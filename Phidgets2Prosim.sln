@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phidgets2Prosim", "Phidgets2Prosim.csproj", "{6E27C366-C368-4E07-9184-23F4825AB671}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E27C366-C368-4E07-9184-23F4825AB671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E27C366-C368-4E07-9184-23F4825AB671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E27C366-C368-4E07-9184-23F4825AB671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E27C366-C368-4E07-9184-23F4825AB671}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1055248D-0D45-493D-A58E-804785F395B2}
+	EndGlobalSection
+EndGlobal
