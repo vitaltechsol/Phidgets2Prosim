@@ -28,8 +28,8 @@ namespace Phidgets2Prosim
 
 
             // dcMotor0.DeviceSerialNumber = 668534;
-            dcMotor0.HubPort = 0;
-            dcMotor0.IsRemote = true;
+            // dcMotor0.HubPort = 0;
+            // dcMotor0.IsRemote = true;
 
             //try
             //{
@@ -127,8 +127,9 @@ namespace Phidgets2Prosim
             PhidgestInput digitalInput1 = new PhidgestInput(5, 1, "system.switches.S_FIRE_FAULT_TEST", 2, connection);
             PhidgestInput digitalInput2 = new PhidgestInput(5, 0, "system.switches.S_FIRE_FAULT_TEST", 1, connection);
 
-
             PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(2, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
+
+            PhidgetsDCMotor dcm = new PhidgetsDCMotor(0, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
         }
 
         void updateStatusLabel()
@@ -145,5 +146,6 @@ namespace Phidgets2Prosim
             }
         }
 
+      
     }
 }
