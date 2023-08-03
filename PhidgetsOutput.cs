@@ -11,16 +11,24 @@ namespace Phidgets2Prosim
         bool isGate = false;
         int delay = 0;
 
-        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection) {
-            digitalOutput.HubPort = hubPort;
-            digitalOutput.IsRemote = true;
-            digitalOutput.Channel = channel;
-            digitalOutput.Open(1000);
+        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
+        {
+            try
+            {
+                digitalOutput.HubPort = hubPort;
+                digitalOutput.IsRemote = true;
+                digitalOutput.Channel = channel;
+                digitalOutput.Open(1000);
 
 
-            // Set ProSim dataref
-            DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
-            dataRef.onDataChange += DataRef_onDataChange;
+                // Set ProSim dataref
+                DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
+                dataRef.onDataChange += DataRef_onDataChange;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
         }
 
         public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate) : this(hubPort, channel, prosimDatmRef, connection)
