@@ -1,4 +1,7 @@
-﻿namespace Phidgets2Prosim
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace Phidgets2Prosim
 {
     partial class Form1
     {

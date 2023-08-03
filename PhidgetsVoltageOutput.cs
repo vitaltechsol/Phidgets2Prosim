@@ -1,7 +1,7 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
-
+using System;
 
 namespace Phidgets2Prosim
 {
@@ -17,9 +17,8 @@ namespace Phidgets2Prosim
                 voltageOutput.DeviceSerialNumber = 668522;
                 voltageOutput.HubPort = hubPort;
                 voltageOutput.IsRemote = true;
-                voltageOutput.Open(15000);
+                voltageOutput.Open(5000);
                 voltageOutput.Voltage = 0;
-                voltageOutput.Enabled = true;
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);

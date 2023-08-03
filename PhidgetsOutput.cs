@@ -1,7 +1,8 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
-using System.Windows.Forms;
+using System;
+using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {

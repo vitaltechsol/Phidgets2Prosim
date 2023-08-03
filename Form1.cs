@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace Phidgets2Prosim
 {
@@ -7,6 +7,7 @@ namespace Phidgets2Prosim
     using System.Diagnostics;
     using ProSimSDK;
     using System.Windows.Forms;
+    using System.Drawing;
 
     public partial class Form1 : Form
     {
@@ -30,21 +31,21 @@ namespace Phidgets2Prosim
             dcMotor0.HubPort = 0;
             dcMotor0.IsRemote = true;
 
-            try
-            {
-                dcMotor0.Close();
-                dcMotor0.Open(5000);
-                dcMotor0.TargetVelocity = 0;
-                dcMotor0.Acceleration = 100;
-                dcMotor0.TargetBrakingStrength = 1;
+            //try
+            //{
+            //    dcMotor0.Close();
+            //    dcMotor0.Open(5000);
+            //    dcMotor0.TargetVelocity = 0;
+            //    dcMotor0.Acceleration = 100;
+            //    dcMotor0.TargetBrakingStrength = 1;
 
-            }
-            catch (PhidgetException ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("");
-                Debug.WriteLine("PhidgetException " + ex.ErrorCode + " (" + ex.Description + "): " + ex.Detail);
-            }
+            //}
+            //catch (PhidgetException ex)
+            //{
+            //    Debug.WriteLine(ex.ToString());
+            //    Debug.WriteLine("");
+            //    Debug.WriteLine("PhidgetException " + ex.ErrorCode + " (" + ex.Description + "): " + ex.Detail);
+            //}
 
 
             // Register Prosim to receive connect and disconnect events
@@ -127,7 +128,7 @@ namespace Phidgets2Prosim
             PhidgestInput digitalInput2 = new PhidgestInput(5, 0, "system.switches.S_FIRE_FAULT_TEST", 1, connection);
 
 
-            PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(0, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
+            PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(2, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
         }
 
         void updateStatusLabel()
@@ -143,6 +144,6 @@ namespace Phidgets2Prosim
                 connectionStatusLabel.ForeColor = Color.Red;
             }
         }
-        
+
     }
 }

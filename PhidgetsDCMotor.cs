@@ -1,7 +1,7 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
-
+using System;
 
 namespace Phidgets2Prosim
 {

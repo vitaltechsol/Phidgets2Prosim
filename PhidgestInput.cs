@@ -48,7 +48,7 @@ namespace Phidgets2Prosim
                 dataRef.value = 0;
             }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Debug.WriteLine("Input Error " + ex);
             }
