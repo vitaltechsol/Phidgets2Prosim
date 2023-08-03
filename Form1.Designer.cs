@@ -1,4 +1,7 @@
-﻿namespace Phidgets2Prosim
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace Phidgets2Prosim
 {
     partial class Form1
     {
@@ -31,6 +34,7 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
+            connectionStatusLabel = new Label();
             tabControl1.SuspendLayout();
             SuspendLayout();
             // 
@@ -59,22 +63,33 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(192, 72);
+            tabPage2.Size = new Size(736, 284);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // connectionStatusLabel
+            // 
+            connectionStatusLabel.AutoSize = true;
+            connectionStatusLabel.Location = new Point(33, 39);
+            connectionStatusLabel.Name = "connectionStatusLabel";
+            connectionStatusLabel.Size = new Size(38, 15);
+            connectionStatusLabel.TabIndex = 4;
+            connectionStatusLabel.Text = "label1";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(connectionStatusLabel);
             Controls.Add(tabControl1);
             Name = "Form1";
             Text = "Phidgets2Prosim v0.1.0";
             Load += Form1_Load;
             tabControl1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -82,5 +97,9 @@
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
+        private Button button1;
+        private Button button2;
+        private Button button3;
+        private Label connectionStatusLabel;
     }
 }
