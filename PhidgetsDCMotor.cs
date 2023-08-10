@@ -3,6 +3,7 @@ using ProSimSDK;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Phidgets2Prosim
 {
@@ -30,12 +31,6 @@ namespace Phidgets2Prosim
 
             dataRef.onDataChange += DataRef_onDataChange;
             dataRef2.onDataChange += DataRef_onDataChange;
-
-
-            //system.gates.B_TRIM_MOTOR_DOWN
-            // system.gates.B_TRIM_MOTOR_UP
-            //system.numerical.N_TRIM_MOTOR_VALUE
-
         }
 
         private async void DataRef_onDataChange(DataRef dataRef)
@@ -53,21 +48,36 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(dataRef.name);
                 Debug.WriteLine(value);
 
-                if (value == true)
+                
+                if (dataRef.name == prosimDatmRefCW)
                 {
-                    if (dataRef.name == prosimDatmRefCW)
+                    if (value == true)
                     {
                         dcMotor.TargetVelocity = 1;
+                    } 
+                    else
+                    {
+                        dcMotor.TargetVelocity = -0.5;
+                        Thread.Sleep(100);
+                        dcMotor.TargetVelocity = 0;
                     }
+                }
 
-                    if (dataRef.name == prosimDatmRefCCW)
+                if (dataRef.name == prosimDatmRefCCW)
+                {
+                    if (value == true)
                     {
                         dcMotor.TargetVelocity = -1;
                     }
-                } else
-                {
-                    dcMotor.TargetVelocity = 0;
+                    else
+                    {
+                        dcMotor.TargetVelocity = 0.5;
+                        Thread.Sleep(100);
+                        dcMotor.TargetVelocity = 0;
+                    }
                 }
+                 
+                
             }
             catch (Exception ex)
             {
