@@ -11,6 +11,8 @@ namespace Phidgets2Prosim
         DigitalOutput digitalOutput = new DigitalOutput();
         bool isGate = false;
         int delay = 0;
+        string prosimDatmRef;
+        string prosimDatmRefOff;
 
         public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
         {
@@ -19,8 +21,9 @@ namespace Phidgets2Prosim
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.Channel = channel;
-                digitalOutput.Open(1000);
+                this.Open();
 
+                this.prosimDatmRef = prosimDatmRef;
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
@@ -32,9 +35,15 @@ namespace Phidgets2Prosim
             }
         }
 
-        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate) : this(hubPort, channel, prosimDatmRef, connection)
+        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(hubPort, channel, prosimDatmRef, connection)
         {
            this.isGate = isGate;
+            // Set ProSim dataref
+            this.prosimDatmRefOff = prosimDatmRefOff;
+            if (prosimDatmRefOff != null) { 
+                DataRef dataRef = new DataRef(prosimDatmRefOff, 10, connection);
+                dataRef.onDataChange += DataRef_onDataChange;
+            }
         }
 
         public void AddDelay(int delay)
@@ -62,12 +71,15 @@ namespace Phidgets2Prosim
             digitalOutput.Close();
         }
 
+        private async void Open()
+        {
+            digitalOutput.Open(1000);
+        }
+
         private void DataRef_onDataChange(DataRef dataRef)
         {
 
-
-
-            // var name = dataRef.name;
+            var name = dataRef.name;
             try
             {
                 Debug.WriteLine("OUT " + dataRef.value + " " + dataRef.name);
@@ -75,10 +87,17 @@ namespace Phidgets2Prosim
                 if (isGate)
                 {
                     var value = Convert.ToBoolean(dataRef.value);
-                    if (value == true)
+                    if (value == true && name == prosimDatmRef)
                     {
                         TurnOn();
-                    } else
+                    }
+
+                    if (value == true && name == prosimDatmRefOff)
+                    {
+                        TurnOff();
+                    }
+
+                    if (prosimDatmRefOff == null && value == false)
                     {
                         TurnOff();
                     }
