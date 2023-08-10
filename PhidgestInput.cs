@@ -23,30 +23,32 @@ namespace Phidgets2Prosim
             digitalInput.IsRemote = true;
             digitalInput.Channel = channel;
             digitalInput.StateChange += StateChange;
+            digitalInput.DeviceSerialNumber = 618534;
 
             digitalInput.Open(5000);
+
             this.inputValue = inputValue;
             // Set ProSim dataref
-            dataRef = new DataRef(prosimDatmRef, 10, connection);
+            // dataRef = new DataRef(prosimDatmRef, 100, connection);
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
 
             
-            Debug.WriteLine("**** State: " + e.State);
-            DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
+           Debug.WriteLine("**** State: " + e.State);
+           DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
 
             try
-            { 
-            if (e.State == true)
             {
-               dataRef.value = inputValue;
-            }
-            else
-            {
-                dataRef.value = 0;
-            }
+                if (e.State == true)
+                {
+                    dataRef.value = inputValue;
+                }
+                else
+                {
+                    dataRef.value = 0;
+                }
             }
             catch (System.Exception ex)
             {
@@ -58,6 +60,11 @@ namespace Phidgets2Prosim
         public void Close()
         {
             digitalInput.Close();
+        }
+
+        public void Open()
+        {
+            digitalInput.Open(5000);
         }
 
     }
