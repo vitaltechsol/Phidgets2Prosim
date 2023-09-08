@@ -11,26 +11,37 @@ namespace Phidgets2Prosim
     {
         string prosimDatmRefCCW;
         string prosimDatmRefCW;
+        double targetVel = 1;
 
         DCMotor dcMotor = new DCMotor();
         public PhidgetsDCMotor(int hubPort, string prosimDatmRefCW, string prosimDatmRefCCW, ProSimConnect connection)
         {
-            this.prosimDatmRefCCW = prosimDatmRefCCW;
-            this.prosimDatmRefCW = prosimDatmRefCW;
+            try
+            {
+                this.prosimDatmRefCCW = prosimDatmRefCCW;
+                this.prosimDatmRefCW = prosimDatmRefCW;
 
-            dcMotor.HubPort = hubPort;
-            dcMotor.IsRemote = true;
-            dcMotor.Open(5000);
-            dcMotor.DeviceSerialNumber = 668534;
-            dcMotor.Acceleration = 100;
-            dcMotor.TargetBrakingStrength = 1;
+                dcMotor.HubPort = hubPort;
+                dcMotor.IsRemote = true;
+                dcMotor.Open(5000);
+                dcMotor.DeviceSerialNumber = 668534;
+                dcMotor.Acceleration = 100;
+                dcMotor.TargetBrakingStrength = 1;
 
-            // Set ProSim dataref
-            DataRef dataRef = new DataRef(prosimDatmRefCW, 10, connection);
-            DataRef dataRef2 = new DataRef(prosimDatmRefCCW, 10, connection);
+                // Set ProSim dataref
+                DataRef dataRef = new DataRef(prosimDatmRefCW, 10, connection);
+                DataRef dataRef2 = new DataRef(prosimDatmRefCCW, 10, connection);
+                DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
 
-            dataRef.onDataChange += DataRef_onDataChange;
-            dataRef2.onDataChange += DataRef_onDataChange;
+                dataRef.onDataChange += DataRef_onDataChange;
+                dataRef2.onDataChange += DataRef_onDataChange;
+                dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine("prosimDatmRefCW " + prosimDatmRefCW);
+            }
         }
 
         private async void DataRef_onDataChange(DataRef dataRef)
@@ -48,16 +59,16 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(dataRef.name);
                 Debug.WriteLine(value);
 
-                
+
                 if (dataRef.name == prosimDatmRefCW)
                 {
                     if (value == true)
                     {
-                        dcMotor.TargetVelocity = 1;
-                    } 
+                        dcMotor.TargetVelocity = targetVel * -1;
+                    }
                     else
                     {
-                        dcMotor.TargetVelocity = -0.5;
+                        dcMotor.TargetVelocity = 0.5;
                         Thread.Sleep(100);
                         dcMotor.TargetVelocity = 0;
                     }
@@ -67,23 +78,45 @@ namespace Phidgets2Prosim
                 {
                     if (value == true)
                     {
-                        dcMotor.TargetVelocity = -1;
+                        dcMotor.TargetVelocity = targetVel;
                     }
                     else
                     {
-                        dcMotor.TargetVelocity = 0.5;
+                        dcMotor.TargetVelocity = -0.5;
                         Thread.Sleep(100);
                         dcMotor.TargetVelocity = 0;
                     }
                 }
-                 
-                
+
+
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }
+
+        }
+
+        private async void DataRef_onFlapsDataChange(DataRef dataRef)
+        {
+            var value = Convert.ToDouble(dataRef.value);
+
+            Debug.WriteLine("flaps changed  " + dataRef.value);
+
+
+            if (value > 1)
+            {
+                targetVel = 1;
+            } else
+            {
+                targetVel = 0.4;
+            }
+        }
+
+        public void changeTargetVelocity(double vel)
+        {
+            targetVel = vel;
         }
 
     }

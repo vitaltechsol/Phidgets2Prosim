@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgestOuput
+    internal class PhidgestOutput
     {
         DigitalOutput digitalOutput = new DigitalOutput();
         bool isGate = false;
@@ -14,7 +14,7 @@ namespace Phidgets2Prosim
         string prosimDatmRef;
         string prosimDatmRefOff;
 
-        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
+        public PhidgestOutput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
         {
             try
             {
@@ -35,13 +35,13 @@ namespace Phidgets2Prosim
             }
         }
 
-        public PhidgestOuput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(hubPort, channel, prosimDatmRef, connection)
+        public PhidgestOutput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(hubPort, channel, prosimDatmRef, connection)
         {
            this.isGate = isGate;
             // Set ProSim dataref
             this.prosimDatmRefOff = prosimDatmRefOff;
             if (prosimDatmRefOff != null) { 
-                DataRef dataRef = new DataRef(prosimDatmRefOff, 10, connection);
+                DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
         }

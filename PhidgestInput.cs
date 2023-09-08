@@ -9,7 +9,6 @@ namespace Phidgets2Prosim
     {
         DigitalInput digitalInput = new DigitalInput();
         int inputValue;
-        static DataRef dataRef;
         string prosimDatmRef;
         ProSimConnect connection;
 
@@ -29,7 +28,6 @@ namespace Phidgets2Prosim
 
             this.inputValue = inputValue;
             // Set ProSim dataref
-            // dataRef = new DataRef(prosimDatmRef, 100, connection);
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
@@ -37,7 +35,7 @@ namespace Phidgets2Prosim
 
             
            Debug.WriteLine("**** State: " + e.State);
-           DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
+           DataRef dataRef = new DataRef(prosimDatmRef, 50, connection);
 
             try
             {
