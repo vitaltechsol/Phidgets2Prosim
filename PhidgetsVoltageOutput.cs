@@ -17,11 +17,11 @@ namespace Phidgets2Prosim
                 voltageOutput.DeviceSerialNumber = 668522;
                 voltageOutput.HubPort = hubPort;
                 voltageOutput.IsRemote = true;
-                voltageOutput.Open(5000);
+                voltageOutput.Open(2000);
                 voltageOutput.Voltage = 0;
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
+                DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             catch (Exception ex)

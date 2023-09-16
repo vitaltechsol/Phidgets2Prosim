@@ -23,8 +23,7 @@ namespace Phidgets2Prosim
             digitalInput.Channel = channel;
             digitalInput.StateChange += StateChange;
             digitalInput.DeviceSerialNumber = 618534;
-
-            digitalInput.Open(5000);
+            Open();
 
             this.inputValue = inputValue;
             // Set ProSim dataref
@@ -35,7 +34,7 @@ namespace Phidgets2Prosim
 
             
            Debug.WriteLine("**** State: " + e.State);
-           DataRef dataRef = new DataRef(prosimDatmRef, 50, connection);
+           DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
 
             try
             {
@@ -62,7 +61,7 @@ namespace Phidgets2Prosim
 
         public void Open()
         {
-            digitalInput.Open(5000);
+            digitalInput.Open(500);
         }
 
     }

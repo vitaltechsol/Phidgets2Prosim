@@ -21,12 +21,12 @@ namespace Phidgets2Prosim
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.Channel = channel;
-                this.Open();
+                Open();
 
                 this.prosimDatmRef = prosimDatmRef;
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRef, 10, connection);
+                DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace Phidgets2Prosim
 
         private async void Open()
         {
-            digitalOutput.Open(1000);
+            digitalOutput.Open(500);
         }
 
         private void DataRef_onDataChange(DataRef dataRef)

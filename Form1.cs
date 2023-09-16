@@ -40,19 +40,17 @@ namespace Phidgets2Prosim
         public Form1()
         {
             // Add Phidgets Hub
-            Net.AddServer("serverName2", "hub5000-2", 5661, "", 0);
             Net.AddServer("serverName1", "hub5000-1", 5661, "", 0);
+            Net.AddServer("serverName2", "hub5000-2", 5661, "", 0);
+            Net.AddServer("serverName3", "hub5000-motors", 5661, "", 0);
+
 
             InitializeComponent();
-
             connectToProSim();
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;
-
-
-
         }
 
         void connectToProSim()
@@ -136,12 +134,24 @@ namespace Phidgets2Prosim
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(2, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
 
                     PhidgetsDCMotor dcm = new PhidgetsDCMotor(0, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
+
+                    PhidgetsBLDCMotor bldcm_00 = new PhidgetsBLDCMotor(1, connection, false, 0,
+                        "system.gates.B_THROTTLE_SERVO_POWER_RIGHT",
+                        "system.analog.A_THROTTLE_RIGHT",
+                        "system.gauge.G_THROTTLE_RIGHT");
+
+                    PhidgetsBLDCMotor bldcm_01 = new PhidgetsBLDCMotor(0, connection, true, 5,
+                     "system.gates.B_THROTTLE_SERVO_POWER_LEFT",
+                     "system.analog.A_THROTTLE_LEFT",
+                     "system.gauge.G_THROTTLE_LEFT");
+
+
                     phidgetsAdded = true;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Cannto Initialize phidgets " + ex);
+                Debug.WriteLine("Cann't Initialize phidgets " + ex);
             }
 
 

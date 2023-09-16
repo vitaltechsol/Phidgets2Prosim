@@ -29,8 +29,8 @@ namespace Phidgets2Prosim
                 dcMotor.TargetBrakingStrength = 1;
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRefCW, 10, connection);
-                DataRef dataRef2 = new DataRef(prosimDatmRefCCW, 10, connection);
+                DataRef dataRef = new DataRef(prosimDatmRefCW, 100, connection);
+                DataRef dataRef2 = new DataRef(prosimDatmRefCCW, 100, connection);
                 DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
 
                 dataRef.onDataChange += DataRef_onDataChange;
@@ -110,7 +110,7 @@ namespace Phidgets2Prosim
                 targetVel = 1;
             } else
             {
-                targetVel = 0.4;
+                targetVel = 0.6;
             }
         }
 
