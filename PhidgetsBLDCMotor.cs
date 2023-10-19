@@ -19,7 +19,7 @@ namespace Phidgets2Prosim
         bool motorOn = false;
         double currentPosition = 0;
         int threshold = 5;
-
+        double currentVel = 0;
 
         BLDCMotor dcMotor = new BLDCMotor();
         public PhidgetsBLDCMotor(int hubPort, ProSimConnect connection, bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos)
@@ -68,7 +68,8 @@ namespace Phidgets2Prosim
             if (motorOn == true && newValue == false)
             {
                 // stop motor
-                dcMotor.TargetVelocity = 0;
+                currentVel = 0;
+                dcMotor.TargetVelocity = currentVel;
             }
             motorOn = newValue;
         }
@@ -78,8 +79,7 @@ namespace Phidgets2Prosim
             if (motorOn)
             {
                 var targetPosition = Convert.ToDouble(dataRef.value) - offset;
-                Debug.WriteLine("Targetfor " + hubPort + " is " + targetPosition);
-
+                //  Debug.WriteLine("Targetfor " + hubPort + " is " + targetPosition);
                 // Calculate the direction based on the difference between current and target positions
 
                 // Check if the motor is within the acceptable range
@@ -89,34 +89,20 @@ namespace Phidgets2Prosim
                 if (Math.Abs(diff) <= threshold)
 
                 {
-                    Debug.WriteLine("Motor " + hubPort + " reached the target position.");
-                    dcMotor.TargetVelocity = 0;
+                    // Debug.WriteLine("Motor " + hubPort + " reached the target position.");
+                    currentVel = 0;
+                    dcMotor.TargetVelocity = currentVel;
                 } else
                 {
                     int direction = Math.Sign(targetPosition - currentPosition) * (reversed ? -1 : 1);
-                    Debug.WriteLine("direction " + direction);
+                   // Debug.WriteLine("direction " + direction);
 
                     double targetVel = targetVelFast;
-
-
                     targetVel = diff > 100 ? 100 : diff;
                     targetVel = targetVel / 100;
 
-                    Debug.WriteLine("targetVel " + targetVel);
-
-
-                    //if (diff < 20)
-                    //{
-                    //    Debug.WriteLine("Go Slow." + hubPort);
-                    //    targetVel = targetVelSlow;
-                    //}
-                    //if (diff > 40)
-                    //{
-                    //    Debug.WriteLine("Go Fast." + hubPort);
-                    //    targetVel = targetVelFastest;
-                    //}
-
-                    dcMotor.TargetVelocity = targetVel * direction;
+                    currentVel = targetVel * direction;
+                    dcMotor.TargetVelocity = currentVel;
                 }
             }
         }
@@ -124,6 +110,18 @@ namespace Phidgets2Prosim
         public void changeTargetVelocity(double vel)
         {
             targetVelFast = vel;
+        }
+
+        public void pause(bool isPaused)
+        {
+            if (isPaused == true)
+            {
+                dcMotor.TargetVelocity = 0;
+            }
+            else
+            {
+                dcMotor.TargetVelocity = currentVel;
+            }
         }
 
     }

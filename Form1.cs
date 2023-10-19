@@ -36,6 +36,11 @@ namespace Phidgets2Prosim
         PhidgestInput digitalInput1_10;
         PhidgestInput digitalInput1_11;
 
+        Custom_TrimWheel trimWheel;
+        PhidgetsBLDCMotor bldcm_00;
+        PhidgetsBLDCMotor bldcm_01;
+
+        bool simIsPaused = false;
 
         public Form1()
         {
@@ -51,6 +56,9 @@ namespace Phidgets2Prosim
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;
+
+            DataRef dataRef = new DataRef("simulator.pause", 100, connection);
+            dataRef.onDataChange += DataRef_onDataChange;
         }
 
         void connectToProSim()
@@ -133,14 +141,16 @@ namespace Phidgets2Prosim
 
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(2, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
 
-                    PhidgetsDCMotor dcm = new PhidgetsDCMotor(0, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
+                   // PhidgetsDCMotor dcm = new PhidgetsDCMotor(0, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
 
-                    PhidgetsBLDCMotor bldcm_00 = new PhidgetsBLDCMotor(1, connection, false, 0,
+                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
+
+                    bldcm_00 = new PhidgetsBLDCMotor(1, connection, false, 0,
                         "system.gates.B_THROTTLE_SERVO_POWER_RIGHT",
                         "system.analog.A_THROTTLE_RIGHT",
                         "system.gauge.G_THROTTLE_RIGHT");
 
-                    PhidgetsBLDCMotor bldcm_01 = new PhidgetsBLDCMotor(0, connection, true, 5,
+                    bldcm_01 = new PhidgetsBLDCMotor(0, connection, true, 5,
                      "system.gates.B_THROTTLE_SERVO_POWER_LEFT",
                      "system.analog.A_THROTTLE_LEFT",
                      "system.gauge.G_THROTTLE_LEFT");
@@ -164,12 +174,19 @@ namespace Phidgets2Prosim
             {
                 connectionStatusLabel.Text = "Connected";
                 connectionStatusLabel.ForeColor = Color.LimeGreen;
+                
+                if (simIsPaused)
+                {
+                    connectionStatusLabel.Text = "Paused";
+                    connectionStatusLabel.ForeColor = Color.OrangeRed;
+                }
             }
             else
             {
                 connectionStatusLabel.Text = "Disconnected";
                 connectionStatusLabel.ForeColor = Color.Red;
             }
+
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -189,6 +206,33 @@ namespace Phidgets2Prosim
             digitalInput1_3.Open(); 
             digitalInput1_4.Open();
         }
+
+
+
+        private void DataRef_onDataChange(DataRef dataRef)
+        {
+            var name = dataRef.name;
+            if (name == "simulator.pause") { 
+                try
+                {
+                    simIsPaused = Convert.ToBoolean(dataRef.value);
+                    Debug.WriteLine("Sim paused Changed " + dataRef.value + " " + dataRef.name);
+
+                    // Pause motors
+                    trimWheel.pause(simIsPaused);
+                    bldcm_00.pause(simIsPaused);
+                    bldcm_01.pause(simIsPaused);
+
+                    Invoke(new MethodInvoker(updateStatusLabel));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                    Debug.WriteLine("simulator.pause " + dataRef.value);
+                }
+            }
+        }
+
 
         private void Form1_Load_1(object sender, EventArgs e)
         {

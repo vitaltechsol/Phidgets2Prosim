@@ -73,7 +73,14 @@ namespace Phidgets2Prosim
 
         private async void Open()
         {
-            digitalOutput.Open(500);
+            try
+            {
+                digitalOutput.Open(500);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
         }
 
         private void DataRef_onDataChange(DataRef dataRef)

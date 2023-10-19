@@ -9,17 +9,19 @@ namespace Phidgets2Prosim
 {
     internal class PhidgetsDCMotor
     {
-        string prosimDatmRefCCW;
-        string prosimDatmRefCW;
-        double targetVel = 1;
+        string prosimDatmRefBwd;
+        string prosimDatmRefFwd;
+        double targetVelFwd = 1;
+        double targetVelBwd = 1;
+        double currentVel = 0;
 
         DCMotor dcMotor = new DCMotor();
-        public PhidgetsDCMotor(int hubPort, string prosimDatmRefCW, string prosimDatmRefCCW, ProSimConnect connection)
+        public PhidgetsDCMotor(int hubPort, string prosimDatmRefFwd, string prosimDatmRefBwd, ProSimConnect connection)
         {
             try
             {
-                this.prosimDatmRefCCW = prosimDatmRefCCW;
-                this.prosimDatmRefCW = prosimDatmRefCW;
+                this.prosimDatmRefBwd = prosimDatmRefBwd;
+                this.prosimDatmRefFwd = prosimDatmRefFwd;
 
                 dcMotor.HubPort = hubPort;
                 dcMotor.IsRemote = true;
@@ -29,18 +31,16 @@ namespace Phidgets2Prosim
                 dcMotor.TargetBrakingStrength = 1;
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRefCW, 100, connection);
-                DataRef dataRef2 = new DataRef(prosimDatmRefCCW, 100, connection);
-                DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+                DataRef dataRef = new DataRef(prosimDatmRefFwd, 100, connection);
+                DataRef dataRef2 = new DataRef(prosimDatmRefBwd, 100, connection);
 
                 dataRef.onDataChange += DataRef_onDataChange;
                 dataRef2.onDataChange += DataRef_onDataChange;
-                dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("prosimDatmRefCW " + prosimDatmRefCW);
+                Debug.WriteLine("prosimDatmRefCW " + prosimDatmRefFwd);
             }
         }
 
@@ -48,9 +48,6 @@ namespace Phidgets2Prosim
         {
 
             Debug.WriteLine("trim name " + dataRef.name);
-            Debug.WriteLine("tim value " + dataRef.name);
-
-
             // var name = dataRef.name;
             try
             {
@@ -60,63 +57,75 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(value);
 
 
-                if (dataRef.name == prosimDatmRefCW)
+                if (dataRef.name == prosimDatmRefFwd)
                 {
                     if (value == true)
                     {
-                        dcMotor.TargetVelocity = targetVel * -1;
+                        currentVel = targetVelFwd * -1;
+                        dcMotor.TargetVelocity = currentVel;
                     }
                     else
                     {
-                        dcMotor.TargetVelocity = 0.5;
+                        currentVel = 0;
+                        dcMotor.TargetVelocity = 0.2;
                         Thread.Sleep(100);
-                        dcMotor.TargetVelocity = 0;
+                        dcMotor.TargetVelocity = currentVel;
                     }
                 }
 
-                if (dataRef.name == prosimDatmRefCCW)
+                if (dataRef.name == prosimDatmRefBwd)
                 {
                     if (value == true)
                     {
-                        dcMotor.TargetVelocity = targetVel;
+                        currentVel = targetVelBwd;
+                        dcMotor.TargetVelocity = currentVel;
                     }
                     else
                     {
-                        dcMotor.TargetVelocity = -0.5;
+                        currentVel = 0;
+                        dcMotor.TargetVelocity = -0.2;
                         Thread.Sleep(100);
-                        dcMotor.TargetVelocity = 0;
+                        dcMotor.TargetVelocity = currentVel;
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
+                // Stop motor
+                currentVel = 0;
+                dcMotor.TargetVelocity = 0;
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }
 
         }
 
-        private async void DataRef_onFlapsDataChange(DataRef dataRef)
+        public void changeTargetFwdVelocity(double val)
         {
-            var value = Convert.ToDouble(dataRef.value);
-
-            Debug.WriteLine("flaps changed  " + dataRef.value);
-
-
-            if (value > 1)
-            {
-                targetVel = 1;
-            } else
-            {
-                targetVel = 0.6;
-            }
+            targetVelFwd = val;
         }
 
-        public void changeTargetVelocity(double vel)
+        public void changeTargetBwdVelocity(double val)
         {
-            targetVel = vel;
+            targetVelBwd = val;
+        }
+
+        public void changeTargetVelocity(double val)
+        {
+            targetVelFwd = val;
+            targetVelBwd = val;
+        }
+
+        public void pause(bool isPaused)
+        {
+            if (isPaused == true)
+            {
+                dcMotor.TargetVelocity = 0;
+            }
+            else
+            {
+                dcMotor.TargetVelocity = currentVel;
+            }
         }
 
     }
