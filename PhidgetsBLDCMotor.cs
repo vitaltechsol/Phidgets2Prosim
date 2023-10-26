@@ -20,6 +20,7 @@ namespace Phidgets2Prosim
         double currentPosition = 0;
         int threshold = 5;
         double currentVel = 0;
+        bool isPaused = false;
 
         BLDCMotor dcMotor = new BLDCMotor();
         public PhidgetsBLDCMotor(int hubPort, ProSimConnect connection, bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos)
@@ -102,7 +103,10 @@ namespace Phidgets2Prosim
                     targetVel = targetVel / 100;
 
                     currentVel = targetVel * direction;
-                    dcMotor.TargetVelocity = currentVel;
+                    if (!isPaused)
+                    {
+                        dcMotor.TargetVelocity = currentVel;
+                    }
                 }
             }
         }
@@ -114,6 +118,7 @@ namespace Phidgets2Prosim
 
         public void pause(bool isPaused)
         {
+            this.isPaused = isPaused;
             if (isPaused == true)
             {
                 dcMotor.TargetVelocity = 0;

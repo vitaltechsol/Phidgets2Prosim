@@ -13,6 +13,7 @@ namespace Phidgets2Prosim
         int delay = 0;
         string prosimDatmRef;
         string prosimDatmRefOff;
+        public int TurnOffAfterMs { get; set; } = 0;
 
         public PhidgestOutput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
         {
@@ -57,7 +58,17 @@ namespace Phidgets2Prosim
                 var taskDelay = Task.Delay(delay); 
                 await taskDelay;
             }
+
             digitalOutput.DutyCycle = 1;
+
+            // Turn off after specified time (ms)
+            if (TurnOffAfterMs > 0)
+                {
+                Debug.WriteLine("Start Delay " + TurnOffAfterMs);
+                var taskDelay2 = Task.Delay(TurnOffAfterMs);
+                await taskDelay2;
+                TurnOff();
+            }
         }
 
         public void TurnOff()

@@ -14,6 +14,8 @@ namespace Phidgets2Prosim
         double targetVelFwd = 1;
         double targetVelBwd = 1;
         double currentVel = 0;
+        bool isPaused = false;
+
 
         DCMotor dcMotor = new DCMotor();
         public PhidgetsDCMotor(int hubPort, string prosimDatmRefFwd, string prosimDatmRefBwd, ProSimConnect connection)
@@ -57,7 +59,7 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(value);
 
 
-                if (dataRef.name == prosimDatmRefFwd)
+                if (dataRef.name == prosimDatmRefFwd && !isPaused)
                 {
                     if (value == true)
                     {
@@ -73,7 +75,7 @@ namespace Phidgets2Prosim
                     }
                 }
 
-                if (dataRef.name == prosimDatmRefBwd)
+                if (dataRef.name == prosimDatmRefBwd && !isPaused)
                 {
                     if (value == true)
                     {
@@ -118,6 +120,7 @@ namespace Phidgets2Prosim
 
         public void pause(bool isPaused)
         {
+            this.isPaused = isPaused;
             if (isPaused == true)
             {
                 dcMotor.TargetVelocity = 0;
