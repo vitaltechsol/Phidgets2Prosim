@@ -36,6 +36,7 @@ namespace Phidgets2Prosim
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.btnConnect = new System.Windows.Forms.Button();
+            this.btnSpeedBrake = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -88,11 +89,22 @@ namespace Phidgets2Prosim
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
+            // btnSpeedBrake
+            // 
+            this.btnSpeedBrake.Location = new System.Drawing.Point(518, 34);
+            this.btnSpeedBrake.Name = "btnSpeedBrake";
+            this.btnSpeedBrake.Size = new System.Drawing.Size(114, 23);
+            this.btnSpeedBrake.TabIndex = 6;
+            this.btnSpeedBrake.Text = "Speed Brake Down";
+            this.btnSpeedBrake.UseVisualStyleBackColor = true;
+            this.btnSpeedBrake.Click += new System.EventHandler(this.btnSpeedBrake_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.btnSpeedBrake);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.connectionStatusLabel);
             this.Controls.Add(this.tabControl1);
@@ -115,5 +127,6 @@ namespace Phidgets2Prosim
         private Button button3;
         private Label connectionStatusLabel;
         private Button btnConnect;
+        private Button btnSpeedBrake;
     }
 }

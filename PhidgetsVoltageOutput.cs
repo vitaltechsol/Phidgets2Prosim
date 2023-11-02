@@ -39,9 +39,9 @@ namespace Phidgets2Prosim
                 var convertedValue = value > 0 ? (value / 500) : 0;
 
                 voltageOutput.Voltage = convertedValue;
-                Debug.WriteLine(dataRef.name);
-                Debug.WriteLine(value);
-                Debug.WriteLine(convertedValue);
+                //Debug.WriteLine(dataRef.name);
+                //Debug.WriteLine(value);
+                //Debug.WriteLine(convertedValue);
 
             }
             catch (Exception ex)

@@ -36,6 +36,8 @@ namespace Phidgets2Prosim
         PhidgestInput digitalInput1_10;
         PhidgestInput digitalInput1_11;
 
+        PhidgestOutput digitalOutput_3_8;
+
         Custom_TrimWheel trimWheel;
         PhidgetsBLDCMotor bldcm_00;
         PhidgetsBLDCMotor bldcm_01;
@@ -100,13 +102,12 @@ namespace Phidgets2Prosim
                     PhidgestOutput digitalOutput_3_2 = new PhidgestOutput(3, 2, "system.gates.B_REVERSER_1_SYNC_LOCK", connection, true);
                     digitalOutput_3_2.AddDelay(1500);
                     PhidgestOutput digitalOutput_3_3 = new PhidgestOutput(3, 3, "system.gates.B_AC_POWER", connection, true);
-                    PhidgestOutput digitalOutput_3_8 = new PhidgestOutput(3, 8, 
-                        "system.gates.B_SPEED_BRAKE_DEPLOY", connection, true, 
+                   digitalOutput_3_8 = new PhidgestOutput(3, 8,
+                        "system.gates.B_SPEED_BRAKE_DEPLOY", connection, true,
                         "system.gates.B_SPEED_BRAKE_RESTOW");
 
                     // Auto stow speed brake after it has open for that long
-                    digitalOutput_3_8.TurnOffAfterMs = 100000;
-                    digitalOutput_3_8.TurnOn();
+                        digitalOutput_3_8.TurnOffAfterMs = 60000;
 
                     PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
 
@@ -238,6 +239,11 @@ namespace Phidgets2Prosim
         private void Form1_Load_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnSpeedBrake_Click(object sender, EventArgs e)
+        {
+            digitalOutput_3_8.TurnOff();
         }
     }
 }

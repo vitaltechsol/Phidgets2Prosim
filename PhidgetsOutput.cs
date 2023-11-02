@@ -54,27 +54,45 @@ namespace Phidgets2Prosim
 
         public async void TurnOn()
         {
-            if (delay > 0) { 
-                var taskDelay = Task.Delay(delay); 
-                await taskDelay;
-            }
+            try
+            {
+                digitalOutput.Open(1000);
 
-            digitalOutput.DutyCycle = 1;
-
-            // Turn off after specified time (ms)
-            if (TurnOffAfterMs > 0)
+                if (delay > 0)
                 {
-                Debug.WriteLine("Start Delay " + TurnOffAfterMs);
-                var taskDelay2 = Task.Delay(TurnOffAfterMs);
-                await taskDelay2;
-                TurnOff();
+                    var taskDelay = Task.Delay(delay);
+                    await taskDelay;
+                }
+
+                digitalOutput.DutyCycle = 1;
+
+                // Turn off after specified time(ms)
+                if (TurnOffAfterMs > 0)
+                {
+                    Debug.WriteLine("Start Delay " + TurnOffAfterMs);
+                    var taskDelay2 = Task.Delay(TurnOffAfterMs);
+                    await taskDelay2;
+                    TurnOff();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
             }
         }
 
         public void TurnOff()
         {
-            digitalOutput.Open(1000);
-            digitalOutput.DutyCycle = 0;
+            try
+            {
+                Debug.WriteLine("Torn Off");
+                digitalOutput.Open(1000);
+                digitalOutput.DutyCycle = 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
         }
 
         public void Close()
@@ -107,16 +125,20 @@ namespace Phidgets2Prosim
                     var value = Convert.ToBoolean(dataRef.value);
                     if (value == true && name == prosimDatmRef)
                     {
+                        Debug.WriteLine("Torn on " + dataRef.value + " " + dataRef.name);
                         TurnOn();
                     }
 
                     if (value == true && name == prosimDatmRefOff)
                     {
+                        Debug.WriteLine("Torn Off from ref" + dataRef.value + " " + dataRef.name);
                         TurnOff();
                     }
 
                     if (prosimDatmRefOff == null && value == false)
                     {
+                        Debug.WriteLine("Torn Off" + dataRef.value + " " + dataRef.name);
+
                         TurnOff();
                     }
                 }
