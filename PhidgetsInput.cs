@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgestInput
+    internal class PhidgetsInput
     {
         DigitalInput digitalInput = new DigitalInput();
         int inputValue;
@@ -13,7 +13,7 @@ namespace Phidgets2Prosim
         ProSimConnect connection;
 
 
-        public PhidgestInput(int hubPort, int channel, string prosimDatmRef, int inputValue, ProSimConnect connection) {
+        public PhidgetsInput(int hubPort, int channel, string prosimDatmRef, int inputValue, ProSimConnect connection) {
 
             this.prosimDatmRef = prosimDatmRef;
             this.connection = connection;
