@@ -14,6 +14,7 @@ namespace Phidgets2Prosim
         string prosimDatmRef;
         string prosimDatmRefOff;
         public int TurnOffAfterMs { get; set; } = 0;
+        public bool Inverse { get; set; } = false;
 
         public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
         {
@@ -127,20 +128,41 @@ namespace Phidgets2Prosim
                     if (value == true && name == prosimDatmRef)
                     {
                         Debug.WriteLine("Torn on " + dataRef.value + " " + dataRef.name);
-                        TurnOn();
+                        if (Inverse)
+                        {
+                            TurnOff();
+                        }
+                        else
+                        {
+                            TurnOn();
+                        }
                     }
 
                     if (value == true && name == prosimDatmRefOff)
                     {
                         Debug.WriteLine("Torn Off from ref" + dataRef.value + " " + dataRef.name);
-                        TurnOff();
+                        if (Inverse)
+                        {
+                            TurnOn();
+                        }
+                        else
+                        {
+                            TurnOff();
+                        }
                     }
 
                     if (prosimDatmRefOff == null && value == false)
                     {
                         Debug.WriteLine("Torn Off" + dataRef.value + " " + dataRef.name);
 
-                        TurnOff();
+                        if (Inverse)
+                        {
+                            TurnOn();
+                        }
+                        else
+                        {
+                            TurnOff();
+                        }
                     }
                 }
                 else { 
@@ -149,12 +171,26 @@ namespace Phidgets2Prosim
 
                     if (value == 2)
                     {
-                        TurnOn();
+                        if (Inverse)
+                        {
+                            TurnOff();
+                        } else
+                        {
+                            TurnOn();
+                        }
+                        
                     }
 
                     if (value == 0)
                     {
-                        TurnOff();
+                        if (Inverse)
+                        {
+                            TurnOn();
+                        }
+                        else
+                        {
+                            TurnOff();
+                        }
                     }
                 }
             }
