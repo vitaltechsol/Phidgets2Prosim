@@ -15,13 +15,14 @@ namespace Phidgets2Prosim
         string prosimDatmRefOff;
         public int TurnOffAfterMs { get; set; } = 0;
 
-        public PhidgestOutput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
+        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
         {
             try
             {
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.Channel = channel;
+                digitalOutput.DeviceSerialNumber = deviceSerialNo;
                 Open();
 
                 this.prosimDatmRef = prosimDatmRef;
@@ -36,7 +37,7 @@ namespace Phidgets2Prosim
             }
         }
 
-        public PhidgestOutput(int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(hubPort, channel, prosimDatmRef, connection)
+        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(deviceSerialNo, hubPort, channel, prosimDatmRef, connection)
         {
            this.isGate = isGate;
             // Set ProSim dataref

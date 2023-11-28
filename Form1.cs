@@ -36,6 +36,9 @@ namespace Phidgets2Prosim
         PhidgestInput digitalInput1_10;
         PhidgestInput digitalInput1_11;
 
+        PhidgestInput digitalInput1_12;
+        PhidgestInput digitalInput1_13;
+
         PhidgestOutput digitalOutput_3_8;
 
         Custom_TrimWheel trimWheel;
@@ -94,40 +97,53 @@ namespace Phidgets2Prosim
 
         private void AddAllPhidgets()
         {
+
+            var hubPedestal = 618534;
+            var hubMip = 668522;
+
             try { 
                 if (!phidgetsAdded) {
-                    PhidgestOutput digitalOutput3_0 = new PhidgestOutput(3, 0, "system.gates.B_STANDBY_POWER", connection, true);
-                    PhidgestOutput digitalOutput_3_1 = new PhidgestOutput(3, 1, "system.gates.B_REVERSER_2_SYNC_LOCK", connection, true);
+                    PhidgestOutput do_1_8 = new PhidgestOutput(668522, 1, 8, "system.indicators.I_MIP_GEAR_RIGHT_TRANSIT", connection);
+                    PhidgestOutput do_1_9 = new PhidgestOutput(668522, 1, 9, "system.indicators.I_MIP_GEAR_NOSE_DOWN", connection);
+                    PhidgestOutput do_1_10 = new PhidgestOutput(668522, 1, 10, "system.indicators.I_MIP_GEAR_RIGHT_DOWN", connection);
+                    PhidgestOutput do_1_11 = new PhidgestOutput(668522, 1, 11, "system.indicators.I_MIP_GEAR_NOSE_TRANSIT", connection);
+                    PhidgestOutput do_1_12 = new PhidgestOutput(668522, 1, 12, "system.indicators.I_MIP_GEAR_LEFT_TRANSIT", connection);
+                    PhidgestOutput do_1_13 = new PhidgestOutput(668522, 1, 13, "system.indicators.I_MIP_GEAR_LEFT_DOWN", connection);
+
+                    PhidgestOutput digitalOutput_3_0 = new PhidgestOutput(hubPedestal, 3, 0, "system.gates.B_STANDBY_POWER", connection, true);
+                    PhidgestOutput digitalOutput_3_1 = new PhidgestOutput(hubPedestal, 3, 1, "system.gates.B_REVERSER_2_SYNC_LOCK", connection, true);
                     digitalOutput_3_1.AddDelay(1500);
-                    PhidgestOutput digitalOutput_3_2 = new PhidgestOutput(3, 2, "system.gates.B_REVERSER_1_SYNC_LOCK", connection, true);
+                    PhidgestOutput digitalOutput_3_2 = new PhidgestOutput(hubPedestal, 3, 2, "system.gates.B_REVERSER_1_SYNC_LOCK", connection, true);
                     digitalOutput_3_2.AddDelay(1500);
-                    PhidgestOutput digitalOutput_3_3 = new PhidgestOutput(3, 3, "system.gates.B_AC_POWER", connection, true);
-                   digitalOutput_3_8 = new PhidgestOutput(3, 8,
+                    PhidgestOutput digitalOutput_3_3 = new PhidgestOutput(hubPedestal, 3, 3, "system.gates.B_AC_POWER", connection, true);
+                   digitalOutput_3_8 = new PhidgestOutput(hubPedestal, 3, 8,
                         "system.gates.B_SPEED_BRAKE_DEPLOY", connection, true,
                         "system.gates.B_SPEED_BRAKE_RESTOW");
 
                     // Auto stow speed brake after it has open for that long
                         digitalOutput_3_8.TurnOffAfterMs = 60000;
 
-                    PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
+                    PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(hubPedestal, 3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
 
 
-                    PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(4, 0, "system.indicators.I_FIRE_1", connection);
-                    PhidgestOutput digitalOutput_4_1 = new PhidgestOutput(4, 1, "system.indicators.I_FIRE_APU", connection);
-                    PhidgestOutput digitalOutput_4_2 = new PhidgestOutput(4, 2, "system.indicators.I_FIRE_2", connection);
-                    PhidgestOutput digitalOutput_4_3 = new PhidgestOutput(4, 3, "system.indicators.I_FIRE_L_BOTTLE_DISCHARGE", connection);
-                    PhidgestOutput digitalOutput_4_4 = new PhidgestOutput(4, 4, "system.indicators.I_FIRE_R_BOTTLE_DISCHARGE", connection);
-                    PhidgestOutput digitalOutput_4_5 = new PhidgestOutput(4, 5, "system.indicators.I_FIRE_TEST_APU", connection);
-                    PhidgestOutput digitalOutput_4_6 = new PhidgestOutput(4, 6, "system.indicators.I_FIRE_APU_DET_INOPT", connection);
+                    PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(hubPedestal, 4, 0, "system.indicators.I_FIRE_1", connection);
+                    PhidgestOutput digitalOutput_4_1 = new PhidgestOutput(hubPedestal, 4, 1, "system.indicators.I_FIRE_APU", connection);
+                    PhidgestOutput digitalOutput_4_2 = new PhidgestOutput(hubPedestal, 4, 2, "system.indicators.I_FIRE_2", connection);
+                    PhidgestOutput digitalOutput_4_3 = new PhidgestOutput(hubPedestal, 4, 3, "system.indicators.I_FIRE_L_BOTTLE_DISCHARGE", connection);
+                    PhidgestOutput digitalOutput_4_4 = new PhidgestOutput(hubPedestal, 4, 4, "system.indicators.I_FIRE_R_BOTTLE_DISCHARGE", connection);
+                    PhidgestOutput digitalOutput_4_5 = new PhidgestOutput(hubPedestal, 4, 5, "system.indicators.I_FIRE_TEST_APU", connection);
+                    PhidgestOutput digitalOutput_4_6 = new PhidgestOutput(hubPedestal, 4, 6, "system.indicators.I_FIRE_APU_DET_INOPT", connection);
 
-                    PhidgestOutput digitalOutput_4_8 = new PhidgestOutput(4, 8, "system.indicators.B_FIRE_HANDLE_LEFT_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_10 = new PhidgestOutput(4, 10, "system.indicators.B_FIRE_HANDLE_RIGHT_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_11 = new PhidgestOutput(4, 11, "system.indicators.I_FIRE_ENG_1_OVT", connection);
-                    PhidgestOutput digitalOutput_4_12 = new PhidgestOutput(4, 12, "system.indicators.I_FIRE_ENG_2_OVT", connection);
-                    PhidgestOutput digitalOutput_4_13 = new PhidgestOutput(4, 13, "system.indicators.I_FIRE_WHEEL_WELL_OVT", connection);
-                    PhidgestOutput digitalOutput_4_14 = new PhidgestOutput(4, 14, "system.indicators.B_FIRE_HANDLE_APU_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_15 = new PhidgestOutput(4, 15, "system.indicators.I_FIRE_FAULT", connection);
+                    PhidgestOutput digitalOutput_4_8 = new PhidgestOutput(hubPedestal, 4, 8, "system.indicators.B_FIRE_HANDLE_LEFT_LOCK", connection, true);
+                    PhidgestOutput digitalOutput_4_10 = new PhidgestOutput(hubPedestal, 4, 10, "system.indicators.B_FIRE_HANDLE_RIGHT_LOCK", connection, true);
+                    PhidgestOutput digitalOutput_4_11 = new PhidgestOutput(hubPedestal, 4, 11, "system.indicators.I_FIRE_ENG_1_OVT", connection);
+                    PhidgestOutput digitalOutput_4_12 = new PhidgestOutput(hubPedestal, 4, 12, "system.indicators.I_FIRE_ENG_2_OVT", connection);
+                    PhidgestOutput digitalOutput_4_13 = new PhidgestOutput(hubPedestal, 4, 13, "system.indicators.I_FIRE_WHEEL_WELL_OVT", connection);
+                    PhidgestOutput digitalOutput_4_14 = new PhidgestOutput(hubPedestal, 4, 14, "system.indicators.B_FIRE_HANDLE_APU_LOCK", connection, true);
+                    PhidgestOutput digitalOutput_4_15 = new PhidgestOutput(hubPedestal, 4, 15, "system.indicators.I_FIRE_FAULT", connection);
 
+                    PhidgestOutput digitalOutput_5_01 = new PhidgestOutput(hubPedestal, 5, 0, "system.indicators.I_ASP_VHF_1_SEND", connection, true);
+                    PhidgestOutput digitalOutput_5_02 = new PhidgestOutput(hubPedestal, 5, 1, "system.indicators.I_ASP_VHF_2_SEND", connection);
 
                     digitalInput_2_00 = new PhidgestInput(2, 1, "system.switches.S_FIRE_FAULT_TEST", 2, connection);
                     digitalInput_2_01 = new PhidgestInput(2, 0, "system.switches.S_FIRE_FAULT_TEST", 1, connection);
@@ -146,6 +162,8 @@ namespace Phidgets2Prosim
                     digitalInput1_08 = new PhidgestInput(1, 08, "system.switches.S_AILERON_TRIM", 1, connection);
                     digitalInput1_09 = new PhidgestInput(1, 09, "system.switches.S_AILERON_TRIM", 2, connection);
 
+                    digitalInput1_12 = new PhidgestInput(1, 12, "system.switches.S_ASP_VHF_1_SEND", 1, connection);
+                    digitalInput1_13 = new PhidgestInput(1, 13, "system.switches.S_ASP_VHF_2_SEND", 1, connection);
 
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(2, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
                     trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
