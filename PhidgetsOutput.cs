@@ -3,6 +3,7 @@ using ProSimSDK;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Channels;
 
 namespace Phidgets2Prosim
 {
@@ -87,12 +88,13 @@ namespace Phidgets2Prosim
         {
             try
             {
-                Debug.WriteLine("Torn Off");
+                Debug.WriteLine("Turn Off");
                 digitalOutput.Open(1000);
                 digitalOutput.DutyCycle = 0;
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("Turn Off Failed for channel " + prosimDatmRef);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -110,6 +112,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("Open failed for " + prosimDatmRef);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -127,7 +130,7 @@ namespace Phidgets2Prosim
                     var value = Convert.ToBoolean(dataRef.value);
                     if (value == true && name == prosimDatmRef)
                     {
-                        Debug.WriteLine("Torn on " + dataRef.value + " " + dataRef.name);
+                        Debug.WriteLine("Turn on " + dataRef.value + " " + dataRef.name);
                         if (Inverse)
                         {
                             TurnOff();
@@ -196,6 +199,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("DataRef_onDataChange failed for " + prosimDatmRef);
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }
