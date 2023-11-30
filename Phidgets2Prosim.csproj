@@ -81,10 +81,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="PhidgestInput.cs" />
+    <Compile Include="PhidgetsInput.cs" />
     <Compile Include="PhidgetsBLDCMotor.cs" />
     <Compile Include="PhidgetsDCMotor.cs" />
+    <Compile Include="PhidgetsHub.cs" />
     <Compile Include="PhidgetsOutput.cs" />
+    <Compile Include="PhidgetsPort.cs" />
     <Compile Include="PhidgetsVoltageOutput.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
