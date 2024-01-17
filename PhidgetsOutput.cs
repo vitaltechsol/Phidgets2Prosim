@@ -21,13 +21,14 @@ namespace Phidgets2Prosim
         {
             try
             {
+                this.prosimDatmRef = prosimDatmRef;
+
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = deviceSerialNo;
                 Open();
 
-                this.prosimDatmRef = prosimDatmRef;
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
@@ -108,7 +109,7 @@ namespace Phidgets2Prosim
         {
             try
             {
-                digitalOutput.Open(500);
+                await Task.Run(() => digitalOutput.Open(500));
             }
             catch (Exception ex)
             {
@@ -119,7 +120,7 @@ namespace Phidgets2Prosim
 
         private void DataRef_onDataChange(DataRef dataRef)
         {
-
+       
             var name = dataRef.name;
             try
             {
