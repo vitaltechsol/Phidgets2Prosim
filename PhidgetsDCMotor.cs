@@ -15,13 +15,14 @@ namespace Phidgets2Prosim
         double targetVelBwd = 1;
         double currentVel = 0;
         bool isPaused = false;
-
+        int hubPort;
 
         DCMotor dcMotor = new DCMotor();
         public PhidgetsDCMotor(int hubPort, string prosimDatmRefFwd, string prosimDatmRefBwd, ProSimConnect connection)
         {
             try
             {
+                this.hubPort = hubPort;
                 this.prosimDatmRefBwd = prosimDatmRefBwd;
                 this.prosimDatmRefFwd = prosimDatmRefFwd;
 
@@ -128,6 +129,19 @@ namespace Phidgets2Prosim
             else
             {
                 dcMotor.TargetVelocity = currentVel;
+            }
+        }
+
+        private async void Open()
+        {
+            try
+            {
+                await Task.Run(() => dcMotor.Open(500));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Open failed for DC Motor " + hubPort);
+                Debug.WriteLine(ex.ToString());
             }
         }
 
