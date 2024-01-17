@@ -129,5 +129,18 @@ namespace Phidgets2Prosim
             }
         }
 
+        private async void Open()
+        {
+            try
+            {
+                await Task.Run(() => dcMotor.Open(500));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Open failed for DC Motor " + hubPort);
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
     }
 }
