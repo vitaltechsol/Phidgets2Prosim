@@ -1,7 +1,6 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace Phidgets2Prosim
 {
@@ -13,7 +12,8 @@ namespace Phidgets2Prosim
         ProSimConnect connection;
 
 
-        public PhidgetsInput(int hubPort, int channel, string prosimDatmRef, int inputValue, ProSimConnect connection) {
+        public PhidgetsInput(int hubPort, int channel, string prosimDatmRef, int inputValue, ProSimConnect connection)
+        {
 
             this.prosimDatmRef = prosimDatmRef;
             this.connection = connection;
@@ -32,9 +32,9 @@ namespace Phidgets2Prosim
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
 
-            
-           Debug.WriteLine("**** State: " + e.State);
-           DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
+
+            Debug.WriteLine("**** State: " + e.State);
+            DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
 
             try
             {

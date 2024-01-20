@@ -17,18 +17,36 @@ namespace Phidgets2Prosim
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
 
-        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection)
+        private bool isHubPortDevice = false;
+
+        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection): this(deviceSerialNo, hubPort, channel, prosimDatmRef, connection, false, null, false)
         {
+          
+        }
+
+        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null, bool isHubPortDevice = false)
+        {
+           this.isGate = isGate;
+            // Set ProSim dataref
+            this.prosimDatmRefOff = prosimDatmRefOff;
+            if (prosimDatmRefOff != null) { 
+                DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
+                dataRef.onDataChange += DataRef_onDataChange;
+            }
+            this.isHubPortDevice = isHubPortDevice;
+
             try
             {
                 this.prosimDatmRef = prosimDatmRef;
 
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
+                digitalOutput.IsHubPortDevice = isHubPortDevice;
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = deviceSerialNo;
-                Open();
+                Debug.WriteLine("*****l " + prosimDatmRef + " " + isHubPortDevice);
 
+                Open();
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
@@ -38,17 +56,7 @@ namespace Phidgets2Prosim
             {
                 Debug.WriteLine(ex.ToString());
             }
-        }
 
-        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null) : this(deviceSerialNo, hubPort, channel, prosimDatmRef, connection)
-        {
-           this.isGate = isGate;
-            // Set ProSim dataref
-            this.prosimDatmRefOff = prosimDatmRefOff;
-            if (prosimDatmRefOff != null) { 
-                DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
-                dataRef.onDataChange += DataRef_onDataChange;
-            }
         }
 
         public void AddDelay(int delay)
@@ -60,7 +68,7 @@ namespace Phidgets2Prosim
         {
             try
             {
-                digitalOutput.Open(1000);
+               // digitalOutput.Open(5000);
 
                 if (delay > 0)
                 {
@@ -90,7 +98,7 @@ namespace Phidgets2Prosim
             try
             {
                 Debug.WriteLine("Turn Off");
-                digitalOutput.Open(1000);
+              //  digitalOutput.Open(1000);
                 digitalOutput.DutyCycle = 0;
             }
             catch (Exception ex)
@@ -113,7 +121,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Open failed for " + prosimDatmRef);
+                Debug.WriteLine("Open failed for " + prosimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
                 Debug.WriteLine(ex.ToString());
             }
         }
