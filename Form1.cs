@@ -8,6 +8,7 @@ namespace Phidgets2Prosim
     using ProSimSDK;
     using System.Windows.Forms;
     using System.Drawing;
+    using System.Collections.Generic;
     using System.Diagnostics.Eventing.Reader;
     using System.Runtime.Remoting.Channels;
 
@@ -142,17 +143,6 @@ namespace Phidgets2Prosim
                     hub_motors = new PhidgetsHub();
                     hub_oh_1 = new PhidgetsHub();
 
-
-
-                    //DigitalOutput digitalOutput = new DigitalOutput();
-
-                    //digitalOutput.HubPort = 5;
-                    //digitalOutput.IsRemote = true;
-                    //digitalOutput.IsHubPortDevice = true;
-                    //digitalOutput.Channel = 0;
-                    //digitalOutput.DeviceSerialNumber = 668066;
-                    //digitalOutput.Open(2000);
-
                     hub_motors.port[4].output[0] = new PhidgestOutput(hubMotorsSlrNo, 4, 0, "system.gates.B_STICKSHAKER_FO", connection, true, null, true);
                     hub_motors.port[5].output[0] = new PhidgestOutput(hubMotorsSlrNo, 5, 0, "system.gates.B_STICKSHAKER", connection, true, null, true);
 
@@ -224,11 +214,6 @@ namespace Phidgets2Prosim
                     hub_oh_1.port[4].output[14] = new PhidgestOutput(hubOH_1_SrlNo, 4, 14, "system.indicators.I_OH_LEDEVICES_EXT_SLAT8", connection);
                     hub_oh_1.port[4].output[15] = new PhidgestOutput(hubOH_1_SrlNo, 4, 15, "system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT8", connection);
 
-
-
-
-
-
                     PhidgestOutput digitalOutput_3_0 = new PhidgestOutput(hubPedestalSlrNo, 3, 0, "system.gates.B_STANDBY_POWER", connection, true);
                     PhidgestOutput digitalOutput_3_1 = new PhidgestOutput(hubPedestalSlrNo, 3, 1, "system.gates.B_REVERSER_2_SYNC_LOCK", connection, true);
                     digitalOutput_3_1.AddDelay(1500);
@@ -264,22 +249,20 @@ namespace Phidgets2Prosim
                     PhidgestOutput digitalOutput_5_01 = new PhidgestOutput(hubPedestalSlrNo, 5, 0, "system.indicators.I_ASP_VHF_1_SEND", connection);
                     PhidgestOutput digitalOutput_5_02 = new PhidgestOutput(hubPedestalSlrNo, 5, 1, "system.indicators.I_ASP_VHF_2_SEND", connection);
 
-
-
                     //hub_ped.port[3].input[0] = new PhidgetsInput(2, 0, "system.switches.S_FIRE_FAULT_TEST", 1, connection);
                     // hub_ped.port[3].input[0] = new PhidgetsInput(2, 1, "system.switches.S_FIRE_FAULT_TEST", 2, connection);
 
-                    digitalInput_2_00 = new PhidgetsInput(2, 0, "system.switches.S_FIRE_FAULT_TEST", 1, connection);
-                    digitalInput_2_01 = new PhidgetsInput(2, 1, "system.switches.S_FIRE_FAULT_TEST", 2, connection);
-                    digitalInput_2_02 = new PhidgetsInput(2, 2, "system.switches.S_FIRE_HANDLE1", 1, connection);
-                    digitalInput_2_03 = new PhidgetsInput(2, 3, "system.switches.S_FIRE_PULL1", 1, connection);
-                    digitalInput_2_04 = new PhidgetsInput(2, 4, "system.switches.S_FIRE_HANDLE1", 2, connection);
-                    digitalInput_2_08 = new PhidgetsInput(2, 8, "system.switches.S_FIRE_HANDLE_APU", 1, connection);
-                    digitalInput_2_09 = new PhidgetsInput(2, 9, "system.switches.S_FIRE_PULL_APU", 1, connection);
-                    digitalInput_2_10 = new PhidgetsInput(2, 10, "system.switches.S_FIRE_HANDLE_APU", 2, connection);
-                    digitalInput_2_11 = new PhidgetsInput(2, 11, "system.switches.S_FIRE_HANDLE2", 1, connection);
-                    digitalInput_2_12 = new PhidgetsInput(2, 12, "system.switches.S_FIRE_PULL2", 1, connection);
-                    digitalInput_2_13 = new PhidgetsInput(2, 13, "system.switches.S_FIRE_HANDLE2", 2, connection);
+                    digitalInput_2_00 = new PhidgetsInput(2, 0, connection, "system.switches.S_FIRE_FAULT_TEST", 1);
+                    digitalInput_2_01 = new PhidgetsInput(2, 1, connection, "system.switches.S_FIRE_FAULT_TEST", 2);
+                    digitalInput_2_02 = new PhidgetsInput(2, 2, connection, "system.switches.S_FIRE_HANDLE1", 1);
+                    digitalInput_2_03 = new PhidgetsInput(2, 3, connection, "system.switches.S_FIRE_PULL1", 1);
+                    digitalInput_2_04 = new PhidgetsInput(2, 4, connection, "system.switches.S_FIRE_HANDLE1", 2);
+                    digitalInput_2_08 = new PhidgetsInput(2, 8, connection, "system.switches.S_FIRE_HANDLE_APU", 1);
+                    digitalInput_2_09 = new PhidgetsInput(2, 9, connection, "system.switches.S_FIRE_PULL_APU", 1);
+                    digitalInput_2_10 = new PhidgetsInput(2, 10, connection, "system.switches.S_FIRE_HANDLE_APU", 2);
+                    digitalInput_2_11 = new PhidgetsInput(2, 11, connection, "system.switches.S_FIRE_HANDLE2", 1);
+                    digitalInput_2_12 = new PhidgetsInput(2, 12, connection, "system.switches.S_FIRE_PULL2", 1);
+                    digitalInput_2_13 = new PhidgetsInput(2, 13, connection, "system.switches.S_FIRE_HANDLE2", 2);
 
                     //hub_ped.port[1].input[0] = new PhidgetsInput(1, 0, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1, connection);
                     //hub_ped.port[1].input[1] = new PhidgetsInput(1, 1, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1, connection);
@@ -287,19 +270,36 @@ namespace Phidgets2Prosim
                     //hub_ped.port[1].input[3] = new PhidgetsInput(1, 3, "system.switches.S_THROTTLE_AT_DISENGAGE_2", 1, connection);
                     //hub_ped.port[1].input[4] = new PhidgetsInput(1, 4, "system.switches.S_THROTTLE_TOGA", 1, connection);
 
-                    digitalInput1_0 = new PhidgetsInput(1, 0, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1, connection);
-                    digitalInput1_1 = new PhidgetsInput(1, 1, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1, connection);
-                    digitalInput1_2 = new PhidgetsInput(1, 2, "system.switches.S_THROTTLE_AT_DISENGAGE", 1, connection);
-                    digitalInput1_3 = new PhidgetsInput(1, 3, "system.switches.S_THROTTLE_AT_DISENGAGE_2", 1, connection);
-                    digitalInput1_4 = new PhidgetsInput(1, 4, "system.switches.S_THROTTLE_TOGA", 1, connection);
+                    digitalInput1_0 = new PhidgetsInput(1, 0, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1);
+                    digitalInput1_1 = new PhidgetsInput(1, 1, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1);
+                    digitalInput1_2 = new PhidgetsInput(1, 2, connection, "system.switches.S_THROTTLE_AT_DISENGAGE", 1);
+                    digitalInput1_3 = new PhidgetsInput(1, 3, connection, "system.switches.S_THROTTLE_AT_DISENGAGE_2", 1);
+                    digitalInput1_4 = new PhidgetsInput(1, 4, connection, "system.switches.S_THROTTLE_TOGA", 1);
 
-                    digitalInput1_08 = new PhidgetsInput(1, 08, "system.switches.S_AILERON_TRIM", 1, connection);
-                    digitalInput1_09 = new PhidgetsInput(1, 09, "system.switches.S_AILERON_TRIM", 2, connection);
-                    digitalInput1_10 = new PhidgetsInput(1, 10, "system.switches.S_RUDDER_TRIM", 1, connection);
-                    digitalInput1_11 = new PhidgetsInput(1, 11, "system.switches.S_RUDDER_TRIM", 2, connection);
+                    digitalInput1_08 = new PhidgetsInput(1, 08, connection, "system.switches.S_AILERON_TRIM", 1);
+                    digitalInput1_09 = new PhidgetsInput(1, 09, connection, "system.switches.S_AILERON_TRIM", 2);
+                    digitalInput1_10 = new PhidgetsInput(1, 10, connection, "system.switches.S_RUDDER_TRIM", 1);
+                    digitalInput1_11 = new PhidgetsInput(1, 11, connection, "system.switches.S_RUDDER_TRIM", 2);
 
-                    digitalInput1_12 = new PhidgetsInput(1, 12, "system.switches.S_ASP_VHF_1_SEND", 1, connection);
-                    digitalInput1_13 = new PhidgetsInput(1, 13, "system.switches.S_ASP_VHF_2_SEND", 1, connection);
+                    digitalInput1_12 = new PhidgetsInput(1, 12, connection, "system.switches.S_ASP_VHF_1_SEND", 1);
+                    digitalInput1_13 = new PhidgetsInput(1, 13, connection, "system.switches.S_ASP_VHF_2_SEND", 1);
+
+                    PhidgetsMultiInput mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2]{ 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
+                        new Dictionary<string, int>() {
+                            {"11", 0},
+                            {"10", 2},
+                            {"00", 1},
+                            {"01", 3}
+                        });
+
+                   PhidgetsMultiInput mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
+                   new Dictionary<string, int>() {
+                            {"11", 0},
+                            {"10", 2},
+                            {"00", 1},
+                            {"01", 3}
+                   });
+
 
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
                     PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);

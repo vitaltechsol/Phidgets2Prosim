@@ -8,15 +8,17 @@ namespace Phidgets2Prosim
     {
         DigitalInput digitalInput = new DigitalInput();
         int inputValue;
-        string prosimDatmRef;
+        int offInputValue;
+        string prosimDataRef;
         ProSimConnect connection;
 
 
-        public PhidgetsInput(int hubPort, int channel, string prosimDatmRef, int inputValue, ProSimConnect connection)
+        public PhidgetsInput(int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
         {
 
-            this.prosimDatmRef = prosimDatmRef;
+            this.prosimDataRef = prosimDataRef;
             this.connection = connection;
+            this.offInputValue = offInputValue;
 
             digitalInput.HubPort = hubPort;
             digitalInput.IsRemote = true;
@@ -26,15 +28,13 @@ namespace Phidgets2Prosim
             Open();
 
             this.inputValue = inputValue;
-            // Set ProSim dataref
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
-
-
+            // Set ProSim dataref
             Debug.WriteLine("**** State: " + e.State);
-            DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
+            DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
 
             try
             {
@@ -44,15 +44,15 @@ namespace Phidgets2Prosim
                 }
                 else
                 {
-                    dataRef.value = 0;
+                    dataRef.value = offInputValue;
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.WriteLine("Input Error " + ex);
+                Debug.WriteLine("Error: Input " + prosimDataRef + " - Value:" + inputValue);
+                Debug.WriteLine(ex.ToString());
             }
         }
-
 
         public void Close()
         {

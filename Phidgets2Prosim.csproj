@@ -85,6 +85,7 @@
     <Compile Include="PhidgetsBLDCMotor.cs" />
     <Compile Include="PhidgetsDCMotor.cs" />
     <Compile Include="PhidgetsHub.cs" />
+    <Compile Include="PhidgetsMultiInput.cs" />
     <Compile Include="PhidgetsOutput.cs" />
     <Compile Include="PhidgetsPort.cs" />
     <Compile Include="PhidgetsVoltageOutput.cs" />

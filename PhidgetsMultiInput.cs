@@ -1,0 +1,161 @@
+﻿using Phidget22;
+using ProSimSDK;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Runtime.Remoting.Channels;
+using System;
+using System.Collections;
+using static System.Net.Mime.MediaTypeNames;
+using System.Threading;
+
+namespace Phidgets2Prosim
+{
+
+    internal class PhidgetsMultiInput
+    {
+        string prosimDataRef;
+        ProSimConnect connection;
+        PhidgetsMultiInputItem[] multiInputs;
+        string allValues = "";
+        Dictionary<string, int> inputsRefs;
+
+        public PhidgetsMultiInput(
+            int serial,
+            int hubPort,
+            int[] channels,
+            ProSimConnect connection,
+            string prosimDataRef, 
+            Dictionary<string, int> inputsRefs)
+
+        {
+
+            this.prosimDataRef = prosimDataRef;
+            this.connection = connection;
+            this.inputsRefs = inputsRefs;
+            allValues = new string('0', channels.Length);
+            multiInputs = new PhidgetsMultiInputItem[10];
+
+            var index = 0;
+
+            foreach (var channel in channels)
+            {
+                multiInputs[index] = new PhidgetsMultiInputItem(serial, hubPort, channel, index);
+                multiInputs[index].InputChanged += HandleInputChanged;
+                multiInputs[index].Open();
+                index++;
+            }
+        }
+        private void HandleInputChanged(object sender, InputChangedEventArgs e)
+        {
+                // Event handler to receive input change
+                int index = e.Index;
+                bool state = e.State;
+
+                // Update value based on index
+                allValues = UpdateStringAtIndex(allValues, index, state);
+                // Debug.WriteLine($"State received: {e.State} new values {allValues}");
+
+
+            //Update ref
+            int dataRefVal;
+                if (!inputsRefs.TryGetValue(allValues, out dataRefVal))
+                {
+                    // the key isn't in the dictionary.
+                    return; 
+                }
+            // Debug.WriteLine($"Update values: {allValues} REF: {dataRefVal} VAL: {dataRefVal}");
+            UpdateRef(dataRefVal);
+        }
+
+        static string UpdateStringAtIndex(string inputString, int index, bool value)
+        {
+            // Check if the index is within the valid range
+            if (index < 0 || index >= inputString.Length)
+            {
+                Debug.WriteLine("ERROR: UpdateStringAtIndex. Invalid index");
+                return inputString;
+            }
+
+            // Update the string at the specified index based on the boolean value
+            char newValue = value ? '1' : '0';
+            char[] charArray = inputString.ToCharArray();
+            charArray[index] = newValue;
+
+            // Convert the character array back to a string
+            return new string(charArray);
+        }
+
+        private void UpdateRef(int inputValue)
+        {
+
+            DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
+
+            try
+            {
+                dataRef.value = inputValue;
+                Debug.WriteLine($"**** Multi Input State Changed {prosimDataRef} | val: {inputValue}");
+
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine("Error: Multi Input " + prosimDataRef + " - Value:" + inputValue);
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+    }
+
+
+    internal class PhidgetsMultiInputItem
+    {
+        int Channel { get; set; } = -1;
+        int Index { get; set; } = -1;
+
+        private int hubPort;
+        private int serial;
+
+        public event EventHandler<InputChangedEventArgs> InputChanged;
+
+        public bool State { get; set; } = false;
+        public PhidgetsMultiInputItem(int serial, int hubPort, int channel, int index)
+        {
+            Channel = channel;
+            Index = index;
+            this.hubPort = hubPort;
+            this.serial = serial;
+        }
+
+        public void Open()
+        {
+            DigitalInput digitalInput = new DigitalInput();
+            digitalInput.HubPort = hubPort;
+            digitalInput.IsRemote = true;
+            digitalInput.Channel = Channel;
+            digitalInput.StateChange += StateChange;
+            digitalInput.DeviceSerialNumber = serial;
+            digitalInput.Open(500);
+        }
+
+        private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
+        {
+            // Debug.WriteLine("**** Multi Channel Changed. Channel: " + Channel + " State:" + e.State);
+            State = e.State;
+            InputChanged.Invoke(this, new InputChangedEventArgs(Index, Channel, State));
+        }
+
+    }
+
+    public class InputChangedEventArgs : EventArgs
+    {
+        public int Index { get; }
+        public int Channel { get; }
+        public bool State { get; }
+
+        public InputChangedEventArgs(int index, int channel, bool state)
+        {
+            Index = index;
+            Channel = channel;
+            State = state;
+        }
+    }
+}
