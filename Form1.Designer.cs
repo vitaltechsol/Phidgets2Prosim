@@ -35,7 +35,6 @@ namespace Phidgets2Prosim
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
-            this.btnConnect = new System.Windows.Forms.Button();
             this.btnSpeedBrake = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
@@ -73,21 +72,11 @@ namespace Phidgets2Prosim
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
-            this.connectionStatusLabel.Location = new System.Drawing.Point(28, 34);
+            this.connectionStatusLabel.Location = new System.Drawing.Point(12, 39);
             this.connectionStatusLabel.Name = "connectionStatusLabel";
             this.connectionStatusLabel.Size = new System.Drawing.Size(35, 13);
             this.connectionStatusLabel.TabIndex = 4;
             this.connectionStatusLabel.Text = "label1";
-            // 
-            // btnConnect
-            // 
-            this.btnConnect.Location = new System.Drawing.Point(89, 24);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(75, 23);
-            this.btnConnect.TabIndex = 5;
-            this.btnConnect.Text = "Toggle Connection";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // btnSpeedBrake
             // 
@@ -105,7 +94,6 @@ namespace Phidgets2Prosim
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
             this.Controls.Add(this.btnSpeedBrake);
-            this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.connectionStatusLabel);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
@@ -126,7 +114,6 @@ namespace Phidgets2Prosim
         private Button button2;
         private Button button3;
         private Label connectionStatusLabel;
-        private Button btnConnect;
         private Button btnSpeedBrake;
     }
 }

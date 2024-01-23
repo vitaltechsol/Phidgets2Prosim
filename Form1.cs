@@ -53,7 +53,7 @@ namespace Phidgets2Prosim
         PhidgetsBLDCMotor bldcm_01;
 
         static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
-        
+
         bool simIsPaused = false;
 
         public Form1()
@@ -127,8 +127,9 @@ namespace Phidgets2Prosim
 
 
             try
-            { 
-                if (!phidgetsAdded) {
+            {
+                if (!phidgetsAdded)
+                {
 
                     var ph = new PhidgetsHub[5];
                     var mip1 = ph[0];
@@ -284,21 +285,41 @@ namespace Phidgets2Prosim
                     digitalInput1_12 = new PhidgetsInput(1, 12, connection, "system.switches.S_ASP_VHF_1_SEND", 1);
                     digitalInput1_13 = new PhidgetsInput(1, 13, connection, "system.switches.S_ASP_VHF_2_SEND", 1);
 
-                    PhidgetsMultiInput mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2]{ 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
-                        new Dictionary<string, int>() {
+                    PhidgetsMultiInput mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
+                        new Dictionary<string, int>() 
+                        {
                             {"11", 0},
                             {"10", 2},
                             {"00", 1},
                             {"01", 3}
                         });
 
-                   PhidgetsMultiInput mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
-                   new Dictionary<string, int>() {
+                    PhidgetsMultiInput mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_ENG_START_L",
+                        new Dictionary<string, int>() 
+                        {
                             {"11", 0},
                             {"10", 2},
                             {"00", 1},
                             {"01", 3}
-                   });
+                        });
+
+                    PhidgetsMultiInput mu3 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 8, 9, 10 }, connection, "system.switches.S_OH_ENG_START_R",
+                        new Dictionary<string, int>()
+                        {
+                            {"000", 0},
+                            {"011", 1},
+                            {"010", 2},
+                            {"100", 3}
+                        });
+
+                    PhidgetsMultiInput mu4 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 11, 12, 13 }, connection, "system.switches.S_OH_ENG_START_L",
+                        new Dictionary<string, int>()
+                        {
+                            {"000", 0},
+                            {"011", 1},
+                            {"010", 2},
+                            {"100", 3}
+                        });
 
 
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
@@ -332,7 +353,7 @@ namespace Phidgets2Prosim
             {
                 connectionStatusLabel.Text = "Connected";
                 connectionStatusLabel.ForeColor = Color.LimeGreen;
-                
+
                 if (simIsPaused)
                 {
                     connectionStatusLabel.Text = "Paused";
@@ -347,39 +368,20 @@ namespace Phidgets2Prosim
 
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            Debug.WriteLine("**** restart phidgets: ");
-
-
-            //digitalInput1_0.Close();
-            //digitalInput1_1.Close();
-            //digitalInput1_2.Close();
-            //digitalInput1_3.Close();
-            //digitalInput1_4.Close();
-
-            //digitalInput1_0.Open();
-            //digitalInput1_1.Open(); 
-            //digitalInput1_2.Open();
-            //digitalInput1_3.Open(); 
-            //digitalInput1_4.Open();
-        }
-
-
-
         private void DataRef_onDataChange(DataRef dataRef)
         {
             var name = dataRef.name;
-            if (name == "simulator.pause") { 
+            if (name == "simulator.pause")
+            {
                 try
                 {
                     simIsPaused = Convert.ToBoolean(dataRef.value);
                     Debug.WriteLine("Sim paused Changed " + dataRef.value + " " + dataRef.name);
 
                     // Pause motors
-                  //  trimWheel.pause(simIsPaused);
-                    // bldcm_00.pause(simIsPaused);
-                    // bldcm_01.pause(simIsPaused);
+                    trimWheel.pause(simIsPaused);
+                    bldcm_00.pause(simIsPaused);
+                    bldcm_01.pause(simIsPaused);
 
                     Invoke(new MethodInvoker(updateStatusLabel));
                 }
