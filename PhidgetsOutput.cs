@@ -10,34 +10,38 @@ namespace Phidgets2Prosim
     internal class PhidgestOutput
     {
         DigitalOutput digitalOutput = new DigitalOutput();
-        bool isGate = false;
+        //bool isGate = false;
         int delay = 0;
-        string prosimDatmRef;
-        string prosimDatmRefOff;
+        //string prosimDatmRef;
+        //string prosimDatmRefOff;
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
 
-        private bool isHubPortDevice = false;
+        //private bool isHubPortDevice = false;
 
-        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection): this(deviceSerialNo, hubPort, channel, prosimDatmRef, connection, false, null, false)
-        {
-          
-        }
+        public int DeviceSerialNo { get; set; }
+        public int HubPort { get; set; }
+        public int Channel { get; set; }
+        public string ProsimDatmRef { get; set; }
+        public ProSimConnect Connection { get; set; }
+        public bool IsGate { get; set; }
+        public string ProsimDatmRefOff { get; set; }
+        public bool IsHubPortDevice { get; set; }
 
-        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate, string prosimDatmRefOff = null, bool isHubPortDevice = false)
+        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate = false, string prosimDatmRefOff = null, bool isHubPortDevice = false)
         {
-           this.isGate = isGate;
+            IsGate = isGate;
             // Set ProSim dataref
-            this.prosimDatmRefOff = prosimDatmRefOff;
+            ProsimDatmRef = prosimDatmRefOff;
             if (prosimDatmRefOff != null) { 
                 DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
-            this.isHubPortDevice = isHubPortDevice;
+            IsHubPortDevice = isHubPortDevice;
 
             try
             {
-                this.prosimDatmRef = prosimDatmRef;
+                ProsimDatmRef = prosimDatmRef;
 
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
@@ -103,7 +107,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Turn Off Failed for channel " + prosimDatmRef);
+                Debug.WriteLine("Turn Off Failed for channel " + ProsimDatmRef);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -121,7 +125,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Open failed for " + prosimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
+                Debug.WriteLine("Open failed for " + ProsimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -134,10 +138,10 @@ namespace Phidgets2Prosim
             {
                 Debug.WriteLine("OUT " + dataRef.value + " " + dataRef.name);
 
-                if (isGate)
+                if (IsGate)
                 {
                     var value = Convert.ToBoolean(dataRef.value);
-                    if (value == true && name == prosimDatmRef)
+                    if (value == true && name == ProsimDatmRef)
                     {
                         Debug.WriteLine("Turn on " + dataRef.value + " " + dataRef.name);
                         if (Inverse)
@@ -150,7 +154,7 @@ namespace Phidgets2Prosim
                         }
                     }
 
-                    if (value == true && name == prosimDatmRefOff)
+                    if (value == true && name == ProsimDatmRefOff)
                     {
                         Debug.WriteLine("Torn Off from ref" + dataRef.value + " " + dataRef.name);
                         if (Inverse)
@@ -163,7 +167,7 @@ namespace Phidgets2Prosim
                         }
                     }
 
-                    if (prosimDatmRefOff == null && value == false)
+                    if (ProsimDatmRefOff == null && value == false)
                     {
                         Debug.WriteLine("Torn Off" + dataRef.value + " " + dataRef.name);
 
@@ -208,7 +212,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("DataRef_onDataChange failed for " + prosimDatmRef);
+                Debug.WriteLine("DataRef_onDataChange failed for " + ProsimDatmRef);
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }

@@ -11,6 +11,9 @@ namespace Phidgets2Prosim
     using System.Collections.Generic;
     using System.Diagnostics.Eventing.Reader;
     using System.Runtime.Remoting.Channels;
+    using YamlDotNet.Serialization;
+    using YamlDotNet.Serialization.NamingConventions;
+    using System.IO;
 
     public partial class Form1 : Form
     {
@@ -59,10 +62,28 @@ namespace Phidgets2Prosim
         public Form1()
         {
 
-
-
-
             InitializeComponent();
+
+            // Read YAML from file
+            string yamlContent = File.ReadAllText("config.yaml");
+
+            // Deserialize YAML to objects
+            var deserializer = new DeserializerBuilder()
+                //  .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                .Build();
+
+            var config = deserializer.Deserialize<Config>(yamlContent);
+            // Create instances based on the configuration
+            foreach (var instance in config.PhidgetsOutputInstances)
+            {
+                PhidgestOutput phidgestOutput = new PhidgestOutput(instance.DeviceSerialNo, instance.HubPort, instance.Channel,
+                    instance.ProsimDatmRef, connection, instance.IsGate, instance.ProsimDatmRefOff, instance.IsHubPortDevice);
+
+                // Use the created instance as needed
+                Console.WriteLine(phidgestOutput);
+            }
+
+
             connectToProSim();
             // Add Phidgets Hub
             foreach (var hub in hubs)
@@ -117,6 +138,8 @@ namespace Phidgets2Prosim
         private void AddAllPhidgets()
         {
 
+       
+
             var hubPedestalSlrNo = 618534;
             var hubMipSlrNo = 668522;
             var hubMip2SlrNo = 664861;
@@ -144,6 +167,9 @@ namespace Phidgets2Prosim
                     hub_motors = new PhidgetsHub();
                     hub_oh_1 = new PhidgetsHub();
 
+                   
+
+
                     hub_motors.port[4].output[0] = new PhidgestOutput(hubMotorsSlrNo, 4, 0, "system.gates.B_STICKSHAKER_FO", connection, true, null, true);
                     hub_motors.port[5].output[0] = new PhidgestOutput(hubMotorsSlrNo, 5, 0, "system.gates.B_STICKSHAKER", connection, true, null, true);
 
@@ -154,8 +180,8 @@ namespace Phidgets2Prosim
                     mip1.port[1].output[7] = new PhidgestOutput(hubMipSlrNo, 1, 7, "system.indicators.I_MIP_ASA_APR_1", connection);
 
                     mip1.port[1].output[8] = new PhidgestOutput(hubMipSlrNo, 1, 8, "system.indicators.I_MIP_GEAR_RIGHT_TRANSIT", connection);
-                    mip1.port[1].output[9] = new PhidgestOutput(hubMipSlrNo, 1, 9, "system.indicators.I_MIP_GEAR_NOSE_DOWN", connection);
-                    mip1.port[1].output[10] = new PhidgestOutput(hubMipSlrNo, 1, 10, "system.indicators.I_MIP_GEAR_RIGHT_DOWN", connection);
+                   // mip1.port[1].output[9] = new PhidgestOutput(hubMipSlrNo, 1, 9, "system.indicators.I_MIP_GEAR_NOSE_DOWN", connection);
+                    // mip1.port[1].output[10] = new PhidgestOutput(hubMipSlrNo, 1, 10, "system.indicators.I_MIP_GEAR_RIGHT_DOWN", connection);
                     mip1.port[1].output[11] = new PhidgestOutput(hubMipSlrNo, 1, 11, "system.indicators.I_MIP_GEAR_NOSE_TRANSIT", connection);
                     mip1.port[1].output[12] = new PhidgestOutput(hubMipSlrNo, 1, 12, "system.indicators.I_MIP_GEAR_LEFT_TRANSIT", connection);
                     mip1.port[1].output[13] = new PhidgestOutput(hubMipSlrNo, 1, 13, "system.indicators.I_MIP_GEAR_LEFT_DOWN", connection);
@@ -286,7 +312,7 @@ namespace Phidgets2Prosim
                     digitalInput1_13 = new PhidgetsInput(1, 13, connection, "system.switches.S_ASP_VHF_2_SEND", 1);
 
                     PhidgetsMultiInput mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
-                        new Dictionary<string, int>() 
+                        new Dictionary<string, int>()
                         {
                             {"11", 0},
                             {"10", 2},
@@ -295,7 +321,7 @@ namespace Phidgets2Prosim
                         });
 
                     PhidgetsMultiInput mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_ENG_START_L",
-                        new Dictionary<string, int>() 
+                        new Dictionary<string, int>()
                         {
                             {"11", 0},
                             {"10", 2},
@@ -404,4 +430,45 @@ namespace Phidgets2Prosim
             digitalOutput_3_8.TurnOff();
         }
     }
+
+
+    public class Config
+    {
+        public List<PhidgestOutputInst> PhidgetsOutputInstances { get; set; }
+        public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
+        public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
+    }
+
+    public class PhidgestOutputInst
+    {
+        public int DeviceSerialNo { get; set; }
+        public int HubPort { get; set; }
+        public int Channel { get; set; }
+        public string ProsimDatmRef { get; set; }
+        public bool IsGate { get; set; } = false;
+        public string ProsimDatmRefOff { get; set; } = null;
+        public bool IsHubPortDevice { get; set; } = false;
+    }
+
+    public class PhidgetsBLDCMotorInst
+    {
+        public int HubPort { get; set; }
+        public ProSimConnect Connection { get; set; }
+        public bool Reversed { get; set; }
+        public int Offset { get; set; }
+        public string RefTurnOn { get; set; }
+        public string RefCurrentPos { get; set; }
+        public string RefTargetPos { get; set; }
+    }
+
+    public class PhidgetsVoltageOutputInst
+    {
+        public int DeviceSerialN { get; set; }
+        public int HubPort { get; set; }
+        public decimal ScaleFactor { get; set; }
+        public string ProsimDatmRef { get; set; }
+        public ProSimConnect Connection { get; set; }
+    }
+
+   
 }
