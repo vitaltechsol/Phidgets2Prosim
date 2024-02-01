@@ -13,7 +13,7 @@ namespace Phidgets2Prosim
         ProSimConnect connection;
 
 
-        public PhidgetsInput(int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
+        public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
         {
 
             this.prosimDataRef = prosimDataRef;
@@ -24,7 +24,7 @@ namespace Phidgets2Prosim
             digitalInput.IsRemote = true;
             digitalInput.Channel = channel;
             digitalInput.StateChange += StateChange;
-            digitalInput.DeviceSerialNumber = 618534;
+            digitalInput.DeviceSerialNumber = serial; 
             Open();
 
             this.inputValue = inputValue;
