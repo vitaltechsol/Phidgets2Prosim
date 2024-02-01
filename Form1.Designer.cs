@@ -74,9 +74,9 @@ namespace Phidgets2Prosim
             this.connectionStatusLabel.AutoSize = true;
             this.connectionStatusLabel.Location = new System.Drawing.Point(12, 39);
             this.connectionStatusLabel.Name = "connectionStatusLabel";
-            this.connectionStatusLabel.Size = new System.Drawing.Size(35, 13);
+            this.connectionStatusLabel.Size = new System.Drawing.Size(95, 13);
             this.connectionStatusLabel.TabIndex = 4;
-            this.connectionStatusLabel.Text = "label1";
+            this.connectionStatusLabel.Text = "Prosim Connection";
             // 
             // btnSpeedBrake
             // 
