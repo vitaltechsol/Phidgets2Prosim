@@ -101,8 +101,7 @@ namespace Phidgets2Prosim
         {
             try
             {
-                Debug.WriteLine("Turn Off");
-              //  digitalOutput.Open(1000);
+                Debug.WriteLine("Turn Off " + ProsimDatmRef);
                 digitalOutput.DutyCycle = 0;
             }
             catch (Exception ex)

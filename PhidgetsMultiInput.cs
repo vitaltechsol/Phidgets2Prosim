@@ -53,7 +53,7 @@ namespace Phidgets2Prosim
 
                 // Update value based on index
                 allValues = UpdateStringAtIndex(allValues, index, state);
-                // Debug.WriteLine($"State received: {e.State} new values {allValues}");
+                Debug.WriteLine($"State received: {e.State} new values {allValues}");
 
 
             //Update ref
@@ -108,6 +108,7 @@ namespace Phidgets2Prosim
 
     internal class PhidgetsMultiInputItem
     {
+        DigitalInput digitalInput = new DigitalInput();
         int Channel { get; set; } = -1;
         int Index { get; set; } = -1;
 
@@ -127,7 +128,6 @@ namespace Phidgets2Prosim
 
         public void Open()
         {
-            DigitalInput digitalInput = new DigitalInput();
             digitalInput.HubPort = hubPort;
             digitalInput.IsRemote = true;
             digitalInput.Channel = Channel;
@@ -138,7 +138,7 @@ namespace Phidgets2Prosim
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
-            // Debug.WriteLine("**** Multi Channel Changed. Channel: " + Channel + " State:" + e.State);
+            Debug.WriteLine("**** Multi Channel Changed. Channel: " + Channel + " State:" + e.State);
             State = e.State;
             InputChanged.Invoke(this, new InputChangedEventArgs(Index, Channel, State));
         }
