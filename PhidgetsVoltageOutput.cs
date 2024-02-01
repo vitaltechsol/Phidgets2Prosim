@@ -35,19 +35,19 @@ namespace Phidgets2Prosim
 
         private void DataRef_onDataChange(DataRef dataRef)
         {
-            var value = Convert.ToDecimal(dataRef.value);
+            var value = Convert.ToInt64(dataRef.value);
             var convertedValue = value > 0 ? (value / scaleFactor) : 0;
             if (lastVoltage != value)
             {
 
-                Debug.WriteLine("VOLTAGE CHANGE");
+                Debug.WriteLine($"Voltage Changed: {dataRef.name} {value}");
                 try
                 {
                     Debug.WriteLine(dataRef.name);
                     // Debug.WriteLine(value);
                     // Debug.WriteLine(convertedValue);
-                    // voltageOutput.Voltage = Convert.ToDouble(convertedValue);
-                    // lastVoltage = value;
+                    voltageOutput.Voltage = Convert.ToDouble(convertedValue);
+                    lastVoltage = value;
                 }
                 catch (Exception ex)
                 {
