@@ -31,42 +31,58 @@ namespace Phidgets2Prosim
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabGroups = new System.Windows.Forms.TabControl();
+            this.tabOut = new System.Windows.Forms.TabPage();
+            this.dataGridViewOutputs = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.btnSpeedBrake = new System.Windows.Forms.Button();
-            this.tabControl1.SuspendLayout();
+            this.dataGridViewInputs = new System.Windows.Forms.DataGridView();
+            this.tabGroups.SuspendLayout();
+            this.tabOut.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).BeginInit();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabGroups
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(10, 90);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(638, 270);
-            this.tabControl1.TabIndex = 0;
+            this.tabGroups.Controls.Add(this.tabOut);
+            this.tabGroups.Controls.Add(this.tabPage2);
+            this.tabGroups.Location = new System.Drawing.Point(10, 90);
+            this.tabGroups.Name = "tabGroups";
+            this.tabGroups.SelectedIndex = 0;
+            this.tabGroups.Size = new System.Drawing.Size(638, 270);
+            this.tabGroups.TabIndex = 0;
             // 
-            // tabPage1
+            // tabOut
             // 
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(630, 244);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabOut.Controls.Add(this.dataGridViewOutputs);
+            this.tabOut.Location = new System.Drawing.Point(4, 22);
+            this.tabOut.Name = "tabOut";
+            this.tabOut.Padding = new System.Windows.Forms.Padding(3);
+            this.tabOut.Size = new System.Drawing.Size(630, 244);
+            this.tabOut.TabIndex = 0;
+            this.tabOut.Text = "Outputs";
+            this.tabOut.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewOutputs
+            // 
+            this.dataGridViewOutputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewOutputs.Location = new System.Drawing.Point(7, 27);
+            this.dataGridViewOutputs.Name = "dataGridViewOutputs";
+            this.dataGridViewOutputs.Size = new System.Drawing.Size(611, 211);
+            this.dataGridViewOutputs.TabIndex = 0;
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.dataGridViewInputs);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(630, 244);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.Text = "Inputs";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // connectionStatusLabel
@@ -88,6 +104,14 @@ namespace Phidgets2Prosim
             this.btnSpeedBrake.UseVisualStyleBackColor = true;
             this.btnSpeedBrake.Click += new System.EventHandler(this.btnSpeedBrake_Click);
             // 
+            // dataGridViewInputs
+            // 
+            this.dataGridViewInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewInputs.Location = new System.Drawing.Point(10, 17);
+            this.dataGridViewInputs.Name = "dataGridViewInputs";
+            this.dataGridViewInputs.Size = new System.Drawing.Size(611, 211);
+            this.dataGridViewInputs.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -95,11 +119,15 @@ namespace Phidgets2Prosim
             this.ClientSize = new System.Drawing.Size(686, 390);
             this.Controls.Add(this.btnSpeedBrake);
             this.Controls.Add(this.connectionStatusLabel);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabGroups);
             this.Name = "Form1";
             this.Text = "Phidgets2Prosim v0.1.0";
             this.Load += new System.EventHandler(this.Form1_Load_1);
-            this.tabControl1.ResumeLayout(false);
+            this.tabGroups.ResumeLayout(false);
+            this.tabOut.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,13 +135,15 @@ namespace Phidgets2Prosim
 
         #endregion
 
-        private TabControl tabControl1;
-        private TabPage tabPage1;
+        private TabControl tabGroups;
+        private TabPage tabOut;
         private TabPage tabPage2;
         private Button button1;
         private Button button2;
         private Button button3;
         private Label connectionStatusLabel;
         private Button btnSpeedBrake;
+        private DataGridView dataGridViewOutputs;
+        private DataGridView dataGridViewInputs;
     }
 }

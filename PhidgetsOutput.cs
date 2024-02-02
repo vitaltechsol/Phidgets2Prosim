@@ -12,8 +12,6 @@ namespace Phidgets2Prosim
         DigitalOutput digitalOutput = new DigitalOutput();
         //bool isGate = false;
         int delay = 0;
-        //string prosimDatmRef;
-        //string prosimDatmRefOff;
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
 
@@ -31,6 +29,7 @@ namespace Phidgets2Prosim
         public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate = false, string prosimDatmRefOff = null, bool isHubPortDevice = false)
         {
             IsGate = isGate;
+            Channel = channel;
             // Set ProSim dataref
             ProsimDatmRef = prosimDatmRefOff;
             if (prosimDatmRefOff != null) { 
@@ -48,9 +47,10 @@ namespace Phidgets2Prosim
                 digitalOutput.IsHubPortDevice = isHubPortDevice;
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = deviceSerialNo;
-                Debug.WriteLine("*****l " + prosimDatmRef + " " + isHubPortDevice);
+                Debug.WriteLine("<-****Attached " + prosimDatmRef + " to Ch:" + channel);
 
                 Open();
+
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
@@ -81,6 +81,9 @@ namespace Phidgets2Prosim
                 }
 
                 digitalOutput.DutyCycle = 1;
+                Debug.WriteLine("--> Channel " + Channel + ": ON");
+                Debug.WriteLine("  |-- Ref: " + ProsimDatmRef);
+
 
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
@@ -101,12 +104,13 @@ namespace Phidgets2Prosim
         {
             try
             {
-                Debug.WriteLine("Turn Off " + ProsimDatmRef);
+                Debug.WriteLine("<-- Channel " + Channel + ": OFF");
+                Debug.WriteLine("  |-- Ref: " + ProsimDatmRef);
                 digitalOutput.DutyCycle = 0;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Turn Off Failed for channel " + ProsimDatmRef);
+                Debug.WriteLine("ERROR: Turn Off Failed for channel " + ProsimDatmRef);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -124,7 +128,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Open failed for " + ProsimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
+                Debug.WriteLine("ERROR: Open failed for " + ProsimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -135,14 +139,11 @@ namespace Phidgets2Prosim
             var name = dataRef.name;
             try
             {
-                Debug.WriteLine("OUT " + dataRef.value + " " + dataRef.name);
-
                 if (IsGate)
                 {
                     var value = Convert.ToBoolean(dataRef.value);
                     if (value == true && name == ProsimDatmRef)
                     {
-                        Debug.WriteLine("Turn on " + dataRef.value + " " + dataRef.name);
                         if (Inverse)
                         {
                             TurnOff();
@@ -168,8 +169,6 @@ namespace Phidgets2Prosim
 
                     if (ProsimDatmRefOff == null && value == false)
                     {
-                        Debug.WriteLine("Torn Off" + dataRef.value + " " + dataRef.name);
-
                         if (Inverse)
                         {
                             TurnOn();
@@ -211,7 +210,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("DataRef_onDataChange failed for " + ProsimDatmRef);
+                Debug.WriteLine("ERROR: DataRef_onDataChange failed for " + ProsimDatmRef + " ch:" + Channel);
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }

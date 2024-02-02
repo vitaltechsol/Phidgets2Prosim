@@ -14,6 +14,8 @@ namespace Phidgets2Prosim
     using YamlDotNet.Serialization;
     using YamlDotNet.Serialization.NamingConventions;
     using System.IO;
+    using System.ComponentModel;
+    using System.Linq;
 
     public partial class Form1 : Form
     {
@@ -49,6 +51,8 @@ namespace Phidgets2Prosim
         PhidgetsInput digitalInput1_12;
         PhidgetsInput digitalInput1_13;
 
+        PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
+
         PhidgestOutput digitalOutput_3_8;
 
         Custom_TrimWheel trimWheel;
@@ -64,33 +68,16 @@ namespace Phidgets2Prosim
         static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
 
         bool simIsPaused = false;
+        private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
+        private BindingList<PhidgetsInputInst> phidgetsInputInstances;
+
 
         public Form1()
         {
 
             InitializeComponent();
 
-            // Read YAML from file
-            string yamlContent = File.ReadAllText("config.yaml");
-
-            // Deserialize YAML to objects
-            var deserializer = new DeserializerBuilder()
-                //  .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-
-            var config = deserializer.Deserialize<Config>(yamlContent);
-            // Create instances based on the configuration
-            foreach (var instance in config.PhidgetsOutputInstances)
-            {
-                PhidgestOutput phidgestOutput = new PhidgestOutput(instance.DeviceSerialNo, instance.HubPort, instance.Channel,
-                    instance.ProsimDataRef, connection, instance.IsGate, instance.ProsimDataRefOff, instance.IsHubPortDevice);
-
-                // Use the created instance as needed
-                Console.WriteLine(phidgestOutput);
-            }
-
-
-            connectToProSim();
+            
             // Add Phidgets Hub
             foreach (var hub in hubs)
             {
@@ -104,6 +91,9 @@ namespace Phidgets2Prosim
                     Debug.WriteLine("ERROR: Cannot Start Hub. " + hub + " :" + ex);
                 }
             }
+       
+            connectToProSim();
+
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;
@@ -138,7 +128,48 @@ namespace Phidgets2Prosim
         {
             Debug.WriteLine("Prosim CONNECTED");
             Invoke(new MethodInvoker(updateStatusLabel));
+            Invoke(new MethodInvoker(LoadConfig));
             Invoke(new MethodInvoker(AddAllPhidgets));
+        }
+
+        private void LoadConfig()
+        {
+
+            // Read YAML from file
+            string yamlContent = File.ReadAllText("config.yaml");
+
+            // Deserialize YAML to objects
+            var deserializer = new DeserializerBuilder()
+                .Build();
+
+            var config = deserializer.Deserialize<Config>(yamlContent);
+            phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
+            dataGridViewOutputs.DataSource = phidgetsOutputInstances;
+            dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
+            phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+            dataGridViewInputs.DataSource = phidgetsInputInstances;
+            dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
+
+            // Create instances based on the configuration
+            foreach (var instance in config.PhidgetsOutputInstances)
+            {
+                PhidgestOutput phidgetsOutput = new PhidgestOutput(instance.DeviceSerialNo, instance.HubPort, instance.Channel,
+                    instance.ProsimDataRef, connection, instance.IsGate, instance.ProsimDataRefOff, instance.IsHubPortDevice);
+            }
+
+            if (config.PhidgetsInputInstances != null)
+            {
+                var idx = 0;
+                foreach (var instance in config.PhidgetsInputInstances)
+                {
+                    PhidgetsInput phidgetsInput = new PhidgetsInput(instance.DeviceSerialNo, instance.HubPort, instance.Channel, connection,
+                        instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
+                    idx++;
+                }
+            }
+
         }
 
         private void AddAllPhidgets()
@@ -168,9 +199,6 @@ namespace Phidgets2Prosim
                     hub_ped = new PhidgetsHub();
                     hub_motors = new PhidgetsHub();
                     hub_oh_1 = new PhidgetsHub();
-
-                   
-
 
                     hub_motors.port[4].output[0] = new PhidgestOutput(hubMotorsSlrNo, 4, 0, "system.gates.B_STICKSHAKER_FO", connection, true, null, true);
                     hub_motors.port[5].output[0] = new PhidgestOutput(hubMotorsSlrNo, 5, 0, "system.gates.B_STICKSHAKER", connection, true, null, true);
@@ -307,8 +335,8 @@ namespace Phidgets2Prosim
 
                     digitalInput1_08 = new PhidgetsInput(hubPedestalSlrNo, 1, 08, connection, "system.switches.S_AILERON_TRIM", 1);
                     digitalInput1_09 = new PhidgetsInput(hubPedestalSlrNo, 1, 09, connection, "system.switches.S_AILERON_TRIM", 2);
-                    digitalInput1_10 = new PhidgetsInput(hubPedestalSlrNo, 1, 10, connection, "system.switches.S_RUDDER_TRIM", 1);
-                    digitalInput1_11 = new PhidgetsInput(hubPedestalSlrNo, 1, 11, connection, "system.switches.S_RUDDER_TRIM", 2);
+                  //  digitalInput1_10 = new PhidgetsInput(hubPedestalSlrNo, 1, 10, connection, "system.switches.S_RUDDER_TRIM", 1);
+                   //  digitalInput1_11 = new PhidgetsInput(hubPedestalSlrNo, 1, 11, connection, "system.switches.S_RUDDER_TRIM", 2);
 
                     digitalInput1_12 = new PhidgetsInput(hubPedestalSlrNo, 1, 12, connection, "system.switches.S_ASP_VHF_1_SEND", 1);
                     digitalInput1_13 = new PhidgetsInput(hubPedestalSlrNo, 1, 13, connection, "system.switches.S_ASP_VHF_2_SEND", 1);
@@ -439,26 +467,74 @@ namespace Phidgets2Prosim
         {
             digitalOutput_3_8.TurnOff();
         }
+
+        private void dataGridViewOutputs_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            // Save changes whenever a cell is edited
+            SaveYamlConfiguration();
+        }
+        private void SaveYamlConfiguration()
+        {
+            try
+            {
+            
+
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                    .Build();
+
+                var config = new Config
+                {
+                    PhidgetsOutputInstances = phidgetsOutputInstances.ToList(),
+                };
+
+                string yamlContent = serializer.Serialize(config);
+
+                File.WriteAllText("config2.yaml", yamlContent);
+
+            
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving YAML configuration: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
 
     public class Config
     {
-        public List<PhidgestOutputInst> PhidgetsOutputInstances { get; set; }
+        public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
+        public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
+
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
     }
 
-    public class PhidgestOutputInst
+    public class PhidgetsOutputInst
     {
         public int DeviceSerialNo { get; set; }
         public int HubPort { get; set; }
         public int Channel { get; set; }
         public string ProsimDataRef { get; set; }
-        public bool IsGate { get; set; } = false;
         public string ProsimDataRefOff { get; set; } = null;
         public bool IsHubPortDevice { get; set; } = false;
+        public bool IsGate { get; set; } = false;
+
     }
+
+    public class PhidgetsInputInst
+    {
+        public int DeviceSerialNo { get; set; }
+        public int HubPort { get; set; }
+        public int Channel { get; set; }
+        public string ProsimDataRef { get; set; }
+        public bool IsHubPortDevice { get; set; } = false;
+        public int InputValue { get; set; }
+        public int OffInputValue { get; set; } = 0;
+    }
+
+
 
     public class PhidgetsBLDCMotorInst
     {
@@ -473,7 +549,7 @@ namespace Phidgets2Prosim
 
     public class PhidgetsVoltageOutputInst
     {
-        public int DeviceSerialN { get; set; }
+        public int DeviceSerialNo { get; set; }
         public int HubPort { get; set; }
         public decimal ScaleFactor { get; set; }
         public string ProsimDataRef { get; set; }
