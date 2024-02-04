@@ -164,7 +164,7 @@ namespace Phidgets2Prosim
                 var idx = 0;
                 foreach (var instance in config.PhidgetsInputInstances)
                 {
-                    PhidgetsInput phidgetsInput = new PhidgetsInput(instance.DeviceSerialNo, instance.HubPort, instance.Channel, connection,
+                    phidgetsInput[idx] = new PhidgetsInput(instance.DeviceSerialNo, instance.HubPort, instance.Channel, connection,
                         instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
                     idx++;
                 }
@@ -358,7 +358,7 @@ namespace Phidgets2Prosim
                             {"01", 3}
                         });
 
-                    mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_ENG_START_L",
+                    mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
                         new Dictionary<string, int>()
                         {
                             {"11", 0},
