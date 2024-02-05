@@ -4,60 +4,56 @@ using System.Diagnostics;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsInput
+    internal class PhidgetsInput : PhidgetDevice
     {
         DigitalInput digitalInput = new DigitalInput();
-        int inputValue;
-        int offInputValue;
-        string prosimDataRef;
-        ProSimConnect connection;
-        int channel;
 
+        public int InputValue { get; set; }
+        public int OffInputValue { get; set; } = 0;
 
         public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
         {
 
-            this.prosimDataRef = prosimDataRef;
-            this.connection = connection;
-            this.offInputValue = offInputValue;
-            this.inputValue = inputValue;
-            this.channel = channel;
+            ProsimDataRef = prosimDataRef;
+            Connection = connection;
+            Channel = channel;
+
+            OffInputValue = offInputValue;
+            InputValue = inputValue;
 
             digitalInput.HubPort = hubPort;
             digitalInput.IsRemote = true;
             digitalInput.Channel = channel;
             digitalInput.StateChange += StateChange;
             digitalInput.DeviceSerialNumber = serial;
-            Debug.WriteLine("->****Attached " + prosimDataRef + " to Ch:" + channel);
+            SendInfoLog("->****Attached " + prosimDataRef + " to Ch:" + channel);
 
             Open();
-
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
             // Set ProSim dataref
-            Debug.WriteLine("--> Channel " + channel + ":" + e.State);
-            Debug.WriteLine("  |-- Ref: " + prosimDataRef + " - inputValue: " + inputValue + " - offInputValue:" + offInputValue);
-
-
-            DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
+            SendInfoLog("--> Channel " + Channel + ":" + e.State);
+            SendInfoLog("  |-- Ref: " + ProsimDataRef + " - inputValue: " + InputValue + " - offInputValue:" + OffInputValue);
+            
+            DataRef dataRef = new DataRef(ProsimDataRef, 100, Connection);
 
             try
             {
                 if (e.State == true)
                 {
-                    dataRef.value = inputValue;
+                    dataRef.value = InputValue;
                 }
                 else
                 {
-                    dataRef.value = offInputValue;
+                    dataRef.value = OffInputValue;
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.WriteLine("Error: Input " + prosimDataRef + " - Value:" + inputValue);
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
+                SendErrorLog(ex.ToString());
             }
         }
 
@@ -75,8 +71,8 @@ namespace Phidgets2Prosim
             }
             catch (System.Exception ex)
             {
-                Debug.WriteLine("Error: Input " + prosimDataRef + " - Value:" + inputValue);
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
+                SendErrorLog(ex.ToString());
             }
         }
 

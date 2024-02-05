@@ -84,6 +84,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="PhidgetDevice.cs" />
     <Compile Include="PhidgetsInput.cs" />
     <Compile Include="PhidgetsBLDCMotor.cs" />
     <Compile Include="PhidgetsDCMotor.cs" />

@@ -7,31 +7,25 @@ using System.Runtime.Remoting.Channels;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgestOutput
+    internal class PhidgestOutput : PhidgetDevice
     {
         DigitalOutput digitalOutput = new DigitalOutput();
         //bool isGate = false;
+       
         int delay = 0;
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
 
-        //private bool isHubPortDevice = false;
-
-        public int DeviceSerialNo { get; set; }
-        public int HubPort { get; set; }
-        public int Channel { get; set; }
-        public string ProsimDatmRef { get; set; }
-        public ProSimConnect Connection { get; set; }
         public bool IsGate { get; set; }
         public string ProsimDatmRefOff { get; set; }
-        public bool IsHubPortDevice { get; set; }
 
-        public PhidgestOutput(int deviceSerialNo, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate = false, string prosimDatmRefOff = null, bool isHubPortDevice = false)
+        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate = false, string prosimDatmRefOff = null, bool isHubPortDevice = false)
         {
             IsGate = isGate;
             Channel = channel;
             // Set ProSim dataref
-            ProsimDatmRef = prosimDatmRefOff;
+            ProsimDataRef = prosimDatmRefOff;
+            Serial = serial;
             if (prosimDatmRefOff != null) { 
                 DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
@@ -40,14 +34,14 @@ namespace Phidgets2Prosim
 
             try
             {
-                ProsimDatmRef = prosimDatmRef;
+                ProsimDataRef = prosimDatmRef;
 
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.IsHubPortDevice = isHubPortDevice;
                 digitalOutput.Channel = channel;
-                digitalOutput.DeviceSerialNumber = deviceSerialNo;
-                Debug.WriteLine("<-****Attached " + prosimDatmRef + " to Ch:" + channel);
+                digitalOutput.DeviceSerialNumber = serial;
+                SendInfoLog("<-- Listening to " + prosimDatmRef + " to channel:" + channel);
 
                 Open();
 
@@ -58,7 +52,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog(ex.ToString());
             }
 
         }
@@ -81,14 +75,14 @@ namespace Phidgets2Prosim
                 }
 
                 digitalOutput.DutyCycle = 1;
-                Debug.WriteLine("--> Channel " + Channel + ": ON");
-                Debug.WriteLine("  |-- Ref: " + ProsimDatmRef);
+                SendInfoLog("--> Channel " + Channel + ": ON");
+                SendInfoLog("  |-- Ref: " + ProsimDataRef);
 
 
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
                 {
-                    Debug.WriteLine("Start Delay " + TurnOffAfterMs);
+                    SendInfoLog("Start Delay " + TurnOffAfterMs + " for " + ProsimDataRef + " - Channel " + Channel);
                     var taskDelay2 = Task.Delay(TurnOffAfterMs);
                     await taskDelay2;
                     TurnOff();
@@ -96,7 +90,8 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("Turn On Failed for " + ProsimDataRef + " - Channel " + Channel);
+                SendErrorLog(ex.ToString());
             }
         }
 
@@ -104,14 +99,14 @@ namespace Phidgets2Prosim
         {
             try
             {
-                Debug.WriteLine("<-- Channel " + Channel + ": OFF");
-                Debug.WriteLine("  |-- Ref: " + ProsimDatmRef);
+                SendInfoLog("<-- Channel " + Channel + ": OFF");
+                SendInfoLog("  |-- Ref: " + ProsimDataRef);
                 digitalOutput.DutyCycle = 0;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: Turn Off Failed for channel " + ProsimDatmRef);
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("Turn Off Failed for channel " + ProsimDataRef + " - Channel " + Channel);
+                SendErrorLog(ex.ToString());
             }
         }
 
@@ -128,8 +123,8 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: Open failed for " + ProsimDatmRef + " Serial:" + digitalOutput.DeviceSerialNumber);
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("ERROR: Open failed for " + ProsimDataRef + " Serial:" + digitalOutput.DeviceSerialNumber);
+                SendErrorLog(ex.ToString());
             }
         }
 
@@ -142,7 +137,7 @@ namespace Phidgets2Prosim
                 if (IsGate)
                 {
                     var value = Convert.ToBoolean(dataRef.value);
-                    if (value == true && name == ProsimDatmRef)
+                    if (value == true && name == ProsimDataRef)
                     {
                         if (Inverse)
                         {
@@ -156,7 +151,7 @@ namespace Phidgets2Prosim
 
                     if (value == true && name == ProsimDatmRefOff)
                     {
-                        Debug.WriteLine("Torn Off from ref" + dataRef.value + " " + dataRef.name);
+                        SendInfoLog("Turn Off from ref" + dataRef.value + " " + dataRef.name);
                         if (Inverse)
                         {
                             TurnOn();
@@ -210,9 +205,9 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: DataRef_onDataChange failed for " + ProsimDatmRef + " ch:" + Channel);
-                Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("value " + dataRef.value);
+                SendErrorLog("DataRef_onDataChange failed for " + ProsimDataRef + " ch:" + Channel);
+                SendErrorLog("value " + dataRef.value);
+                SendErrorLog(ex.ToString());
             }
         }
 

@@ -84,11 +84,11 @@ namespace Phidgets2Prosim
                 try
                 {
                     Net.AddServer(hub, hub, 5661, "", 0);
-                    Debug.WriteLine("Started Hub. " + hub);
+                    DisplayInfoLog("Hub Added: " + hub);
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("ERROR: Cannot Start Hub. " + hub + " :" + ex);
+                  DisplayErrorLog("Cannot find Hub. " + hub + " :" + ex);
                 }
             }
        
@@ -107,26 +107,24 @@ namespace Phidgets2Prosim
             try
             {
                 connectionStatusLabel.Text = "CONNECTING....";
-                Debug.WriteLine("Prosim connecting");
+                DisplayInfoLog("Prosim connecting");
                 connection.Connect("192.168.1.142", false);
                 updateStatusLabel();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: Cannot connect to Prosim. " + ex);
+                DisplayErrorLog("ERROR: Cannot connect to Prosim. " + ex);
             }
         }
 
         void connection_onDisconnect()
         {
-            Debug.WriteLine("Prosim DISCONNECTED");
             Invoke(new MethodInvoker(updateStatusLabel));
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
         void connection_onConnect()
         {
-            Debug.WriteLine("Prosim CONNECTED");
             Invoke(new MethodInvoker(updateStatusLabel));
             Invoke(new MethodInvoker(LoadConfig));
             Invoke(new MethodInvoker(AddAllPhidgets));
@@ -157,6 +155,9 @@ namespace Phidgets2Prosim
             {
                 PhidgestOutput phidgetsOutput = new PhidgestOutput(instance.DeviceSerialNo, instance.HubPort, instance.Channel,
                     instance.ProsimDataRef, connection, instance.IsGate, instance.ProsimDataRefOff, instance.IsHubPortDevice);
+                phidgetsOutput.ErrorLog += DisplayErrorLog;
+                phidgetsOutput.InfoLog += DisplayInfoLog;       
+
             }
 
             if (config.PhidgetsInputInstances != null)
@@ -166,10 +167,17 @@ namespace Phidgets2Prosim
                 {
                     phidgetsInput[idx] = new PhidgetsInput(instance.DeviceSerialNo, instance.HubPort, instance.Channel, connection,
                         instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
+                    phidgetsInput[idx].ErrorLog += DisplayErrorLog;
+                    phidgetsInput[idx].InfoLog += DisplayInfoLog;
                     idx++;
                 }
             }
 
+        }
+
+        private void Form1_InfoLog(string obj)
+        {
+            throw new NotImplementedException();
         }
 
         private void AddAllPhidgets()
@@ -415,17 +423,20 @@ namespace Phidgets2Prosim
         {
             if (connection.isConnected)
             {
+                DisplayInfoLog("Prosim CONNECTED");
                 connectionStatusLabel.Text = "Connected";
                 connectionStatusLabel.ForeColor = Color.LimeGreen;
 
                 if (simIsPaused)
                 {
+                    DisplayInfoLog("Prosim Paused");
                     connectionStatusLabel.Text = "Paused";
                     connectionStatusLabel.ForeColor = Color.OrangeRed;
                 }
             }
             else
             {
+                DisplayInfoLog("Prosim DISCONNECTED");
                 connectionStatusLabel.Text = "Disconnected";
                 connectionStatusLabel.ForeColor = Color.Red;
             }
@@ -463,10 +474,6 @@ namespace Phidgets2Prosim
 
         }
 
-        private void btnSpeedBrake_Click(object sender, EventArgs e)
-        {
-            digitalOutput_3_8.TurnOff();
-        }
 
         private void dataGridViewOutputs_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
@@ -497,6 +504,36 @@ namespace Phidgets2Prosim
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving YAML configuration: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Method to display error log
+        private void DisplayErrorLog(string errorMessage)
+        {
+            if (txtLog.InvokeRequired)
+            {
+                // If we're not on the UI thread, invoke this method on the UI thread
+                txtLog.Invoke(new Action(() => DisplayErrorLog(errorMessage)));
+            }
+            else
+            {
+                // If we're on the UI thread, directly update the TextBox
+                txtLog.AppendText(DateTime.Now + " - ** ERROR ** : " + errorMessage + Environment.NewLine);
+            }
+        }
+
+        private void DisplayInfoLog(string infoMessage)
+        {
+
+            if (txtLog.InvokeRequired)
+            {
+                // If we're not on the UI thread, invoke this method on the UI thread
+                txtLog.Invoke(new Action(() => DisplayInfoLog(infoMessage)));
+            }
+            else
+            {
+                // If we're on the UI thread, directly update the TextBox
+                txtLog.AppendText(DateTime.Now + ": " + infoMessage + Environment.NewLine);
             }
         }
     }
