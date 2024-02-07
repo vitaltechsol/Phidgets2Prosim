@@ -37,8 +37,9 @@ namespace Phidgets2Prosim
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridViewInputs = new System.Windows.Forms.DataGridView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.connectionStatusLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -107,6 +108,15 @@ namespace Phidgets2Prosim
             this.tabPage1.Text = "Log";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // txtLog
+            // 
+            this.txtLog.Location = new System.Drawing.Point(6, 6);
+            this.txtLog.Multiline = true;
+            this.txtLog.Name = "txtLog";
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLog.Size = new System.Drawing.Size(618, 232);
+            this.txtLog.TabIndex = 0;
+            // 
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
@@ -116,23 +126,25 @@ namespace Phidgets2Prosim
             this.connectionStatusLabel.TabIndex = 4;
             this.connectionStatusLabel.Text = "Prosim Connection";
             // 
-            // txtLog
+            // label1
             // 
-            this.txtLog.Location = new System.Drawing.Point(6, 6);
-            this.txtLog.Multiline = true;
-            this.txtLog.Name = "txtLog";
-            this.txtLog.Size = new System.Drawing.Size(618, 232);
-            this.txtLog.TabIndex = 0;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(603, 13);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "v0.1.0";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.connectionStatusLabel);
             this.Controls.Add(this.tabGroups);
             this.Name = "Form1";
-            this.Text = "Phidgets2Prosim v0.1.0";
+            this.Text = "Phidgets2Prosim";
             this.Load += new System.EventHandler(this.Form1_Load_1);
             this.tabGroups.ResumeLayout(false);
             this.tabOut.ResumeLayout(false);
@@ -159,5 +171,6 @@ namespace Phidgets2Prosim
         private DataGridView dataGridViewInputs;
         private TabPage tabPage1;
         private TextBox txtLog;
+        private Label label1;
     }
 }

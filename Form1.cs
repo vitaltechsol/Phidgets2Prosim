@@ -53,6 +53,8 @@ namespace Phidgets2Prosim
         PhidgetsInput digitalInput1_13;
 
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
+        PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
+
 
         PhidgestOutput digitalOutput_3_8;
 
@@ -92,8 +94,8 @@ namespace Phidgets2Prosim
                   DisplayErrorLog("Cannot find Hub. " + hub + " :" + ex);
                 }
             }
-       
-            connectToProSim();
+            LoadConfig();
+
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
@@ -103,13 +105,16 @@ namespace Phidgets2Prosim
             dataRef.onDataChange += DataRef_onDataChange;
         }
 
-        void connectToProSim()
+        async void connectToProSim(string prosimIP)
         {
+            var taskDelay = Task.Delay(5000);
+            await taskDelay;
+
             try
             {
                 connectionStatusLabel.Text = "CONNECTING....";
                 DisplayInfoLog("Prosim connecting");
-                connection.Connect("192.168.1.142", false);
+                connection.Connect(prosimIP);
                 updateStatusLabel();
             }
             catch (Exception ex)
@@ -127,11 +132,12 @@ namespace Phidgets2Prosim
         void connection_onConnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(LoadConfig));
-            Invoke(new MethodInvoker(AddAllPhidgets));
+           // Invoke(new MethodInvoker(AddAllPhidgets));
+
+            //  Invoke(new MethodInvoker(LoadConfig));
         }
 
-        private void LoadConfig()
+        private async void LoadConfig()
         {
             try
             {
@@ -152,22 +158,28 @@ namespace Phidgets2Prosim
                 dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
 
 
-                // Create instances based on the configuration
-                foreach (var instance in config.PhidgetsOutputInstances)
-                {
-                    try 
-                    { 
-                        PhidgestOutput phidgetsOutput = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
-                            instance.ProsimDataRef, connection, instance.IsGate, instance.ProsimDataRefOff, instance.IsHubPortDevice);
-                        phidgetsOutput.ErrorLog += DisplayErrorLog;
-                        phidgetsOutput.InfoLog += DisplayInfoLog;
-                    }
-                    catch (Exception ex)
-                    {
-                        DisplayErrorLog("Error loading config ling");
-                        DisplayErrorLog(ex.ToString());
-                    }
 
+                // Create instances based on the configuration
+                if (config.PhidgetsOutputInstances != null)
+                {
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsOutputInstances)
+                    {
+                        try
+                        {
+                            phidgetsOutput[idx] = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
+                                instance.ProsimDataRef, connection, instance.IsGate, instance.ProsimDataRefOff, instance.IsHubPortDevice);
+                            phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsOutput[idx].InfoLog += DisplayInfoLog;
+                            idx++;
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config ling");
+                            DisplayErrorLog(ex.ToString());
+                        }
+
+                    }
                 }
 
                 if (config.PhidgetsInputInstances != null)
@@ -190,6 +202,10 @@ namespace Phidgets2Prosim
                         }
                     }
                 }
+                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+
+                connectToProSim(config.GeneralConfig.ProSimIP);
+
             }
             catch (Exception ex)
             {
@@ -246,6 +262,8 @@ namespace Phidgets2Prosim
 
                     // Auto stow speed brake after it has open for that long
                     digitalOutput_3_8.TurnOffAfterMs = 60000;
+                    PhidgestOutput digitalOutput_3_local = new PhidgestOutput(353290, -1, 1, "system.indicators.I_MIP_GEAR_NOSE_DOWN", connection);
+
 
                     PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(hubPedestalSlrNo, 3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
                     PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(hubPedestalSlrNo, 4, 0, "system.indicators.I_FIRE_1", connection);
@@ -338,6 +356,7 @@ namespace Phidgets2Prosim
 
                     PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
                     PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);
+                    PhidgetsVoltageOutput pvo3 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 4, 4.5, "system.gauge.G_OH_CREW_OXYGEN", connection);
 
                     trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
 
@@ -398,10 +417,10 @@ namespace Phidgets2Prosim
                     // Pause motors
                     if (trimWheel != null)
                     {
-                        trimWheel.pause(simIsPaused);
+                        trimWheel?.pause(simIsPaused);
                     }
-                    bldcm_00.pause(simIsPaused);
-                    bldcm_01.pause(simIsPaused);
+                    bldcm_00?.pause(simIsPaused);
+                    bldcm_01?.pause(simIsPaused);
 
                     Invoke(new MethodInvoker(updateStatusLabel));
                 }
@@ -429,8 +448,6 @@ namespace Phidgets2Prosim
         {
             try
             {
-            
-
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .Build();
@@ -463,11 +480,11 @@ namespace Phidgets2Prosim
             else
             {
                 // If we're on the UI thread, directly update the TextBox
-                txtLog.AppendText(DateTime.Now + " - ** ERROR ** : " + errorMessage + Environment.NewLine);
+                txtLog.AppendText(DateTime.Now.ToLongTimeString() + " - ** ERROR ** : " + errorMessage + Environment.NewLine);
             }
         }
 
-        private void DisplayInfoLog(string infoMessage)
+        private async void DisplayInfoLog(string infoMessage)
         {
 
             if (txtLog.InvokeRequired)
@@ -478,7 +495,7 @@ namespace Phidgets2Prosim
             else
             {
                 // If we're on the UI thread, directly update the TextBox
-                txtLog.AppendText(DateTime.Now + ": " + infoMessage + Environment.NewLine);
+                txtLog.AppendText(DateTime.Now.ToLongTimeString() + ": " + infoMessage + Environment.NewLine);
             }
         }
     }
@@ -486,6 +503,7 @@ namespace Phidgets2Prosim
 
     public class Config
     {
+        public GeneralConfig GeneralConfig { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
 
@@ -525,5 +543,11 @@ namespace Phidgets2Prosim
         public ProSimConnect Connection { get; set; }
     }
 
-   
+    public class GeneralConfig
+    {
+        public string ProSimIP { get; set; }
+    }
+
+
+
 }

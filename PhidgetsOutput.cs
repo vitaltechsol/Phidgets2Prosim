@@ -19,6 +19,9 @@ namespace Phidgets2Prosim
         public bool IsGate { get; set; }
         public string ProsimDataRefOff { get; set; }
 
+        public int Delay { get; set; } = 0;
+
+
         public PhidgestOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null, bool isHubPortDevice = false)
         {
             IsGate = isGate;
@@ -35,16 +38,17 @@ namespace Phidgets2Prosim
             try
             {
                 ProsimDataRef = prosimDataRef;
-
-                digitalOutput.HubPort = hubPort;
-                digitalOutput.IsRemote = true;
-                digitalOutput.IsHubPortDevice = isHubPortDevice;
+                if (hubPort >= 0)
+                { 
+                    digitalOutput.HubPort = hubPort;
+                    digitalOutput.IsRemote = true;
+                    digitalOutput.IsHubPortDevice = isHubPortDevice;
+                }
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = serial;
                 SendInfoLog("<-- Listening to " + prosimDataRef + " to channel:" + channel);
 
                 Open();
-
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
@@ -67,7 +71,6 @@ namespace Phidgets2Prosim
             try
             {
                // digitalOutput.Open(5000);
-
                 if (delay > 0)
                 {
                     var taskDelay = Task.Delay(delay);
@@ -75,8 +78,7 @@ namespace Phidgets2Prosim
                 }
 
                 digitalOutput.DutyCycle = 1;
-                SendInfoLog("--> Channel " + Channel + ": ON");
-                SendInfoLog("  |-- Ref: " + ProsimDataRef);
+                SendInfoLog("--> Channel " + Channel + ": [ON]" + "  |-- Ref: " + ProsimDataRef);
 
 
                 // Turn off after specified time(ms)
@@ -99,9 +101,9 @@ namespace Phidgets2Prosim
         {
             try
             {
-                SendInfoLog("<-- Channel " + Channel + ": OFF");
-                SendInfoLog("  |-- Ref: " + ProsimDataRef);
                 digitalOutput.DutyCycle = 0;
+                SendInfoLog("--> Channel " + Channel + ": [OFF]" + "  |-- Ref: " + ProsimDataRef);
+
             }
             catch (Exception ex)
             {
