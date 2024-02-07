@@ -17,37 +17,37 @@ namespace Phidgets2Prosim
         public bool Inverse { get; set; } = false;
 
         public bool IsGate { get; set; }
-        public string ProsimDatmRefOff { get; set; }
+        public string ProsimDataRefOff { get; set; }
 
-        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDatmRef, ProSimConnect connection, bool isGate = false, string prosimDatmRefOff = null, bool isHubPortDevice = false)
+        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null, bool isHubPortDevice = false)
         {
             IsGate = isGate;
             Channel = channel;
             // Set ProSim dataref
-            ProsimDataRef = prosimDatmRefOff;
+            ProsimDataRef = prosimDataRefOff;
             Serial = serial;
-            if (prosimDatmRefOff != null) { 
-                DataRef dataRef = new DataRef(prosimDatmRefOff, 100, connection);
+            if (prosimDataRefOff != null) { 
+                DataRef dataRef = new DataRef(prosimDataRefOff, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             IsHubPortDevice = isHubPortDevice;
 
             try
             {
-                ProsimDataRef = prosimDatmRef;
+                ProsimDataRef = prosimDataRef;
 
                 digitalOutput.HubPort = hubPort;
                 digitalOutput.IsRemote = true;
                 digitalOutput.IsHubPortDevice = isHubPortDevice;
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = serial;
-                SendInfoLog("<-- Listening to " + prosimDatmRef + " to channel:" + channel);
+                SendInfoLog("<-- Listening to " + prosimDataRef + " to channel:" + channel);
 
                 Open();
 
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
+                DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             catch (Exception ex)
@@ -149,7 +149,7 @@ namespace Phidgets2Prosim
                         }
                     }
 
-                    if (value == true && name == ProsimDatmRefOff)
+                    if (value == true && name == ProsimDataRefOff)
                     {
                         SendInfoLog("Turn Off from ref" + dataRef.value + " " + dataRef.name);
                         if (Inverse)
@@ -162,7 +162,7 @@ namespace Phidgets2Prosim
                         }
                     }
 
-                    if (ProsimDatmRefOff == null && value == false)
+                    if (ProsimDataRefOff == null && value == false)
                     {
                         if (Inverse)
                         {

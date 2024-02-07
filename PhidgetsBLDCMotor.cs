@@ -10,8 +10,6 @@ namespace Phidgets2Prosim
     internal class PhidgetsBLDCMotor
     {
         double targetVelFast = 0.4;
-        double targetVelFastest = 1;
-        double targetVelSlow = 0.1;
         bool reversed;
         int hubPort;
         int offset = 0;
