@@ -16,6 +16,7 @@ namespace Phidgets2Prosim
     using System.IO;
     using System.ComponentModel;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public partial class Form1 : Form
     {
