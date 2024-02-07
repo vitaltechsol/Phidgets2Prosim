@@ -9,9 +9,9 @@ namespace Phidgets2Prosim
     {
 
         VoltageOutput voltageOutput = new VoltageOutput();
-        decimal scaleFactor;
-        decimal lastVoltage = 0;
-        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, decimal scaleFactor, string prosimDatmRef, ProSimConnect connection)
+        double scaleFactor;
+        double lastVoltage = 0;
+        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, double scaleFactor, string prosimDatmRef, ProSimConnect connection)
         {
 
             try
@@ -29,7 +29,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("EROR: " + ex.ToString());
+                Debug.WriteLine("ERROR: " + ex.ToString());
             }
         }
 
