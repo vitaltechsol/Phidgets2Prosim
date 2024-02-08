@@ -52,6 +52,8 @@ namespace Phidgets2Prosim
         PhidgetsInput digitalInput1_12;
         PhidgetsInput digitalInput1_13;
 
+        PhidgetsInput[] phidgetsInputPreview = new PhidgetsInput[360];
+
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
         PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
@@ -82,7 +84,8 @@ namespace Phidgets2Prosim
         {
 
             InitializeComponent();
-            
+            this.Shown += new System.EventHandler(this.Form1_Shown);
+
             // Add Phidgets Hub
             foreach (var hub in hubs)
             {
@@ -97,9 +100,7 @@ namespace Phidgets2Prosim
                 }
             }
 
-            LoadConfig();
-            AddAllPhidgets();
-
+          
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;
@@ -170,12 +171,16 @@ namespace Phidgets2Prosim
                         try
                         {
                             phidgetsOutput[idx] = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
-                                "system.indicators." + instance.ProsimDataRef, connection, false, instance.ProsimDataRefOff);
+                                "system.indicators." + instance.ProsimDataRef, connection, false, null);
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
                             if (instance.OnDelay != null && instance.OnDelay > 0)
                             {
                                 phidgetsOutput[idx].Delay = Convert.ToInt32(instance.OnDelay);
+                            }
+                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            {
+                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
                             }
                         }
                         catch (Exception ex)
@@ -208,7 +213,10 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsGate[idx].Delay = Convert.ToInt32(instance.OnDelay);
                             }
-
+                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            {
+                                phidgetsGate[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -265,6 +273,25 @@ namespace Phidgets2Prosim
             var hubPedestalSlrNo = 618534;
             var hubMipSlrNo = 668522;
             var hubOH_2_SrlNo = 668015;
+            int[] inHubs = { 0, 1, 2, 5 }; 
+
+
+            //Possible code to display inputs
+            //var oh1 = 668659;
+
+            //// Load for test
+            //var idx = 0;
+            //for (var hubIdx = 0; hubIdx < inHubs.Length; hubIdx++) 
+            //{
+            //    for (var chIdx = 0; chIdx < 16; chIdx++)
+            //    {
+            //        phidgetsInputPreview[idx] = new PhidgetsInput(oh1, inHubs[hubIdx], chIdx, connection, "test", 1);
+            //        phidgetsInputPreview[idx].ErrorLog += DisplayErrorLog;
+            //        phidgetsInputPreview[idx].InfoLog += DisplayInfoLog;
+            //        idx++;
+            //    }
+            //}   
+            
 
             try
             {
@@ -284,25 +311,8 @@ namespace Phidgets2Prosim
                     hub_motors = new PhidgetsHub();
                     hub_oh_1 = new PhidgetsHub();
 
-                    //hub_motors.port[4].output[0] = new PhidgestOutput(hubMotorsSlrNo, 4, 0, "system.gates.B_STICKSHAKER_FO", connection, true, null, true);
-                    //hub_motors.port[5].output[0] = new PhidgestOutput(hubMotorsSlrNo, 5, 0, "system.gates.B_STICKSHAKER", connection, true, null, true);
-                    // mip1.port[1].output[14] = new PhidgestOutput(hubMipSlrNo, 1, 14, "system.gates.B_GEAR_HANDLE_RELEASE", connection);
-
                     PhidgestOutput digitalOutput_3_0 = new PhidgestOutput(hubPedestalSlrNo, 3, 0, "system.gates.B_STANDBY_POWER", connection, true);
-                    //PhidgestOutput digitalOutput_3_1 = new PhidgestOutput(hubPedestalSlrNo, 3, 1, "system.gates.B_REVERSER_2_SYNC_LOCK", connection, true);
-                    //digitalOutput_3_1.AddDelay(1500);
-                    //PhidgestOutput digitalOutput_3_2 = new PhidgestOutput(hubPedestalSlrNo, 3, 2, "system.gates.B_REVERSER_1_SYNC_LOCK", connection, true);
-                    //digitalOutput_3_2.AddDelay(1500);
                     PhidgestOutput digitalOutput_3_3 = new PhidgestOutput(hubPedestalSlrNo, 3, 3, "system.gates.B_AC_POWER", connection, true);
-                    //digitalOutput_3_8 = new PhidgestOutput(hubPedestalSlrNo, 3, 8,
-                    //     "system.gates.B_SPEED_BRAKE_DEPLOY", connection, true,
-                    //     "system.gates.B_SPEED_BRAKE_RESTOW");
-
-                    //// Auto stow speed brake after it has open for that long
-                    //digitalOutput_3_8.TurnOffAfterMs = 60000;
-                    PhidgestOutput digitalOutput_3_local = new PhidgestOutput(353290, -1, 1, "system.indicators.I_MIP_GEAR_NOSE_DOWN", connection);
-
-
                     PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(hubPedestalSlrNo, 3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
                     PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(hubPedestalSlrNo, 4, 0, "system.indicators.I_FIRE_1", connection);
                     PhidgestOutput digitalOutput_4_1 = new PhidgestOutput(hubPedestalSlrNo, 4, 1, "system.indicators.I_FIRE_APU", connection);
@@ -407,7 +417,6 @@ namespace Phidgets2Prosim
                      "system.gates.B_THROTTLE_SERVO_POWER_LEFT",
                      "system.analog.A_THROTTLE_LEFT",
                      "system.gauge.G_THROTTLE_LEFT");
-
 
                     phidgetsAdded = true;
                 }
@@ -536,7 +545,15 @@ namespace Phidgets2Prosim
                 txtLog.AppendText(DateTime.Now.ToLongTimeString() + ": " + infoMessage + Environment.NewLine);
             }
         }
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            LoadConfig();
+            AddAllPhidgets();
+
+        }
     }
+
+
 
 
     public class Config
@@ -553,17 +570,16 @@ namespace Phidgets2Prosim
     {
         public int? OnDelay { get; set; }
         public bool Inverse { get; set; } = false;
-        public string ProsimDataRefOff { get; set; } = null;
-        public int TurnOffAfterMs { get; set; } = 0;
+        public int? TurnOffAfterMs { get; set; } = null;
 
     }
 
     public class PhidgetsGateInst : PhidgetDevice
     {
-        public int? OnDelay { get; set; }
+        public int? OnDelay { get; set; } = null;
         public bool Inverse { get; set; } = false;
         public string ProsimDataRefOff { get; set; } = null;
-        public int TurnOffAfterMs { get; set; } = 0;
+        public int? TurnOffAfterMs { get; set; } = null;
 
     }
 

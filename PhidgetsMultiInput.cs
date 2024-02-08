@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
@@ -126,14 +127,14 @@ namespace Phidgets2Prosim
             this.serial = serial;
         }
 
-        public void Open()
+        public async void Open()
         {
             digitalInput.HubPort = hubPort;
             digitalInput.IsRemote = true;
             digitalInput.Channel = Channel;
             digitalInput.StateChange += StateChange;
             digitalInput.DeviceSerialNumber = serial;
-            digitalInput.Open(500);
+            await Task.Run(() => digitalInput.Open(500));
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)

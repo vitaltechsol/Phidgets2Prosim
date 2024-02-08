@@ -1,6 +1,7 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
@@ -17,6 +18,7 @@ namespace Phidgets2Prosim
             ProsimDataRef = prosimDataRef;
             Connection = connection;
             Channel = channel;
+            HubPort = hubPort;
 
             OffInputValue = offInputValue;
             InputValue = inputValue;
@@ -34,9 +36,14 @@ namespace Phidgets2Prosim
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
             // Set ProSim dataref
-            SendInfoLog("--> Channel " + Channel + ":" + e.State);
-            SendInfoLog("  |-- Ref: " + ProsimDataRef + " - inputValue: " + InputValue + " - offInputValue:" + OffInputValue);
+            SendInfoLog($"--> [{HubPort}] Ch {Channel}: {e.State}");
+            SendInfoLog($"  |-- Ref: {ProsimDataRef} - inputValue: {InputValue} - offInputValue {OffInputValue}");
             
+            if (ProsimDataRef == "test")
+            {
+                return;
+            }
+
             DataRef dataRef = new DataRef(ProsimDataRef, 100, Connection);
 
             try
@@ -54,6 +61,8 @@ namespace Phidgets2Prosim
             {
                 SendErrorLog("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
                 SendErrorLog(ex.ToString());
+                Debug.WriteLine("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
+                Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -62,17 +71,23 @@ namespace Phidgets2Prosim
             digitalInput.Close();
         }
 
-        public void Open()
+        public async void Open()
         {
 
             try
             {
-                digitalInput.Open(500);
+                if (digitalInput.IsOpen == false)
+                {
+                    await Task.Run(() => digitalInput.Open(500));
+                }
             }
             catch (System.Exception ex)
             {
-                SendErrorLog("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
+                SendErrorLog("Error: --> Channel " + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
                 SendErrorLog(ex.ToString());
+
+                Debug.WriteLine("Error: --> Channel " + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
+                Debug.WriteLine(ex.ToString());
             }
         }
 

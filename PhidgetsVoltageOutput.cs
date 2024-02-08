@@ -2,10 +2,13 @@
 using ProSimSDK;
 using System.Diagnostics;
 using System;
+using System.Runtime.Remoting.Channels;
+using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsVoltageOutput
+    internal class PhidgetsVoltageOutput : PhidgetDevice
     {
 
         VoltageOutput voltageOutput = new VoltageOutput();
@@ -20,8 +23,8 @@ namespace Phidgets2Prosim
                 voltageOutput.DeviceSerialNumber = deviceSerialN; 
                 voltageOutput.HubPort = hubPort;
                 voltageOutput.IsRemote = true;
-                voltageOutput.Open(2000);
-                voltageOutput.Voltage = 0;
+                
+                Open();
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDatmRef, 100, connection);
@@ -30,6 +33,27 @@ namespace Phidgets2Prosim
             catch (Exception ex)
             {
                 Debug.WriteLine("ERROR: " + ex.ToString());
+            }
+        }
+
+        public async void Open()
+        {
+
+            try
+            {
+                if (voltageOutput.IsOpen == false)
+                {
+                    await Task.Run(() => voltageOutput.Open(500));
+                    voltageOutput.Voltage = 0;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                SendErrorLog("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
+                SendErrorLog(ex.ToString());
+
+                Debug.WriteLine("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
+                Debug.WriteLine(ex.ToString());
             }
         }
 

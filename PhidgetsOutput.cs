@@ -26,7 +26,8 @@ namespace Phidgets2Prosim
             IsGate = isGate;
             Channel = channel;
             // Set ProSim dataref
-            ProsimDataRef = prosimDataRefOff;
+            ProsimDataRef = prosimDataRef;
+            ProsimDataRefOff = prosimDataRefOff;
             Serial = serial;
             if (prosimDataRefOff != null) { 
                 DataRef dataRef = new DataRef(prosimDataRefOff, 100, connection);
@@ -35,7 +36,6 @@ namespace Phidgets2Prosim
 
             try
             {
-                ProsimDataRef = prosimDataRef;
                 // use -1 for hubPort when is not a network hub
 
                 if (hubPort >= 0)
@@ -52,7 +52,7 @@ namespace Phidgets2Prosim
                 Open();
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDataRef, 100, connection);
+                DataRef dataRef = new DataRef(prosimDataRef, 50, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace Phidgets2Prosim
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
                 {
-                    SendInfoLog("Start Delay " + TurnOffAfterMs + " for " + ProsimDataRef + " - Channel " + Channel);
+                    SendInfoLog("Start OFF Delay " + TurnOffAfterMs + " for " + ProsimDataRef + " - Channel " + Channel);
                     var taskDelay2 = Task.Delay(TurnOffAfterMs);
                     await taskDelay2;
                     TurnOff();
@@ -150,7 +150,7 @@ namespace Phidgets2Prosim
 
                     if (value == true && name == ProsimDataRefOff)
                     {
-                        SendInfoLog("Turn Off from ref" + dataRef.value + " " + dataRef.name);
+                        SendInfoLog("Turn Off from ProsimDataRefOff" + dataRef.value + " " + dataRef.name);
                         if (Inverse)
                         {
                             TurnOn();
