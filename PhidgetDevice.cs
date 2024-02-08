@@ -8,9 +8,7 @@ namespace Phidgets2Prosim
         public int Channel { get; set; }
         public int HubPort { get; set; }
         public bool IsRemote { get; set; }
-        public bool IsHubPortDevice { get; set; }
         public int Serial { get; set; }
-
         public string ProsimDataRef { get; set; }
         public ProSimConnect Connection { get; set; }
 

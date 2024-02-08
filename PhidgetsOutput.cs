@@ -12,7 +12,6 @@ namespace Phidgets2Prosim
         DigitalOutput digitalOutput = new DigitalOutput();
         //bool isGate = false;
        
-        int delay = 0;
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
 
@@ -22,7 +21,7 @@ namespace Phidgets2Prosim
         public int Delay { get; set; } = 0;
 
 
-        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null, bool isHubPortDevice = false)
+        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
         {
             IsGate = isGate;
             Channel = channel;
@@ -33,16 +32,18 @@ namespace Phidgets2Prosim
                 DataRef dataRef = new DataRef(prosimDataRefOff, 100, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
-            IsHubPortDevice = isHubPortDevice;
 
             try
             {
                 ProsimDataRef = prosimDataRef;
+                // use -1 for hubPort when is not a network hub
+
                 if (hubPort >= 0)
                 { 
                     digitalOutput.HubPort = hubPort;
                     digitalOutput.IsRemote = true;
-                    digitalOutput.IsHubPortDevice = isHubPortDevice;
+                    // use -1 for channel when is a IsHubPortDevice
+                    digitalOutput.IsHubPortDevice = channel == -1;
                 }
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = serial;
@@ -61,19 +62,15 @@ namespace Phidgets2Prosim
 
         }
 
-        public void AddDelay(int delay)
-        {
-            this.delay = delay;
-        }
 
         public async void TurnOn()
         {
             try
             {
                // digitalOutput.Open(5000);
-                if (delay > 0)
+                if (Delay > 0)
                 {
-                    var taskDelay = Task.Delay(delay);
+                    var taskDelay = Task.Delay(Delay);
                     await taskDelay;
                 }
 
