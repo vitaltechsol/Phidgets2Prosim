@@ -111,7 +111,7 @@ namespace Phidgets2Prosim
 
         async void connectToProSim(string prosimIP)
         {
-            var taskDelay = Task.Delay(5000);
+            var taskDelay = Task.Delay(3000);
             await taskDelay;
 
             try
@@ -136,11 +136,11 @@ namespace Phidgets2Prosim
         void connection_onConnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-           // Invoke(new MethodInvoker(AddAllPhidgets));
-            //  Invoke(new MethodInvoker(LoadConfig));
+            // Invoke(new MethodInvoker(AddAllPhidgets));
+            Invoke(new MethodInvoker(LoadConfigIns));
         }
 
-        private void LoadConfig()
+        private void LoadConfigOuts()
         {
             try
             {
@@ -152,19 +152,15 @@ namespace Phidgets2Prosim
                     .Build();
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
-                phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
-                dataGridViewOutputs.DataSource = phidgetsOutputInstances;
-                dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-
-                phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
-                dataGridViewInputs.DataSource = phidgetsInputInstances;
-                dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-
                 // Create instances based on the configuration
 
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
                 {
+                    phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
+                    dataGridViewOutputs.DataSource = phidgetsOutputInstances;
+                    dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
                     var idx = 0;
                     foreach (var instance in config.PhidgetsOutputInstances)
                     {
@@ -227,10 +223,41 @@ namespace Phidgets2Prosim
                     }
                 }
 
+                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+                lblPsIP.Text = config.GeneralConfig.ProSimIP; 
+                connectToProSim(config.GeneralConfig.ProSimIP);
+
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error loading config");
+                DisplayErrorLog(ex.ToString());
+            }
+
+        }
+
+        private void LoadConfigIns()
+        {
+            try
+            {
+                // Read YAML from file
+                string yamlContent = File.ReadAllText("config.yaml");
+
+                // Deserialize YAML to objects
+                var deserializer = new DeserializerBuilder()
+                    .Build();
+
+                var config = deserializer.Deserialize<Config>(yamlContent);
+                // Create instances based on the configuration
+
 
                 // INPUTS
                 if (config.PhidgetsInputInstances != null)
                 {
+                    phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+                    dataGridViewInputs.DataSource = phidgetsInputInstances;
+                    dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
                     {
@@ -249,9 +276,6 @@ namespace Phidgets2Prosim
                         idx++;
                     }
                 }
-                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
-                lblPsIP.Text = config.GeneralConfig.ProSimIP; 
-                connectToProSim(config.GeneralConfig.ProSimIP);
 
             }
             catch (Exception ex)
@@ -345,8 +369,8 @@ namespace Phidgets2Prosim
                     digitalInput_2_12 = new PhidgetsInput(hubPedestalSlrNo, 2, 12, connection, "system.switches.S_FIRE_PULL2", 1);
                     digitalInput_2_13 = new PhidgetsInput(hubPedestalSlrNo, 2, 13, connection, "system.switches.S_FIRE_HANDLE2", 2);
 
-                    digitalInput1_0 = new PhidgetsInput(hubPedestalSlrNo, 1, 0, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1);
-                    digitalInput1_1 = new PhidgetsInput(hubPedestalSlrNo, 1, 1, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1);
+                 //   digitalInput1_0 = new PhidgetsInput(hubPedestalSlrNo, 1, 0, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1);
+                //    digitalInput1_1 = new PhidgetsInput(hubPedestalSlrNo, 1, 1, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1);
                     digitalInput1_2 = new PhidgetsInput(hubPedestalSlrNo, 1, 2, connection, "system.switches.S_THROTTLE_AT_DISENGAGE", 1);
                     digitalInput1_3 = new PhidgetsInput(hubPedestalSlrNo, 1, 3, connection, "system.switches.S_THROTTLE_AT_DISENGAGE_2", 1);
                     digitalInput1_4 = new PhidgetsInput(hubPedestalSlrNo, 1, 4, connection, "system.switches.S_THROTTLE_TOGA", 1);
@@ -547,9 +571,8 @@ namespace Phidgets2Prosim
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            LoadConfig();
             AddAllPhidgets();
-
+            LoadConfigOuts();
         }
     }
 

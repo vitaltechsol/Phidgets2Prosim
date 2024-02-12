@@ -36,8 +36,7 @@ namespace Phidgets2Prosim
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
             // Set ProSim dataref
-            SendInfoLog($"--> [{HubPort}] Ch {Channel}: {e.State}");
-            SendInfoLog($"  |-- Ref: {ProsimDataRef} - inputValue: {InputValue} - offInputValue {OffInputValue}");
+            SendInfoLog($"--> [{HubPort}] Ch {Channel}: {e.State} | Ref: {ProsimDataRef} - inputValue: {InputValue} - offInputValue {OffInputValue}");
             
             if (ProsimDataRef == "test")
             {

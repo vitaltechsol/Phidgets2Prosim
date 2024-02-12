@@ -75,8 +75,7 @@ namespace Phidgets2Prosim
                 }
 
                 digitalOutput.DutyCycle = 1;
-                SendInfoLog("--> Channel " + Channel + ": [ON]" + "  |-- Ref: " + ProsimDataRef);
-
+                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON] | Ref: {ProsimDataRef}");
 
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
@@ -99,7 +98,7 @@ namespace Phidgets2Prosim
             try
             {
                 digitalOutput.DutyCycle = 0;
-                SendInfoLog("--> Channel " + Channel + ": [OFF]" + "  |-- Ref: " + ProsimDataRef);
+                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [OFF] | Ref: {ProsimDataRef}");
 
             }
             catch (Exception ex)
