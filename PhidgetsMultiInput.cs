@@ -107,10 +107,9 @@ namespace Phidgets2Prosim
     }
 
 
-    internal class PhidgetsMultiInputItem
+    internal class PhidgetsMultiInputItem : PhidgetDevice
     {
         DigitalInput digitalInput = new DigitalInput();
-        int Channel { get; set; } = -1;
         int Index { get; set; } = -1;
 
         private int hubPort;
@@ -129,12 +128,20 @@ namespace Phidgets2Prosim
 
         public async void Open()
         {
-            digitalInput.HubPort = hubPort;
-            digitalInput.IsRemote = true;
-            digitalInput.Channel = Channel;
-            digitalInput.StateChange += StateChange;
-            digitalInput.DeviceSerialNumber = serial;
-            await Task.Run(() => digitalInput.Open(500));
+            try
+            {
+                digitalInput.HubPort = hubPort;
+                digitalInput.IsRemote = true;
+                digitalInput.Channel = Channel;
+                digitalInput.StateChange += StateChange;
+                digitalInput.DeviceSerialNumber = serial;
+                await Task.Run(() => digitalInput.Open(500));
+            }
+            catch (Exception ex)
+            {
+                SendErrorLog("Multi input Open failed" + ProsimDataRef + " ch:" + Channel);
+                SendErrorLog(ex.ToString());
+            }
         }
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)

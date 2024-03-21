@@ -57,6 +57,7 @@ namespace Phidgets2Prosim
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
         PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
+        PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
 
 
 
@@ -72,54 +73,33 @@ namespace Phidgets2Prosim
         PhidgetsMultiInput mu3;
         PhidgetsMultiInput mu4;
 
-        static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
+      //  static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
 
         bool simIsPaused = false;
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private BindingList<PhidgetsInputInst> phidgetsInputInstances;
+        private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
+
 
 
         public Form1()
         {
-
             InitializeComponent();
             this.Shown += new System.EventHandler(this.Form1_Shown);
-
-            // Add Phidgets Hub
-            foreach (var hub in hubs)
-            {
-                try
-                {
-                    Net.AddServer(hub, hub, 5661, "", 0);
-                    DisplayInfoLog("Hub Added: " + hub);
-                }
-                catch (Exception ex)
-                {
-                  DisplayErrorLog("Cannot find Hub. " + hub + " :" + ex);
-                }
-            }
-
-          
-            // Register Prosim to receive connect and disconnect events
-            connection.onConnect += connection_onConnect;
-            connection.onDisconnect += connection_onDisconnect;
-
-            DataRef dataRef = new DataRef("simulator.pause", 100, connection);
-            dataRef.onDataChange += DataRef_onDataChange;
         }
 
         async void connectToProSim(string prosimIP)
         {
+            connectionStatusLabel.Text = "CONNECTING....";
+
             var taskDelay = Task.Delay(3000);
             await taskDelay;
 
             try
             {
-                connectionStatusLabel.Text = "CONNECTING....";
                 DisplayInfoLog("Prosim connecting");
                 connection.Connect(prosimIP);
-                updateStatusLabel();
             }
             catch (Exception ex)
             {
@@ -153,6 +133,26 @@ namespace Phidgets2Prosim
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
+
+
+                // Add Phidgets Hub
+                if (config.PhidgetsHubsIntances != null)
+                {
+
+                    foreach (var hub in config.PhidgetsHubsIntances)
+                    {
+                        try
+                        {
+                            Net.AddServer(hub, hub, 5661, "", 0);
+                            DisplayInfoLog("Hub Added: " + hub);
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Cannot find Hub. " + hub + " :" + ex);
+                        }
+                    }
+
+                }
 
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
@@ -202,7 +202,8 @@ namespace Phidgets2Prosim
                         try
                         {
                             phidgetsGate[idx] = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
-                                "system.gates." + instance.ProsimDataRef, connection, true, instance.ProsimDataRefOff);
+                                "system.gates." + instance.ProsimDataRef, connection, true, 
+                                instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
                             phidgetsGate[idx].ErrorLog += DisplayErrorLog;
                             phidgetsGate[idx].InfoLog += DisplayInfoLog;
                             if (instance.OnDelay != null && instance.OnDelay > 0)
@@ -217,6 +218,32 @@ namespace Phidgets2Prosim
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error loading config line");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
+                // Voltage Output
+                if (config.PhidgetsVoltageOutputInstances != null)
+                {
+                    phidgetsVoltageOutputInstances = new BindingList<PhidgetsVoltageOutputInst>(config.PhidgetsVoltageOutputInstances);
+                    dataGridViewVoltageOut.DataSource = phidgetsVoltageOutputInstances;
+                    dataGridViewVoltageOut.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsVoltageOutputInstances)
+                    {
+                        try
+                        {
+                            phidgetsVoltageOutput[idx] = new PhidgetsVoltageOutput(instance.Serial, instance.HubPort, instance.ScaleFactor,
+                                "system.gauge." + instance.ProsimDataRef, connection);
+                            phidgetsVoltageOutput[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsVoltageOutput[idx].InfoLog += DisplayInfoLog;
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config line for Voltage Output");
                             DisplayErrorLog(ex.ToString());
                         }
                         idx++;
@@ -295,10 +322,7 @@ namespace Phidgets2Prosim
         {
 
             var hubPedestalSlrNo = 618534;
-            var hubMipSlrNo = 668522;
             var hubOH_2_SrlNo = 668015;
-            int[] inHubs = { 0, 1, 2, 5 }; 
-
 
             //Possible code to display inputs
             //var oh1 = 668659;
@@ -426,9 +450,9 @@ namespace Phidgets2Prosim
                         });
 
 
-                    PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
-                    PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);
-                    PhidgetsVoltageOutput pvo3 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 4, 4.5, "system.gauge.G_OH_CREW_OXYGEN", connection);
+                    //PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
+                    //PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);
+                    //PhidgetsVoltageOutput pvo3 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 4, 4.5, "system.gauge.G_OH_CREW_OXYGEN", connection);
 
                     trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
 
@@ -455,9 +479,12 @@ namespace Phidgets2Prosim
         {
             if (connection.isConnected)
             {
-                DisplayInfoLog("Prosim CONNECTED");
-                connectionStatusLabel.Text = "Connected";
-                connectionStatusLabel.ForeColor = Color.LimeGreen;
+                if (!simIsPaused) 
+                { 
+                    DisplayInfoLog("Prosim CONNECTED");
+                    connectionStatusLabel.Text = "Connected";
+                    connectionStatusLabel.ForeColor = Color.LimeGreen;
+                }
 
                 if (simIsPaused)
                 {
@@ -571,8 +598,15 @@ namespace Phidgets2Prosim
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            AddAllPhidgets();
             LoadConfigOuts();
+            AddAllPhidgets();
+
+            // Register Prosim to receive connect and disconnect events
+            connection.onConnect += connection_onConnect;
+            connection.onDisconnect += connection_onDisconnect;
+
+            DataRef dataRef = new DataRef("simulator.pause", 100, connection);
+            dataRef.onDataChange += DataRef_onDataChange;
         }
     }
 
@@ -582,6 +616,7 @@ namespace Phidgets2Prosim
     public class Config
     {
         public GeneralConfig GeneralConfig { get; set; }
+        public List<string> PhidgetsHubsIntances { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
         public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
@@ -624,14 +659,13 @@ namespace Phidgets2Prosim
 
     public class PhidgetsVoltageOutputInst : PhidgetDevice
     {
-        public decimal ScaleFactor { get; set; }
-        public string ProsimDataRef { get; set; }
-        public ProSimConnect Connection { get; set; }
+        public double ScaleFactor { get; set; }
     }
 
     public class GeneralConfig
     {
         public string ProSimIP { get; set; }
+        public string Schema { get; set; }
     }
 
 

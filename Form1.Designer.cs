@@ -43,6 +43,8 @@ namespace Phidgets2Prosim
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -51,6 +53,8 @@ namespace Phidgets2Prosim
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).BeginInit();
             this.tabPage1.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).BeginInit();
             this.SuspendLayout();
             // 
             // tabGroups
@@ -58,6 +62,7 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabOut);
             this.tabGroups.Controls.Add(this.tabPage2);
             this.tabGroups.Controls.Add(this.tabPage3);
+            this.tabGroups.Controls.Add(this.tabPage4);
             this.tabGroups.Controls.Add(this.tabPage1);
             this.tabGroups.Location = new System.Drawing.Point(16, 73);
             this.tabGroups.Name = "tabGroups";
@@ -169,6 +174,25 @@ namespace Phidgets2Prosim
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.dataGridViewVoltageOut);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(630, 279);
+            this.tabPage4.TabIndex = 4;
+            this.tabPage4.Text = "Voltage Out";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewVoltageOut
+            // 
+            this.dataGridViewVoltageOut.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewVoltageOut.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewVoltageOut.Name = "dataGridViewVoltageOut";
+            this.dataGridViewVoltageOut.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewVoltageOut.TabIndex = 3;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -190,6 +214,8 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,5 +238,7 @@ namespace Phidgets2Prosim
         private Label lblPsIP;
         private TabPage tabPage3;
         private DataGridView dataGridViewGates;
+        private TabPage tabPage4;
+        private DataGridView dataGridViewVoltageOut;
     }
 }

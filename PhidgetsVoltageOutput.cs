@@ -12,14 +12,14 @@ namespace Phidgets2Prosim
     {
 
         VoltageOutput voltageOutput = new VoltageOutput();
-        double scaleFactor;
+        public double ScaleFactor { get; set; }
         double lastVoltage = 0;
         public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, double scaleFactor, string prosimDatmRef, ProSimConnect connection)
         {
 
             try
             {
-                this.scaleFactor = scaleFactor;
+                ScaleFactor = scaleFactor;
                 voltageOutput.DeviceSerialNumber = deviceSerialN; 
                 voltageOutput.HubPort = hubPort;
                 voltageOutput.IsRemote = true;
@@ -60,14 +60,14 @@ namespace Phidgets2Prosim
         private void DataRef_onDataChange(DataRef dataRef)
         {
             var value = Convert.ToInt64(dataRef.value);
-            var convertedValue = value > 0 ? (value / scaleFactor) : 0;
+            var convertedValue = value > 0 ? (value / ScaleFactor) : 0;
             if (lastVoltage != value)
             {
 
-                Debug.WriteLine($"Voltage Changed: {dataRef.name} {value}");
+              // //
                 try
                 {
-                    Debug.WriteLine(dataRef.name);
+//                    Debug.WriteLine($"Voltage Changed: {dataRef.name} {value}");
                     // Debug.WriteLine(value);
                     // Debug.WriteLine(convertedValue);
                     voltageOutput.Voltage = Convert.ToDouble(convertedValue);

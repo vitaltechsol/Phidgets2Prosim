@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using System.Runtime.Remoting.Channels;
+using YamlDotNet.Core.Tokens;
 
 namespace Phidgets2Prosim
 {
@@ -29,11 +30,7 @@ namespace Phidgets2Prosim
             ProsimDataRef = prosimDataRef;
             ProsimDataRefOff = prosimDataRefOff;
             Serial = serial;
-            if (prosimDataRefOff != null) { 
-                DataRef dataRef = new DataRef(prosimDataRefOff, 100, connection);
-                dataRef.onDataChange += DataRef_onDataChange;
-            }
-
+      
             try
             {
                 // use -1 for hubPort when is not a network hub
@@ -53,7 +50,16 @@ namespace Phidgets2Prosim
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 50, connection);
+
                 dataRef.onDataChange += DataRef_onDataChange;
+
+                if (prosimDataRefOff != null)
+                {
+                    DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);
+                    dataRef2.onDataChange += DataRef_onDataChange;
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -128,8 +134,10 @@ namespace Phidgets2Prosim
 
         private void DataRef_onDataChange(DataRef dataRef)
         {
-       
             var name = dataRef.name;
+
+            Debug.WriteLine($"OUT Changed: {dataRef.name} {dataRef.value}");
+
             try
             {
                 if (IsGate)
