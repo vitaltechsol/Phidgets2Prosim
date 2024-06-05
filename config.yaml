@@ -1,387 +1,501 @@
-﻿PhidgetsOutputInstances:
+﻿GeneralConfig:
+  Schema: 1.0    
+  ProSimIP: 192.168.1.142
+PhidgetsHubsIntances:
+   - hub5000-1
+   - hub5000-MIP-1
+   - hub5000-MIP-2 
+   - hub5000-motors
+   - hub5000-OH-1
+   - hub5000-OH-2
+
+PhidgetsOutputInstances:
   - Serial: 668522
     HubPort: 1
     Channel: 9
-    ProsimDataRef: "system.indicators.I_MIP_GEAR_NOSE_DOWN"
+    ProsimDataRef: "I_MIP_GEAR_NOSE_DOWN"
   - Serial: 668522
     HubPort: 1
     Channel: 10
-    ProsimDataRef: "system.indicators.I_MIP_GEAR_RIGHT_DOWN"
+    ProsimDataRef: "I_MIP_GEAR_RIGHT_DOWN"
   - Serial: 668015
     HubPort: 2
     Channel: 0
-    ProsimDataRef: "system.indicators.I_OH_REVERSER2"
+    ProsimDataRef: "I_OH_REVERSER2"
   - Serial: 668015
     HubPort: 2
     Channel: 1
-    ProsimDataRef: "system.indicators.I_OH_ENGINE_CONTROL2"
+    ProsimDataRef: "I_OH_ENGINE_CONTROL2"
   - Serial: 668015
     HubPort: 2
     Channel: 2
-    ProsimDataRef: "system.indicators.I_OH_EEC_ALTN2"
+    ProsimDataRef: "I_OH_EEC_ALTN2"
+  - Serial: 668015
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: "I_OH_PSEU"
+  - Serial: 668015
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: "I_OH_GEAR_LEFT_DOWN"
+  - Serial: 668015
+    HubPort: 2
+    Channel: 5
+    ProsimDataRef: "I_OH_GEAR_RIGHT_DOWN"
+  - Serial: 668015
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: "I_OH_GEAR_NOSE_DOWN"
   - Serial: 668015
     HubPort: 2
     Channel: 13
-    ProsimDataRef: "system.indicators.I_OH_EEC_ALTN1"
+    ProsimDataRef: "I_OH_EEC_ALTN1"
   - Serial: 668015
     HubPort: 2
     Channel: 14
-    ProsimDataRef: "system.indicators.I_OH_ENGINE_CONTROL1"
+    ProsimDataRef: "I_OH_ENGINE_CONTROL1"
   - Serial: 668015
     HubPort: 2
     Channel: 15
-    ProsimDataRef: "system.indicators.I_OH_REVERSER1"
+    ProsimDataRef: "I_OH_REVERSER1"
   - Serial: 668015
     HubPort: 2
     Channel: 12
-    ProsimDataRef: "system.indicators.I_OH_ELT"
+    ProsimDataRef: "I_OH_ELT"
   - Serial: 668522
     HubPort: 1
     Channel: 3
-    ProsimDataRef: system.indicators.I_MIP_ASA_ATR_1
+    ProsimDataRef: I_MIP_ASA_ATR_1
   - Serial: 668522
     HubPort: 1
     Channel: 4
-    ProsimDataRef: system.indicators.I_MIP_ASA_FMC_1
+    ProsimDataRef: I_MIP_ASA_FMC_1
   - Serial: 668522
     HubPort: 1
     Channel: 5
-    ProsimDataRef: system.indicators.I_MIP_ASA_ATA_1
+    ProsimDataRef: I_MIP_ASA_ATA_1
   - Serial: 668522
     HubPort: 1
     Channel: 6
-    ProsimDataRef: system.indicators.I_MIP_ASA_APA_1
+    ProsimDataRef: I_MIP_ASA_APA_1
   - Serial: 668522
     HubPort: 1
     Channel: 7
-    ProsimDataRef: system.indicators.I_MIP_ASA_APR_1
+    ProsimDataRef: I_MIP_ASA_APR_1
   - Serial: 668522
     HubPort: 1
     Channel: 8
-    ProsimDataRef: system.indicators.I_MIP_GEAR_RIGHT_TRANSIT
+    ProsimDataRef: I_MIP_GEAR_RIGHT_TRANSIT
   - Serial: 668522
     HubPort: 1
     Channel: 11
-    ProsimDataRef: system.indicators.I_MIP_GEAR_NOSE_TRANSIT
+    ProsimDataRef: I_MIP_GEAR_NOSE_TRANSIT
   - Serial: 668522
     HubPort: 1
     Channel: 12
-    ProsimDataRef: system.indicators.I_MIP_GEAR_LEFT_TRANSIT
+    ProsimDataRef: I_MIP_GEAR_LEFT_TRANSIT
   - Serial: 668522
     HubPort: 1
     Channel: 13
-    ProsimDataRef: system.indicators.I_MIP_GEAR_LEFT_DOWN
+    ProsimDataRef: I_MIP_GEAR_LEFT_DOWN
   - Serial: 664861
     HubPort: 0
     Channel: 0
-    ProsimDataRef: system.indicators.I_MIP_LE_FLAP_TRANSIT
+    ProsimDataRef: I_MIP_LE_FLAP_TRANSIT
   - Serial: 664861
     HubPort: 0
     Channel: 1
-    ProsimDataRef: system.indicators.I_MIP_LE_FLAP_EXT
+    ProsimDataRef: I_MIP_LE_FLAP_EXT
   - Serial: 664861
     HubPort: 0
     Channel: 2
-    ProsimDataRef: system.indicators.I_MIP_TAKEOFF_CONFIG_FO
+    ProsimDataRef: I_MIP_TAKEOFF_CONFIG_FO
   - Serial: 664861
     HubPort: 0
     Channel: 3
-    ProsimDataRef: system.indicators.I_MIP_CABIN_ALTITUDE_FO
+    ProsimDataRef: I_MIP_CABIN_ALTITUDE_FO
   - Serial: 664861
     HubPort: 0
     Channel: 4
-    ProsimDataRef: system.indicators.I_MIP_AUTOLAND_FO
+    ProsimDataRef: I_MIP_AUTOLAND_FO
   - Serial: 664861
     HubPort: 0
     Channel: 5
-    ProsimDataRef: system.indicators.I_MIP_FLAP_LOAD_RELIEF
+    ProsimDataRef: I_MIP_FLAP_LOAD_RELIEF
   - Serial: 664861
     HubPort: 0
     Channel: 6
-    ProsimDataRef: system.indicators.I_MIP_BELOW_GS_FO
+    ProsimDataRef: I_MIP_BELOW_GS_FO
   - Serial: 664861
     HubPort: 0
     Channel: 7
-    ProsimDataRef: system.indicators.I_MIP_SPOILER_EXTEND
+    ProsimDataRef: I_MIP_SPOILER_EXTEND
   - Serial: 664861
     HubPort: 0
     Channel: 8
-    ProsimDataRef: system.indicators.I_MIP_BELOW_GS_CP
+    ProsimDataRef: I_MIP_BELOW_GS_CP
   - Serial: 664861
     HubPort: 0
     Channel: 9
-    ProsimDataRef: system.indicators.I_MIP_SPOILER_ARMED
+    ProsimDataRef: I_MIP_SPOILER_ARMED
   - Serial: 664861
     HubPort: 0
     Channel: 10
-    ProsimDataRef: system.indicators.I_MIP_SPEEDBRAKE_DO_NOT_ARM
+    ProsimDataRef: I_MIP_SPEEDBRAKE_DO_NOT_ARM
   - Serial: 664861
     HubPort: 0
     Channel: 11
-    ProsimDataRef: system.indicators.I_MIP_STAB_OUT_OF_TRIM
+    ProsimDataRef: I_MIP_STAB_OUT_OF_TRIM
   - Serial: 664861
     HubPort: 0
     Channel: 12
-    ProsimDataRef: system.indicators.I_MIP_AUTOLAND
+    ProsimDataRef: I_MIP_AUTOLAND
   - Serial: 664861
     HubPort: 0
     Channel: 13
-    ProsimDataRef: system.indicators.I_MIP_CABIN_ALTITUDE
+    ProsimDataRef: I_MIP_CABIN_ALTITUDE
   - Serial: 664861
     HubPort: 0
     Channel: 14
-    ProsimDataRef: system.indicators.I_MIP_TAKEOFF_CONFIG
+    ProsimDataRef: I_MIP_TAKEOFF_CONFIG
   - Serial: 668659
     HubPort: 3
     Channel: 0
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT1
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT1
   - Serial: 668659
     HubPort: 3
     Channel: 1
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT1
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT1
   - Serial: 668659
     HubPort: 3
     Channel: 2
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT1
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT1
   - Serial: 668659
     HubPort: 3
     Channel: 3
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT2
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT2
   - Serial: 668659
     HubPort: 3
     Channel: 4
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT2
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT2
   - Serial: 668659
     HubPort: 3
     Channel: 5
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT2
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT2
   - Serial: 668659
     HubPort: 3
     Channel: 6
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT3
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT3
   - Serial: 668659
     HubPort: 3
     Channel: 7
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT3
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT3
   - Serial: 668659
     HubPort: 3
     Channel: 8
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT3
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT3
   - Serial: 668659
     HubPort: 3
     Channel: 9
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT4
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT4
   - Serial: 668659
     HubPort: 3
     Channel: 10
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT4
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT4
   - Serial: 668659
     HubPort: 3
     Channel: 11
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT4
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT4
   - Serial: 668659
     HubPort: 3
     Channel: 12
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_FLAP1
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_FLAP1
   - Serial: 668659
     HubPort: 3
     Channel: 13
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_FLAP1
+    ProsimDataRef: I_OH_LEDEVICES_EXT_FLAP1
   - Serial: 668659
     HubPort: 3
     Channel: 14
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_FLAP2
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_FLAP2
   - Serial: 668659
     HubPort: 3
     Channel: 15
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_FLAP2
+    ProsimDataRef: I_OH_LEDEVICES_EXT_FLAP2
   - Serial: 668659
     HubPort: 4
     Channel: 0
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_FLAP3
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_FLAP3
   - Serial: 668659
     HubPort: 4
     Channel: 1
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_FLAP3
+    ProsimDataRef: I_OH_LEDEVICES_EXT_FLAP3
   - Serial: 668659
     HubPort: 4
     Channel: 2
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_FLAP4
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_FLAP4
   - Serial: 668659
     HubPort: 4
     Channel: 3
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_FLAP4
+    ProsimDataRef: I_OH_LEDEVICES_EXT_FLAP4
   - Serial: 668659
     HubPort: 4
     Channel: 4
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT5
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT5
   - Serial: 668659
     HubPort: 4
     Channel: 5
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT5
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT5
   - Serial: 668659
     HubPort: 4
     Channel: 6
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT5
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT5
   - Serial: 668659
     HubPort: 4
     Channel: 7
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT6
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT6
   - Serial: 668659
     HubPort: 4
     Channel: 8
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT6
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT6
   - Serial: 668659
     HubPort: 4
     Channel: 9
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT6
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT6
   - Serial: 668659
     HubPort: 4
     Channel: 10
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT7
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT7
   - Serial: 668659
     HubPort: 4
     Channel: 11
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT7
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT7
   - Serial: 668659
     HubPort: 4
     Channel: 12
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT7
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT7
   - Serial: 668659
     HubPort: 4
     Channel: 13
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_TRANS_SLAT8
+    ProsimDataRef: I_OH_LEDEVICES_TRANS_SLAT8
   - Serial: 668659
     HubPort: 4
     Channel: 14
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_EXT_SLAT8
+    ProsimDataRef: I_OH_LEDEVICES_EXT_SLAT8
   - Serial: 668659
     HubPort: 4
     Channel: 15
-    ProsimDataRef: system.indicators.I_OH_LEDEVICES_FULLEXT_SLAT8
+    ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT8
+  - Serial: 668015
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: I_OH_PASS_OXY_ON
+
+PhidgetsGateInstances:
+  - Serial: 668066
+    HubPort: 4
+    Channel: -1
+    ProsimDataRef: B_STICKSHAKER_FO
+  - Serial: 668066
+    HubPort: 5
+    Channel: -1
+    ProsimDataRef: B_STICKSHAKER
+  - Serial: 668522
+    HubPort: 1
+    Channel: 14
+    ProsimDataRef: B_GEAR_HANDLE_RELEASE
+  - Serial: 618534
+    HubPort: 3 
+    Channel: 8
+    ProsimDataRef: B_SPEED_BRAKE_DEPLOY
+    ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
+    TurnOffAfterMs: 60000
+  - Serial: 618534
+    HubPort: 3
+    Channel: 1
+    ProsimDataRef: B_REVERSER_2_SYNC_LOCK
+    OnDelay: 1500
+  - Serial: 618534
+    HubPort: 3
+    Channel: 2
+    ProsimDataRef: B_REVERSER_1_SYNC_LOCK
+    OnDelay: 1500
+  - Serial: 618534
+    HubPort: 3
+    Channel: 0
+    ProsimDataRef: B_STANDBY_POWER
+  - Serial: 618534
+    HubPort: 3
+    Channel: 3
+    ProsimDataRef: B_AC_POWER
 
 PhidgetsInputInstances:
   - Serial: 618534
     HubPort: 1
     Channel: 10
-    ProsimDataRef: "system.switches.S_RUDDER_TRIM"
+    ProsimDataRef: "S_RUDDER_TRIM"
     InputValue: 1
 
   - Serial: 618534
     HubPort: 1
     Channel: 11
-    ProsimDataRef: "system.switches.S_RUDDER_TRIM"
+    ProsimDataRef: "S_RUDDER_TRIM"
     InputValue: 2
 
   - Serial: 668015
     HubPort: 0
     Channel: 4
-    ProsimDataRef: "system.switches.S_OH_EEC1_LATCH"
+    ProsimDataRef: "S_OH_EEC1_LATCH"
     InputValue: 1
     OffInputValue: 0
 
   - Serial: 668015
     HubPort: 0
     Channel: 5
-    ProsimDataRef: "system.switches.S_OH_EEC2_LATCH"
+    ProsimDataRef: "S_OH_EEC2_LATCH"
     InputValue: 1
     OffInputValue: 0
 
   - Serial: 668015
     HubPort: 1
     Channel: 0
-    ProsimDataRef: "system.switches.S_OH_CROSSFEED"
+    ProsimDataRef: "S_OH_CROSSFEED"
     InputValue: 0
     OffInputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 1
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_LA"
+    ProsimDataRef: "S_OH_FUEL_PUMP_LA"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 2
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_LF"
+    ProsimDataRef: "S_OH_FUEL_PUMP_LF"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 3
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_RF"
+    ProsimDataRef: "S_OH_FUEL_PUMP_RF"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 4
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_RA"
+    ProsimDataRef: "S_OH_FUEL_PUMP_RA"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 5
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_CL"
+    ProsimDataRef: "S_OH_FUEL_PUMP_CL"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 6
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_CR"
+    ProsimDataRef: "S_OH_FUEL_PUMP_CR"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 7
-    ProsimDataRef: "system.switches.S_OH_FUEL_PUMP_CR"
+    ProsimDataRef: "S_OH_FUEL_PUMP_CR"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 8
-    ProsimDataRef: "system.switches.S_OH_LIGHT_MAIN_FIXED2"
+    ProsimDataRef: "S_OH_LIGHT_MAIN_FIXED2"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 9
-    ProsimDataRef: "system.switches.S_OH_LIGHT_RETRACT_L_3POS"
+    ProsimDataRef: "S_OH_LIGHT_RETRACT_L_3POS"
     InputValue: 2
 
   - Serial: 668015
     HubPort: 1
     Channel: 10
-    ProsimDataRef: "system.switches.S_OH_LIGHT_TAXI"
+    ProsimDataRef: "S_OH_LIGHT_TAXI"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 11
-    ProsimDataRef: "system.switches.S_OH_LIGHT_RETRACT_R_3POS"
+    ProsimDataRef: "S_OH_LIGHT_RETRACT_R_3POS"
     InputValue: 2
 
   - Serial: 668015
     HubPort: 1
     Channel: 12
-    ProsimDataRef: "system.switches.S_OH_LIGHT_RETRACT_R_3POS"
+    ProsimDataRef: "S_OH_LIGHT_RETRACT_R_3POS"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 13
-    ProsimDataRef: "system.switches.S_OH_LIGHT_RWY2"
+    ProsimDataRef: "S_OH_LIGHT_RWY2"
     InputValue: 1
 
   - Serial: 668015
     HubPort: 1
     Channel: 14
-    ProsimDataRef: "system.switches.S_OH_LIGHT_MAIN_FIXED1"
+    ProsimDataRef: "S_OH_LIGHT_MAIN_FIXED1"
     InputValue: 1
-
   - Serial: 668015
     HubPort: 1
     Channel: 15
-    ProsimDataRef: "system.switches.S_OH_LIGHT_RWY1"
+    ProsimDataRef: "S_OH_LIGHT_RWY1"
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 15
+    ProsimDataRef: "S_OH_WAI"
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 14
+    ProsimDataRef: "S_OH_ENGINE_AI2"
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 13
+    ProsimDataRef: "S_OH_ENGINE_AI1"
+    InputValue: 1
+  - Serial: 618534
+    HubPort: 1
+    Channel: 0
+    ProsimDataRef: "S_THROTTLE_FUEL_CUTOFF1"
+    InputValue: 1
+  - Serial: 618534
+    HubPort: 1
+    Channel: 1
+    ProsimDataRef: "S_THROTTLE_FUEL_CUTOFF2"
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 1
+    Channel: 8
+    ProsimDataRef: S_OH_STALL_TEST_2
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 1
+    Channel: 9
+    InputValue: 1
+    ProsimDataRef: S_OH_STALL_TEST_1
+  - Serial: 668659
+    HubPort: 1
+    Channel: 10
+    InputValue: 1
+    ProsimDataRef: S_OH_MACH_WARNING_TEST_2
+  - Serial: 668659
+    HubPort: 1
+    Channel: 11
+    ProsimDataRef: S_OH_MACH_WARNING_TEST_1
     InputValue: 1
 
 PhidgetsBLDCMotorInstances:
@@ -402,14 +516,18 @@ PhidgetsBLDCMotorInstances:
     RefTargetPos: "targetPosReference2"
 
 PhidgetsVoltageOutputInstances:
-  - Serial: 11
-    HubPort: 12
-    ScaleFactor: 1.5
-    ProsimDataRef: "voltageReference"
-    Connection: # ProSimConnect instance details
+  - Serial: 668522
+    HubPort: 2
+    ScaleFactor: 500
+    ProsimDataRef: "G_MIP_BRAKE_PRESSURE"
 
-  - Serial: 13
-    HubPort: 14
-    ScaleFactor: 2.0
-    ProsimDataRef: "voltageReference2"
-    Connection: # ProSimConnect instance details
+  - Serial: 668015
+    HubPort: 5
+    ScaleFactor: 1090
+    ProsimDataRef: "G_OH_EGT"
+
+  - Serial: 668015
+    HubPort: 4
+    ScaleFactor: 4.5
+    ProsimDataRef: "G_OH_CREW_OXYGEN"
+

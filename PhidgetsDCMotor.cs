@@ -16,6 +16,15 @@ namespace Phidgets2Prosim
         double currentVel = 0;
         bool isPaused = false;
         int hubPort;
+        private bool isMotorMoving = false;
+        private System.Timers.Timer pulsateTimer;
+
+        public bool pulsateMotor { get; set; } = false;
+        public int PulsateMotorInterval { get; set; } = 550;
+        public int PulsateMotorIntervalPause { get; set; } = 200;
+
+        private int pulseIntervalPauseReduced = 0;
+
 
         DCMotor dcMotor = new DCMotor();
         public PhidgetsDCMotor(int hubPort, string prosimDatmRefFwd, string prosimDatmRefBwd, ProSimConnect connection)
@@ -59,19 +68,38 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(dataRef.name);
                 Debug.WriteLine(value);
 
-
+                pulseIntervalPauseReduced = PulsateMotorIntervalPause;
+                
                 if (dataRef.name == prosimDatmRefFwd && !isPaused)
                 {
                     if (value == true)
                     {
                         currentVel = targetVelFwd * -1;
+
+                        isMotorMoving = true;
                         dcMotor.TargetVelocity = currentVel;
+                        if (pulsateMotor) { 
+                            if (pulsateTimer == null)
+                            {
+                                pulsateTimer = new System.Timers.Timer();
+                                pulsateTimer.Interval = PulsateMotorInterval; 
+                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Start();
+                            }
+                        }
                     }
                     else
                     {
+                        isMotorMoving = false;
+                        if (pulsateTimer != null)
+                        {
+                            pulsateTimer.Stop();
+                            pulsateTimer.Dispose();
+                            pulsateTimer = null;
+                        }
                         currentVel = 0;
-                        dcMotor.TargetVelocity = 0.2;
-                        Thread.Sleep(100);
+                        dcMotor.TargetVelocity = 0.5;
+                        Thread.Sleep(200);
                         dcMotor.TargetVelocity = currentVel;
                     }
                 }
@@ -81,13 +109,31 @@ namespace Phidgets2Prosim
                     if (value == true)
                     {
                         currentVel = targetVelBwd;
+                        isMotorMoving = true;
                         dcMotor.TargetVelocity = currentVel;
+                        if (pulsateMotor)
+                        {
+                            if (pulsateTimer == null)
+                            {
+                                pulsateTimer = new System.Timers.Timer();
+                                pulsateTimer.Interval = PulsateMotorInterval;
+                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Start();
+                            }
+                        } 
                     }
                     else
                     {
+                        isMotorMoving = false;
+                        if (pulsateTimer != null)
+                        {
+                            pulsateTimer.Stop();
+                            pulsateTimer.Dispose();
+                            pulsateTimer = null;
+                        }
                         currentVel = 0;
-                        dcMotor.TargetVelocity = -0.2;
-                        Thread.Sleep(100);
+                        dcMotor.TargetVelocity = -0.5;
+                        Thread.Sleep(200);
                         dcMotor.TargetVelocity = currentVel;
                     }
                 }
@@ -145,5 +191,18 @@ namespace Phidgets2Prosim
             }
         }
 
+
+        private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (isMotorMoving)
+            {
+                dcMotor.TargetVelocity = 0;
+                await Task.Delay(pulseIntervalPauseReduced);
+                pulseIntervalPauseReduced -= 30;
+                if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0;}
+                dcMotor.TargetVelocity = currentVel;
+            }
+        }
     }
 }
+

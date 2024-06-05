@@ -58,7 +58,7 @@ namespace Phidgets2Prosim
         PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
-
+        private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
 
 
         PhidgestOutput digitalOutput_3_8;
@@ -80,7 +80,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private BindingList<PhidgetsInputInst> phidgetsInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
-
+        private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
 
 
         public Form1()
@@ -120,7 +120,7 @@ namespace Phidgets2Prosim
             Invoke(new MethodInvoker(LoadConfigIns));
         }
 
-        private void LoadConfigOuts()
+        private async void LoadConfigOuts()
         {
             try
             {
@@ -153,6 +153,10 @@ namespace Phidgets2Prosim
                     }
 
                 }
+
+                // wait for hubs to connect
+                var taskDelay = Task.Delay(3000);
+                await taskDelay;
 
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
@@ -304,6 +308,51 @@ namespace Phidgets2Prosim
                     }
                 }
 
+                // Buttons
+                if (config.PhidgetsButtonInstances != null)
+                {
+                    phidgetsButtonInstances = config.PhidgetsButtonInstances != null ? new BindingList<PhidgetsButtonInst>(config.PhidgetsButtonInstances) : null;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsButtonInstances)
+                    {
+                        try
+                        {
+                            PhidgetsButtonList.Add(new PhidgetsButton(
+                                idx, 
+                                instance.Name, 
+                                connection, 
+                                "system.switches." + instance.ProsimDataRef, 
+                                instance.InputValue, 
+                                instance.OffInputValue)
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config line");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+
+                    // Clear the FlowLayoutPanel before adding buttons
+                    buttonsFlowLayoutPanel.Controls.Clear();
+
+                    foreach (var app in PhidgetsButtonList)
+                    {
+                        Button appButton = new Button();
+                        appButton.Width = 160;
+                        appButton.Height = 45;
+                        appButton.Text = app.Name;
+                        appButton.MouseDown += new MouseEventHandler(app.StateChangeOn);
+                        appButton.MouseUp += new MouseEventHandler(app.StateChangeOff);
+                        app.ErrorLog += DisplayErrorLog;
+                        app.InfoLog += DisplayInfoLog;
+
+                        buttonsFlowLayoutPanel.Controls.Add(appButton);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -359,8 +408,6 @@ namespace Phidgets2Prosim
                     hub_motors = new PhidgetsHub();
                     hub_oh_1 = new PhidgetsHub();
 
-                    PhidgestOutput digitalOutput_3_0 = new PhidgestOutput(hubPedestalSlrNo, 3, 0, "system.gates.B_STANDBY_POWER", connection, true);
-                    PhidgestOutput digitalOutput_3_3 = new PhidgestOutput(hubPedestalSlrNo, 3, 3, "system.gates.B_AC_POWER", connection, true);
                     PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(hubPedestalSlrNo, 3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
                     PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(hubPedestalSlrNo, 4, 0, "system.indicators.I_FIRE_1", connection);
                     PhidgestOutput digitalOutput_4_1 = new PhidgestOutput(hubPedestalSlrNo, 4, 1, "system.indicators.I_FIRE_APU", connection);
@@ -454,7 +501,8 @@ namespace Phidgets2Prosim
                     //PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);
                     //PhidgetsVoltageOutput pvo3 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 4, 4.5, "system.gauge.G_OH_CREW_OXYGEN", connection);
 
-                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
+                    //                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
+                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.6, 0.6, 0.7, 0.5);
 
                     bldcm_00 = new PhidgetsBLDCMotor(0, connection, false, 0,
                         "system.gates.B_THROTTLE_SERVO_POWER_RIGHT",
@@ -622,6 +670,7 @@ namespace Phidgets2Prosim
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
+        public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
     }
 
     public class PhidgetsOutputInst : PhidgetDevice
@@ -660,6 +709,13 @@ namespace Phidgets2Prosim
     public class PhidgetsVoltageOutputInst : PhidgetDevice
     {
         public double ScaleFactor { get; set; }
+    }
+
+    public class PhidgetsButtonInst : PhidgetDevice
+    {
+        public string Name { get; set; }
+        public int InputValue { get; set; }
+        public int OffInputValue { get; set; } = 0;
     }
 
     public class GeneralConfig

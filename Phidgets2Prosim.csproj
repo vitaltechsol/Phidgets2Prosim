@@ -89,6 +89,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="PhidgetDevice.cs" />
+    <Compile Include="PhidgetsButton.cs" />
     <Compile Include="PhidgetsInput.cs" />
     <Compile Include="PhidgetsBLDCMotor.cs" />
     <Compile Include="PhidgetsDCMotor.cs" />

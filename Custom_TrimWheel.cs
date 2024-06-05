@@ -32,6 +32,7 @@ namespace Phidgets2Prosim
             double APOnClean)
         {
             dcm = new PhidgetsDCMotor(hubPort, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
+            dcm.pulsateMotor = true;
 
             DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
