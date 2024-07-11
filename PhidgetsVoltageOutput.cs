@@ -13,13 +13,15 @@ namespace Phidgets2Prosim
 
         VoltageOutput voltageOutput = new VoltageOutput();
         public double ScaleFactor { get; set; }
+        public double Offset { get; set; } = 0;
+
         double lastVoltage = 0;
-        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, double scaleFactor, string prosimDatmRef, ProSimConnect connection)
+
+        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, string prosimDatmRef, ProSimConnect connection)
         {
 
             try
             {
-                ScaleFactor = scaleFactor;
                 voltageOutput.DeviceSerialNumber = deviceSerialN; 
                 voltageOutput.HubPort = hubPort;
                 voltageOutput.IsRemote = true;
@@ -61,24 +63,29 @@ namespace Phidgets2Prosim
         {
             var value = Convert.ToInt64(dataRef.value);
             var convertedValue = value > 0 ? (value / ScaleFactor) : 0;
+            convertedValue = convertedValue + Offset;
+            if (convertedValue > 10 || convertedValue < -10)
+            {
+                Debug.WriteLine($"Voltage invalid: {dataRef.name} | value: {value} | Converted {convertedValue} | ScaleFactor: {ScaleFactor} | Offset {Offset}");
+                convertedValue = 0;
+            }
             if (lastVoltage != value)
             {
 
-              // //
                 try
                 {
-//                    Debug.WriteLine($"Voltage Changed: {dataRef.name} {value}");
-                    // Debug.WriteLine(value);
-                    // Debug.WriteLine(convertedValue);
-                    voltageOutput.Voltage = Convert.ToDouble(convertedValue);
-                    lastVoltage = value;
+                   Debug.WriteLine($"Voltage Changed: {dataRef.name} {value}");
+                   Debug.WriteLine(value);
+                   Debug.WriteLine(convertedValue);
+                   voltageOutput.Voltage = Convert.ToDouble(convertedValue);
+                
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("ERROR: " + value + " to " + convertedValue);
-                    Debug.WriteLine(ex.ToString());
+                    SendErrorLog("ERROR: " + value + " to " + convertedValue);
+                    SendErrorLog(ex.ToString());
                 }
-                
+                lastVoltage = value;
             }
         }
 
