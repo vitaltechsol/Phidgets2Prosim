@@ -77,6 +77,7 @@ namespace Phidgets2Prosim
             {
                 if (digitalInput.IsOpen == false)
                 {
+                    digitalInput.Close();
                     await Task.Run(() => digitalInput.Open(500));
                 }
             }

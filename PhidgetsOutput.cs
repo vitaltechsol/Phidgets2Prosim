@@ -123,6 +123,7 @@ namespace Phidgets2Prosim
         {
             try
             {
+                digitalOutput.Close();
                 await Task.Run(() => digitalOutput.Open(500));
             }
             catch (Exception ex)

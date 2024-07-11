@@ -43,10 +43,10 @@ namespace Phidgets2Prosim
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabButtons = new System.Windows.Forms.TabPage();
+            this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
-            this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -181,6 +181,13 @@ namespace Phidgets2Prosim
             this.tabButtons.Text = "Buttons";
             this.tabButtons.UseVisualStyleBackColor = true;
             // 
+            // buttonsFlowLayoutPanel
+            // 
+            this.buttonsFlowLayoutPanel.Location = new System.Drawing.Point(6, 6);
+            this.buttonsFlowLayoutPanel.Name = "buttonsFlowLayoutPanel";
+            this.buttonsFlowLayoutPanel.Size = new System.Drawing.Size(614, 267);
+            this.buttonsFlowLayoutPanel.TabIndex = 0;
+            // 
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
@@ -197,7 +204,7 @@ namespace Phidgets2Prosim
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v0.1.0";
+            this.label1.Text = "v0.2.0";
             // 
             // lblPsIP
             // 
@@ -207,13 +214,6 @@ namespace Phidgets2Prosim
             this.lblPsIP.Size = new System.Drawing.Size(51, 13);
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
-            // 
-            // buttonsFlowLayoutPanel
-            // 
-            this.buttonsFlowLayoutPanel.Location = new System.Drawing.Point(6, 6);
-            this.buttonsFlowLayoutPanel.Name = "buttonsFlowLayoutPanel";
-            this.buttonsFlowLayoutPanel.Size = new System.Drawing.Size(614, 267);
-            this.buttonsFlowLayoutPanel.TabIndex = 0;
             // 
             // Form1
             // 
