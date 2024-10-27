@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Phidgets2Prosim
 {
 
-    internal class PhidgetsMultiInput
+    internal class PhidgetsMultiInput : PhidgetDevice
     {
         string prosimDataRef;
         ProSimConnect connection;
@@ -42,29 +42,31 @@ namespace Phidgets2Prosim
             {
                 multiInputs[index] = new PhidgetsMultiInputItem(serial, hubPort, channel, index);
                 multiInputs[index].InputChanged += HandleInputChanged;
+                multiInputs[index].ErrorLog += SendErrorLog;
+                multiInputs[index].InfoLog += SendInfoLog;
                 multiInputs[index].Open();
                 index++;
             }
         }
         private void HandleInputChanged(object sender, InputChangedEventArgs e)
         {
-                // Event handler to receive input change
-                int index = e.Index;
-                bool state = e.State;
+            // Event handler to receive input change
+            int index = e.Index;
+            bool state = e.State;
 
-                // Update value based on index
-                allValues = UpdateStringAtIndex(allValues, index, state);
-                Debug.WriteLine($"State received: {e.State} new values {allValues}");
+            // Update value based on index
+            allValues = UpdateStringAtIndex(allValues, index, state);
+            SendInfoLog($"State received: {e.State} new values {allValues}");
 
 
             //Update ref
             int dataRefVal;
-                if (!inputsRefs.TryGetValue(allValues, out dataRefVal))
-                {
-                    // the key isn't in the dictionary.
-                    return; 
-                }
-            // Debug.WriteLine($"Update values: {allValues} REF: {dataRefVal} VAL: {dataRefVal}");
+            if (!inputsRefs.TryGetValue(allValues, out dataRefVal))
+            {
+                // the key isn't in the dictionary.
+                return; 
+            }
+            SendInfoLog($"Update values: {allValues} REF: {dataRefVal} VAL: {dataRefVal}");
             UpdateRef(dataRefVal);
         }
 
@@ -94,13 +96,13 @@ namespace Phidgets2Prosim
             try
             {
                 dataRef.value = inputValue;
-                Debug.WriteLine($"**** Multi Input State Changed {prosimDataRef} | val: {inputValue}");
+                SendInfoLog($"--> Multi - {prosimDataRef} | val: {inputValue}");
 
             }
             catch (System.Exception ex)
             {
-                Debug.WriteLine("Error: Multi Input " + prosimDataRef + " - Value:" + inputValue);
-                Debug.WriteLine(ex.ToString());
+                //SendErrorLog("Error: Multi Input " + prosimDataRef + " - Value:" + inputValue);
+                //SendErrorLog(ex.ToString());
             }
         }
 
@@ -124,7 +126,7 @@ namespace Phidgets2Prosim
             Index = index;
             this.hubPort = hubPort;
             this.serial = serial;
-        }
+                    }
 
         public async void Open()
         {
@@ -146,7 +148,7 @@ namespace Phidgets2Prosim
 
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
-            Debug.WriteLine("**** Multi Channel Changed. Channel: " + Channel + " State:" + e.State);
+            SendInfoLog($"--> Multi [{HubPort}] Ch {Channel}: {e.State} | Ref: {ProsimDataRef}");
             State = e.State;
             InputChanged.Invoke(this, new InputChangedEventArgs(Index, Channel, State));
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using ProSimSDK;
 
 namespace Phidgets2Prosim
@@ -19,6 +20,7 @@ namespace Phidgets2Prosim
         public void SendErrorLog(string logMessage)
         {
             ErrorLog?.Invoke(logMessage);
+            Debug.WriteLine(logMessage);
         }
 
         public event Action<string> InfoLog;

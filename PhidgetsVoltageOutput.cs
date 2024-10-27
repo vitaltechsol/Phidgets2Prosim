@@ -48,7 +48,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: " + ex.ToString());
+                SendErrorLog("PhidgetsVoltageOutput ERROR: " + ex.ToString());
             }
         }
 
@@ -67,7 +67,6 @@ namespace Phidgets2Prosim
             {
                 SendErrorLog("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
                 SendErrorLog(ex.ToString());
-
                 Debug.WriteLine("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
                 Debug.WriteLine(ex.ToString());
             }
@@ -79,13 +78,13 @@ namespace Phidgets2Prosim
             convertedValue = convertedValue + Offset;
             if (convertedValue > 10 || convertedValue < -10)
             {
-                Debug.WriteLine($"Voltage invalid: {name} | value: {value} | Converted {convertedValue} | ScaleFactor: {ScaleFactor} | Offset {Offset}");
+                SendErrorLog($"Voltage invalid: {name} | value: {value} | Converted {convertedValue} | ScaleFactor: {ScaleFactor} | Offset {Offset}");
                 convertedValue = 0;
             }
 
             if (targetPosition != convertedValue)
             {
-                Debug.WriteLine($"Voltage Changed: {name} {value} new target {convertedValue}");
+                // Debug.WriteLine($"Voltage Changed: {name} {value} new target {convertedValue}");
                 targetPosition = convertedValue;
                 if (!timer.Enabled)
                 {
@@ -106,7 +105,7 @@ namespace Phidgets2Prosim
         {
             try
             {
-                Debug.WriteLine($"updating position to {convertedValue}");
+                // Debug.WriteLine($"updating position to {convertedValue}");
                 voltageOutput.Voltage = Convert.ToDouble(convertedValue);
 
             }
@@ -127,7 +126,7 @@ namespace Phidgets2Prosim
                 if ((currentPosition >= targetPosition))
                 {
                     currentPosition = targetPosition;
-                    Debug.WriteLine($"Target position, Stopping: {currentPosition} to {targetPosition}");
+                    // Debug.WriteLine($"Target position, Stopping: {currentPosition} to {targetPosition}");
                     timer.Stop();
                 }
             } else
@@ -136,12 +135,12 @@ namespace Phidgets2Prosim
                 if ((currentPosition <= targetPosition))
                 {
                     currentPosition = targetPosition;
-                    Debug.WriteLine($"Target position, Stopping: {currentPosition} to {targetPosition}");
+                    // Debug.WriteLine($"Target position, Stopping: {currentPosition} to {targetPosition}");
                     timer.Stop();
                 }
             }
 
-            Debug.WriteLine($"Timer position set at {currentPosition} to {targetPosition}");
+            // Debug.WriteLine($"Timer position set at {currentPosition} to {targetPosition}");
             // Update the needle position here
             UpdateNeedlePosition(currentPosition);
         }
