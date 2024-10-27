@@ -10,6 +10,9 @@ namespace Phidgets2Prosim
         DigitalInput digitalInput = new DigitalInput();
 
         public int InputValue { get; set; }
+        public string ProsimDataRef2 { get; set; } = null;
+        public string ProsimDataRef3 { get; set; } = null;
+
         public int OffInputValue { get; set; } = 0;
 
         public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
@@ -29,22 +32,19 @@ namespace Phidgets2Prosim
             digitalInput.StateChange += StateChange;
             digitalInput.DeviceSerialNumber = serial;
             SendInfoLog("->****Attached " + prosimDataRef + " to Ch:" + channel);
-
             Open();
         }
-
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
         {
             // Set ProSim dataref
             SendInfoLog($"--> [{HubPort}] Ch {Channel}: {e.State} | Ref: {ProsimDataRef} - inputValue: {InputValue} - offInputValue {OffInputValue}");
-            
+
             if (ProsimDataRef == "test")
             {
                 return;
             }
 
-            DataRef dataRef = new DataRef(ProsimDataRef, 100, Connection);
-
+            DataRef dataRef = new DataRef(ProsimDataRef, 500, Connection);
             try
             {
                 if (e.State == true)
@@ -60,10 +60,9 @@ namespace Phidgets2Prosim
             {
                 SendErrorLog("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
                 SendErrorLog(ex.ToString());
-                Debug.WriteLine("Error: Input " + ProsimDataRef + " - Value:" + InputValue);
-                Debug.WriteLine(ex.ToString());
             }
         }
+
 
         public void Close()
         {
@@ -77,17 +76,16 @@ namespace Phidgets2Prosim
             {
                 if (digitalInput.IsOpen == false)
                 {
-                    digitalInput.Close();
-                    await Task.Run(() => digitalInput.Open(500));
+                    digitalInput.Open(500);
+                } else
+                {
+                    SendErrorLog("Error: --> Channel (ALREADY OPEN)" + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
                 }
             }
             catch (System.Exception ex)
             {
                 SendErrorLog("Error: --> Channel " + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
                 SendErrorLog(ex.ToString());
-
-                Debug.WriteLine("Error: --> Channel " + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
-                Debug.WriteLine(ex.ToString());
             }
         }
 
