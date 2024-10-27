@@ -23,10 +23,8 @@ namespace Phidgets2Prosim
 
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
-      
 
         PhidgetsInput[] phidgetsInputPreview = new PhidgetsInput[360];
-
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
         PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
@@ -45,8 +43,12 @@ namespace Phidgets2Prosim
         PhidgetsMultiInput mu2;
         PhidgetsMultiInput mu3;
         PhidgetsMultiInput mu4;
+        PhidgetsMultiInput mu5;
+        PhidgetsMultiInput mu6;
+        PhidgetsMultiInput mu7;
+        PhidgetsMultiInput mu8;
 
-      //  static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
+        //  static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
 
         bool simIsPaused = false;
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
@@ -59,7 +61,9 @@ namespace Phidgets2Prosim
         public Form1()
         {
             InitializeComponent();
-            this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.Shown += new System.EventHandler(Form1_Shown);
+            this.FormClosed += new FormClosedEventHandler(Form1_Closed);
+
         }
 
         async void connectToProSim(string prosimIP)
@@ -180,6 +184,10 @@ namespace Phidgets2Prosim
                                 instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
                             phidgetsGate[idx].ErrorLog += DisplayErrorLog;
                             phidgetsGate[idx].InfoLog += DisplayInfoLog;
+                            if (instance.Inverse == true)
+                            {
+                                phidgetsGate[idx].Inverse = true;
+                            }
                             if (instance.OnDelay != null && instance.OnDelay > 0)
                             {
                                 phidgetsGate[idx].Delay = Convert.ToInt32(instance.OnDelay);
@@ -233,7 +241,7 @@ namespace Phidgets2Prosim
 
 
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay(4000);
+                var taskDelay2 = Task.Delay(3000);
                 await taskDelay2;
 
                 connectToProSim(config.GeneralConfig.ProSimIP);
@@ -261,7 +269,7 @@ namespace Phidgets2Prosim
                     .Build();
 
                 // Wait before starting
-                var taskDelay = Task.Delay(3000);
+                var taskDelay = Task.Delay(2000);
                 await taskDelay;
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
@@ -284,6 +292,14 @@ namespace Phidgets2Prosim
                                 "system.switches." + instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
                             phidgetsInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsInput[idx].InfoLog += DisplayInfoLog;
+                            if (instance.ProsimDataRef2 != null)
+                            {
+                                phidgetsInput[idx].ProsimDataRef2 = instance.ProsimDataRef2;
+                            }
+                            if (instance.ProsimDataRef3 != null)
+                            {
+                                phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -339,6 +355,115 @@ namespace Phidgets2Prosim
                     }
                 }
 
+                var hubOH_2_SrlNo = 668015;
+                var hubMip_1_SrlNo = 668522;
+
+                muAPU = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 14, 15 }, connection, "system.switches.S_OH_APU",
+                new Dictionary<string, int>()
+                {
+                            {"01", 2},
+                            {"10", 0},
+                            {"00", 1}
+                });
+
+                mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
+                    new Dictionary<string, int>()
+                    {
+                            {"11", 0},
+                            {"10", 2},
+                            {"00", 1},
+                            {"01", 3}
+                    });
+
+                mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
+                    new Dictionary<string, int>()
+                    {
+                            {"11", 0},
+                            {"10", 2},
+                            {"00", 1},
+                            {"01", 3}
+                    });
+
+                mu3 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 8, 9, 10 }, connection, "system.switches.S_OH_ENG_START_R",
+                    new Dictionary<string, int>()
+                    {
+                            {"000", 0},
+                            {"011", 1},
+                            {"010", 2},
+                            {"100", 3}
+                    });
+
+                mu4 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 11, 12, 13 }, connection, "system.switches.S_OH_ENG_START_L",
+                    new Dictionary<string, int>()
+                    {
+                            {"000", 0},
+                            {"011", 1},
+                            {"010", 2},
+                            {"100", 3}
+                    });
+
+                mu5 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 4, 5, 6 }, connection, "system.switches.S_MIP_N1_SET",
+                    new Dictionary<string, int>()
+                    {
+                            {"100", 2},
+                            {"010", 1},
+                            {"110", 0},
+                            {"001", 3}
+                    });
+
+                mu6 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 7, 8, 9 }, connection, "system.switches.S_MIP_N1_SET_VALUE",
+                    new Dictionary<string, int>()
+                    {
+                            {"001", 4},
+                            {"101", 2},
+                            {"111", 0},
+                            {"110", 1},
+                            {"010", 3}
+                    });
+
+                mu7 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 10, 11, 12 }, connection, "system.switches.S_MIP_SPD_REF_VALUE",
+                    new Dictionary<string, int>()
+                    {
+                            {"001", 4},
+                            {"101", 2},
+                            {"111", 0},
+                            {"110", 1},
+                            {"010", 3}
+                    });
+
+                mu8 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 13, 14, 15 }, connection, "system.switches.S_MIP_SPDREF",
+                    new Dictionary<string, int>()
+                    {
+                            {"100", 0},
+                            {"010", 1},
+                            {"110", 2},
+                            {"001", 3},
+                            {"101", 4},
+                            {"011", 5},
+                            {"111", 6}
+                    });
+
+
+                muAPU.ErrorLog += DisplayErrorLog;
+                muAPU.InfoLog += DisplayInfoLog;
+                mu1.ErrorLog += DisplayErrorLog;
+                mu1.InfoLog += DisplayInfoLog;
+                mu2.ErrorLog += DisplayErrorLog;
+                mu2.InfoLog += DisplayInfoLog;
+                mu3.ErrorLog += DisplayErrorLog;
+                mu3.InfoLog += DisplayInfoLog;
+                mu4.ErrorLog += DisplayErrorLog;
+                mu4.InfoLog += DisplayInfoLog;
+                mu5.ErrorLog += DisplayErrorLog;
+                mu5.InfoLog += DisplayInfoLog;
+                mu6.ErrorLog += DisplayInfoLog;
+                mu6.InfoLog += DisplayInfoLog;
+                mu7.ErrorLog += DisplayErrorLog;
+                mu7.InfoLog += DisplayInfoLog;
+                mu8.ErrorLog += DisplayErrorLog;
+                mu8.InfoLog += DisplayInfoLog;
+                    
+
             }
             catch (Exception ex)
             {
@@ -356,8 +481,7 @@ namespace Phidgets2Prosim
         private void AddAllPhidgets()
         {
 
-            var hubPedestalSlrNo = 618534;
-            var hubOH_2_SrlNo = 668015;
+            //var hubPedestalSlrNo = 618534;
 
             //Possible code to display inputs
             //var oh1 = 668659;
@@ -380,116 +504,7 @@ namespace Phidgets2Prosim
             {
                 if (!phidgetsAdded)
                 {
-
-                    var ph = new PhidgetsHub[5];
-                    var mip1 = ph[0];
-                    var mip2 = ph[1];
-                    var hub_ped = ph[2];
-                    var hub_motors = ph[3];
-                    var hub_oh_1 = ph[4];
-
-                    mip1 = new PhidgetsHub();
-                    mip2 = new PhidgetsHub();
-                    hub_ped = new PhidgetsHub();
-                    hub_motors = new PhidgetsHub();
-                    hub_oh_1 = new PhidgetsHub();
-
-                    PhidgestOutput digitalOutput_3_7 = new PhidgestOutput(hubPedestalSlrNo, 3, 7, "system.indicators.I_MIP_PARKING_BRAKE", connection);
-                    PhidgestOutput digitalOutput_4_0 = new PhidgestOutput(hubPedestalSlrNo, 4, 0, "system.indicators.I_FIRE_1", connection);
-                    PhidgestOutput digitalOutput_4_1 = new PhidgestOutput(hubPedestalSlrNo, 4, 1, "system.indicators.I_FIRE_APU", connection);
-                    PhidgestOutput digitalOutput_4_2 = new PhidgestOutput(hubPedestalSlrNo, 4, 2, "system.indicators.I_FIRE_2", connection);
-                    PhidgestOutput digitalOutput_4_3 = new PhidgestOutput(hubPedestalSlrNo, 4, 3, "system.indicators.I_FIRE_L_BOTTLE_DISCHARGE", connection);
-                    PhidgestOutput digitalOutput_4_4 = new PhidgestOutput(hubPedestalSlrNo, 4, 4, "system.indicators.I_FIRE_R_BOTTLE_DISCHARGE", connection);
-                    PhidgestOutput digitalOutput_4_5 = new PhidgestOutput(hubPedestalSlrNo, 4, 5, "system.indicators.I_FIRE_TEST_APU", connection);
-                    PhidgestOutput digitalOutput_4_6 = new PhidgestOutput(hubPedestalSlrNo, 4, 6, "system.indicators.I_FIRE_APU_DET_INOPT", connection);
-
-                    PhidgestOutput digitalOutput_4_8 = new PhidgestOutput(hubPedestalSlrNo, 4, 8, "system.indicators.B_FIRE_HANDLE_LEFT_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_10 = new PhidgestOutput(hubPedestalSlrNo, 4, 10, "system.indicators.B_FIRE_HANDLE_RIGHT_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_11 = new PhidgestOutput(hubPedestalSlrNo, 4, 11, "system.indicators.I_FIRE_ENG_1_OVT", connection);
-                    PhidgestOutput digitalOutput_4_12 = new PhidgestOutput(hubPedestalSlrNo, 4, 12, "system.indicators.I_FIRE_ENG_2_OVT", connection);
-                    PhidgestOutput digitalOutput_4_13 = new PhidgestOutput(hubPedestalSlrNo, 4, 13, "system.indicators.I_FIRE_WHEEL_WELL_OVT", connection);
-                    PhidgestOutput digitalOutput_4_14 = new PhidgestOutput(hubPedestalSlrNo, 4, 14, "system.indicators.B_FIRE_HANDLE_APU_LOCK", connection, true);
-                    PhidgestOutput digitalOutput_4_15 = new PhidgestOutput(hubPedestalSlrNo, 4, 15, "system.indicators.I_FIRE_FAULT", connection);
-
-                    PhidgestOutput digitalOutput_5_01 = new PhidgestOutput(hubPedestalSlrNo, 5, 0, "system.indicators.I_ASP_VHF_1_SEND", connection);
-                    PhidgestOutput digitalOutput_5_02 = new PhidgestOutput(hubPedestalSlrNo, 5, 1, "system.indicators.I_ASP_VHF_2_SEND", connection);
-
-                    //digitalInput_2_00 = new PhidgetsInput(hubPedestalSlrNo, 2, 0, connection, "system.switches.S_FIRE_FAULT_TEST", 1);
-                    //digitalInput_2_01 = new PhidgetsInput(hubPedestalSlrNo, 2, 1, connection, "system.switches.S_FIRE_FAULT_TEST", 2);
-              
-                    
-                    //digitalInput_2_02 = new PhidgetsInput(hubPedestalSlrNo, 2, 2, connection, "system.switches.S_FIRE_HANDLE1", 1);
-                    //digitalInput_2_03 = new PhidgetsInput(hubPedestalSlrNo, 2, 3, connection, "system.switches.S_FIRE_PULL1", 1);
-                    //digitalInput_2_04 = new PhidgetsInput(hubPedestalSlrNo, 2, 4, connection, "system.switches.S_FIRE_HANDLE1", 2);
-                    //digitalInput_2_08 = new PhidgetsInput(hubPedestalSlrNo, 2, 8, connection, "system.switches.S_FIRE_HANDLE_APU", 1);
-                    //digitalInput_2_09 = new PhidgetsInput(hubPedestalSlrNo, 2, 9, connection, "system.switches.S_FIRE_PULL_APU", 1);
-                    //digitalInput_2_10 = new PhidgetsInput(hubPedestalSlrNo, 2, 10, connection, "system.switches.S_FIRE_HANDLE_APU", 2);
-                    //digitalInput_2_11 = new PhidgetsInput(hubPedestalSlrNo, 2, 11, connection, "system.switches.S_FIRE_HANDLE2", 1);
-                    //digitalInput_2_12 = new PhidgetsInput(hubPedestalSlrNo, 2, 12, connection, "system.switches.S_FIRE_PULL2", 1);
-                    //digitalInput_2_13 = new PhidgetsInput(hubPedestalSlrNo, 2, 13, connection, "system.switches.S_FIRE_HANDLE2", 2);
-
-                 //   digitalInput1_0 = new PhidgetsInput(hubPedestalSlrNo, 1, 0, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF1", 1);
-                //    digitalInput1_1 = new PhidgetsInput(hubPedestalSlrNo, 1, 1, connection, "system.switches.S_THROTTLE_FUEL_CUTOFF2", 1);
-                    //digitalInput1_2 = new PhidgetsInput(hubPedestalSlrNo, 1, 2, connection, "system.switches.S_THROTTLE_AT_DISENGAGE", 1);
-                    //digitalInput1_3 = new PhidgetsInput(hubPedestalSlrNo, 1, 3, connection, "system.switches.S_THROTTLE_AT_DISENGAGE_2", 1);
-                    //digitalInput1_4 = new PhidgetsInput(hubPedestalSlrNo, 1, 4, connection, "system.switches.S_THROTTLE_TOGA", 1);
-
-                    //digitalInput1_08 = new PhidgetsInput(hubPedestalSlrNo, 1, 08, connection, "system.switches.S_AILERON_TRIM", 1);
-                    //digitalInput1_09 = new PhidgetsInput(hubPedestalSlrNo, 1, 09, connection, "system.switches.S_AILERON_TRIM", 2);
-
-                    //digitalInput1_12 = new PhidgetsInput(hubPedestalSlrNo, 1, 12, connection, "system.switches.S_ASP_VHF_1_SEND", 1);
-                    //digitalInput1_13 = new PhidgetsInput(hubPedestalSlrNo, 1, 13, connection, "system.switches.S_ASP_VHF_2_SEND", 1);
-
-                    muAPU = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 14, 15 }, connection, "system.switches.S_OH_APU",
-                    new Dictionary<string, int>()
-                    {
-                            {"01", 2},
-                            {"10", 0},
-                            {"00", 1}
-                    });
-
-                    mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
-                        new Dictionary<string, int>()
-                        {
-                            {"11", 0},
-                            {"10", 2},
-                            {"00", 1},
-                            {"01", 3}
-                        });
-
-                    mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
-                        new Dictionary<string, int>()
-                        {
-                            {"11", 0},
-                            {"10", 2},
-                            {"00", 1},
-                            {"01", 3}
-                        });
-
-                    mu3 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 8, 9, 10 }, connection, "system.switches.S_OH_ENG_START_R",
-                        new Dictionary<string, int>()
-                        {
-                            {"000", 0},
-                            {"011", 1},
-                            {"010", 2},
-                            {"100", 3}
-                        });
-
-                    mu4 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 11, 12, 13 }, connection, "system.switches.S_OH_ENG_START_L",
-                        new Dictionary<string, int>()
-                        {
-                            {"000", 0},
-                            {"011", 1},
-                            {"010", 2},
-                            {"100", 3}
-                        });
-
-
-                    //PhidgetsVoltageOutput pvo = new PhidgetsVoltageOutput(hubMipSlrNo, 2, 500, "system.gauge.G_MIP_BRAKE_PRESSURE", connection);
-                    //PhidgetsVoltageOutput pvo2 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 5, 1090, "system.gauge.G_OH_EGT", connection);
-                    //PhidgetsVoltageOutput pvo3 = new PhidgetsVoltageOutput(hubOH_2_SrlNo, 4, 4.5, "system.gauge.G_OH_CREW_OXYGEN", connection);
-
-                    //                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
+                    // trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.5, 0.5, 0.7, 0.3);
                     trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.6, 0.6, 0.7, 0.5);
 
                     bldcm_00 = new PhidgetsBLDCMotor(0, connection, false, 0,
@@ -643,6 +658,12 @@ namespace Phidgets2Prosim
 
             DataRef dataRef = new DataRef("simulator.pause", 100, connection);
             dataRef.onDataChange += DataRef_onDataChange;
+
+        }
+
+        private void Form1_Closed(object sender, EventArgs e)
+        {
+            Debug.WriteLine("closed");
         }
     }
 
@@ -682,6 +703,9 @@ namespace Phidgets2Prosim
     {
         public int InputValue { get; set; }
         public int OffInputValue { get; set; } = 0;
+        public string ProsimDataRef2 { get; set; } = null;
+        public string ProsimDataRef3 { get; set; } = null;
+
     }
 
 
