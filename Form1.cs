@@ -30,6 +30,8 @@ namespace Phidgets2Prosim
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
+        // Define a dictionary to store custom colors for tabs
+        private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
 
 
         PhidgestOutput digitalOutput_3_8;
@@ -47,6 +49,8 @@ namespace Phidgets2Prosim
         PhidgetsMultiInput mu6;
         PhidgetsMultiInput mu7;
         PhidgetsMultiInput mu8;
+        PhidgetsMultiInput mu9;
+        PhidgetsMultiInput mu10;
 
         //  static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
 
@@ -63,7 +67,6 @@ namespace Phidgets2Prosim
             InitializeComponent();
             this.Shown += new System.EventHandler(Form1_Shown);
             this.FormClosed += new FormClosedEventHandler(Form1_Closed);
-
         }
 
         async void connectToProSim(string prosimIP)
@@ -118,6 +121,7 @@ namespace Phidgets2Prosim
                         try
                         {
                             Net.AddServer(hub, hub, 5661, "", 0);
+                            Net.EnableServer(hub);
                             DisplayInfoLog("Hub Added: " + hub);
                         }
                         catch (Exception ex)
@@ -357,14 +361,15 @@ namespace Phidgets2Prosim
 
                 var hubOH_2_SrlNo = 668015;
                 var hubMip_1_SrlNo = 668522;
+                var hubMip_2_SrlNo = 664861;
 
                 muAPU = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 14, 15 }, connection, "system.switches.S_OH_APU",
-                new Dictionary<string, int>()
-                {
-                            {"01", 2},
-                            {"10", 0},
-                            {"00", 1}
-                });
+                    new Dictionary<string, int>()
+                    {
+                                {"01", 2},
+                                {"10", 0},
+                                {"00", 1}
+                    });
 
                 mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
                     new Dictionary<string, int>()
@@ -443,6 +448,24 @@ namespace Phidgets2Prosim
                             {"111", 6}
                     });
 
+                mu9 = new PhidgetsMultiInput(hubMip_2_SrlNo, 2, new int[5] { 2, 3, 4, 5, 6 }, connection, "system.switches.S_MIP_AUTOBRAKE",
+                    new Dictionary<string, int>()
+                    {
+                            {"00000", 0},
+                            {"10000", 1},
+                            {"01000", 2},
+                            {"00100", 3},
+                            {"00010", 4},
+                            {"00001", 5},
+                    });
+
+                mu10 = new PhidgetsMultiInput(hubMip_2_SrlNo, 1, new int[2] { 8, 9 }, connection, "system.switches.S_MIP_GEAR",
+                    new Dictionary<string, int>()
+                                {
+                            {"00", 0},
+                            {"10", 2},
+                            {"01", 1},
+                    });
 
                 muAPU.ErrorLog += DisplayErrorLog;
                 muAPU.InfoLog += DisplayInfoLog;
@@ -462,7 +485,10 @@ namespace Phidgets2Prosim
                 mu7.InfoLog += DisplayInfoLog;
                 mu8.ErrorLog += DisplayErrorLog;
                 mu8.InfoLog += DisplayInfoLog;
-                    
+                mu9.ErrorLog += DisplayErrorLog;
+                mu9.InfoLog += DisplayInfoLog;
+                mu10.ErrorLog += DisplayErrorLog;
+                mu10.InfoLog += DisplayInfoLog;
 
             }
             catch (Exception ex)
@@ -584,7 +610,8 @@ namespace Phidgets2Prosim
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-
+            tabGroups.DrawMode = TabDrawMode.OwnerDrawFixed;
+            tabGroups.DrawItem += MyTabControl_DrawItem;
         }
 
 
@@ -629,8 +656,30 @@ namespace Phidgets2Prosim
             else
             {
                 // If we're on the UI thread, directly update the TextBox
+                txtLog.ForeColor = Color.Red;
+                tabLog.BackColor = Color.Red;
+                txtLog.Focus();
+                tabGroups.SelectedIndex = 5;
+                tabColors[5] = Color.Red; // Set the color for the second tab (index 1) to red
+                tabGroups.Invalidate(); // Trigger a redraw to apply the color
                 txtLog.AppendText(DateTime.Now.ToLongTimeString() + " - ** ERROR ** : " + errorMessage + Environment.NewLine);
             }
+        }
+
+        private void MyTabControl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            var currentTab = tabControl.TabPages[e.Index];
+
+            // Check if a custom color is set for the tab
+            Color tabColor = tabColors.ContainsKey(e.Index) ? tabColors[e.Index] : Color.Black;
+
+            //// Draw the background (optional)
+            //e.Graphics.FillRectangle(new SolidBrush(Color.White), e.Bounds);
+
+            // Draw the tab text with the specified color
+            TextRenderer.DrawText(e.Graphics, currentTab.Text, tabControl.Font,
+                                  e.Bounds, tabColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
         private async void DisplayInfoLog(string infoMessage)
@@ -664,6 +713,21 @@ namespace Phidgets2Prosim
         private void Form1_Closed(object sender, EventArgs e)
         {
             Debug.WriteLine("closed");
+        }
+
+        private void btnLogOk_Click(object sender, EventArgs e)
+        {
+            txtLog.ForeColor = Color.Black;
+            tabLog.BackColor = Color.White;
+            tabColors[5] = Color.Black;
+        }
+
+        private void btnLogClear_Click(object sender, EventArgs e)
+        {
+            txtLog.ForeColor = Color.Black;
+            tabLog.BackColor = Color.White;
+            tabColors[5] = Color.Black;
+            txtLog.Text = string.Empty;
         }
     }
 

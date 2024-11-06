@@ -40,13 +40,15 @@ namespace Phidgets2Prosim
             this.dataGridViewGates = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.txtLog = new System.Windows.Forms.TextBox();
             this.tabButtons = new System.Windows.Forms.TabPage();
             this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.tabLog = new System.Windows.Forms.TabPage();
+            this.txtLog = new System.Windows.Forms.TextBox();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
+            this.btnLogOk = new System.Windows.Forms.Button();
+            this.btnLogClear = new System.Windows.Forms.Button();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -56,8 +58,8 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).BeginInit();
-            this.tabPage1.SuspendLayout();
             this.tabButtons.SuspendLayout();
+            this.tabLog.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabGroups
@@ -66,8 +68,8 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabPage2);
             this.tabGroups.Controls.Add(this.tabPage3);
             this.tabGroups.Controls.Add(this.tabPage4);
-            this.tabGroups.Controls.Add(this.tabPage1);
             this.tabGroups.Controls.Add(this.tabButtons);
+            this.tabGroups.Controls.Add(this.tabLog);
             this.tabGroups.Location = new System.Drawing.Point(16, 73);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.SelectedIndex = 0;
@@ -150,26 +152,6 @@ namespace Phidgets2Prosim
             this.dataGridViewVoltageOut.Size = new System.Drawing.Size(618, 267);
             this.dataGridViewVoltageOut.TabIndex = 3;
             // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.txtLog);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(630, 279);
-            this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "Log";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // txtLog
-            // 
-            this.txtLog.Location = new System.Drawing.Point(6, 6);
-            this.txtLog.Multiline = true;
-            this.txtLog.Name = "txtLog";
-            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(618, 267);
-            this.txtLog.TabIndex = 0;
-            // 
             // tabButtons
             // 
             this.tabButtons.Controls.Add(this.buttonsFlowLayoutPanel);
@@ -187,6 +169,28 @@ namespace Phidgets2Prosim
             this.buttonsFlowLayoutPanel.Name = "buttonsFlowLayoutPanel";
             this.buttonsFlowLayoutPanel.Size = new System.Drawing.Size(614, 267);
             this.buttonsFlowLayoutPanel.TabIndex = 0;
+            // 
+            // tabLog
+            // 
+            this.tabLog.Controls.Add(this.btnLogClear);
+            this.tabLog.Controls.Add(this.btnLogOk);
+            this.tabLog.Controls.Add(this.txtLog);
+            this.tabLog.Location = new System.Drawing.Point(4, 22);
+            this.tabLog.Name = "tabLog";
+            this.tabLog.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLog.Size = new System.Drawing.Size(630, 279);
+            this.tabLog.TabIndex = 2;
+            this.tabLog.Text = "Log";
+            this.tabLog.UseVisualStyleBackColor = true;
+            // 
+            // txtLog
+            // 
+            this.txtLog.Location = new System.Drawing.Point(6, 6);
+            this.txtLog.Multiline = true;
+            this.txtLog.Name = "txtLog";
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLog.Size = new System.Drawing.Size(618, 237);
+            this.txtLog.TabIndex = 0;
             // 
             // connectionStatusLabel
             // 
@@ -215,6 +219,26 @@ namespace Phidgets2Prosim
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
             // 
+            // btnLogOk
+            // 
+            this.btnLogOk.Location = new System.Drawing.Point(6, 250);
+            this.btnLogOk.Name = "btnLogOk";
+            this.btnLogOk.Size = new System.Drawing.Size(75, 23);
+            this.btnLogOk.TabIndex = 1;
+            this.btnLogOk.Text = "OK";
+            this.btnLogOk.UseVisualStyleBackColor = true;
+            this.btnLogOk.Click += new System.EventHandler(this.btnLogOk_Click);
+            // 
+            // btnLogClear
+            // 
+            this.btnLogClear.Location = new System.Drawing.Point(87, 250);
+            this.btnLogClear.Name = "btnLogClear";
+            this.btnLogClear.Size = new System.Drawing.Size(75, 23);
+            this.btnLogClear.TabIndex = 2;
+            this.btnLogClear.Text = "Clear";
+            this.btnLogClear.UseVisualStyleBackColor = true;
+            this.btnLogClear.Click += new System.EventHandler(this.btnLogClear_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,9 +260,9 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).EndInit();
             this.tabPage4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).EndInit();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.tabButtons.ResumeLayout(false);
+            this.tabLog.ResumeLayout(false);
+            this.tabLog.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -255,7 +279,7 @@ namespace Phidgets2Prosim
         private Label connectionStatusLabel;
         private DataGridView dataGridViewOutputs;
         private DataGridView dataGridViewInputs;
-        private TabPage tabPage1;
+        private TabPage tabLog;
         private TextBox txtLog;
         private Label label1;
         private Label lblPsIP;
@@ -265,5 +289,7 @@ namespace Phidgets2Prosim
         private DataGridView dataGridViewVoltageOut;
         private TabPage tabButtons;
         private FlowLayoutPanel buttonsFlowLayoutPanel;
+        private Button btnLogOk;
+        private Button btnLogClear;
     }
 }
