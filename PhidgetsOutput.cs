@@ -5,20 +5,23 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.Remoting.Channels;
 using YamlDotNet.Core.Tokens;
+using System.Threading;
 
 namespace Phidgets2Prosim
 {
     internal class PhidgestOutput : PhidgetDevice
     {
         DigitalOutput digitalOutput = new DigitalOutput();
+        private CancellationTokenSource blinkCancellation;
+        public int BlinkIntervalMs { get; set; } = 300; // Default blink interval
+
+
         //bool isGate = false;
-       
+
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
-
         public bool IsGate { get; set; }
         public string ProsimDataRefOff { get; set; }
-
         public int Delay { get; set; } = 0;
 
 
@@ -50,7 +53,6 @@ namespace Phidgets2Prosim
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 50, connection);
-
                 dataRef.onDataChange += DataRef_onDataChange;
 
                 if (prosimDataRefOff != null)
@@ -58,7 +60,6 @@ namespace Phidgets2Prosim
                     DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);
                     dataRef2.onDataChange += DataRef_onDataChange;
                 }
-
 
             }
             catch (Exception ex)
@@ -138,6 +139,7 @@ namespace Phidgets2Prosim
             var name = dataRef.name;
 
             Debug.WriteLine($"OUT Changed: {dataRef.name} {dataRef.value}");
+            SendInfoLog($"OUT Changed: {dataRef.name} {dataRef.value}");
 
             try
             {
@@ -185,29 +187,28 @@ namespace Phidgets2Prosim
 
                     var value = Convert.ToInt32(dataRef.value);
 
-                    if (value == 2)
+                    if (value == 4)
                     {
-                        if (Inverse)
+                        if (blinkCancellation == null)
                         {
-                            TurnOff();
-                        } else
-                        {
-                            TurnOn();
+                            blinkCancellation = new CancellationTokenSource();
+                            _ = BlinkAsync(blinkCancellation.Token);
                         }
-                        
                     }
+                    else
+                    {
+                        StopBlinking();
 
-                    if (value == 0)
-                    {
-                        if (Inverse)
+                        if (value == 1 || value == 2)
                         {
                             TurnOn();
                         }
-                        else
+                        else if (value == 0)
                         {
                             TurnOff();
                         }
                     }
+                
                 }
             }
             catch (Exception ex)
@@ -218,5 +219,27 @@ namespace Phidgets2Prosim
             }
         }
 
+        private async Task BlinkAsync(CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    digitalOutput.DutyCycle = digitalOutput.DutyCycle == 1 ? 0 : 1;
+                    await Task.Delay(BlinkIntervalMs, token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                digitalOutput.DutyCycle = 0; // Ensure output is off when stopping
+            }
+        }
+
+        private void StopBlinking()
+        {
+            blinkCancellation?.Cancel();
+            blinkCancellation = null;
+            digitalOutput.DutyCycle = 0;
+        }
     }
 }
