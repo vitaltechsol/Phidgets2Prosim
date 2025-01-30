@@ -43,12 +43,12 @@ namespace Phidgets2Prosim
             this.tabButtons = new System.Windows.Forms.TabPage();
             this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.tabLog = new System.Windows.Forms.TabPage();
+            this.btnLogClear = new System.Windows.Forms.Button();
+            this.btnLogOk = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
-            this.btnLogOk = new System.Windows.Forms.Button();
-            this.btnLogClear = new System.Windows.Forms.Button();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -183,6 +183,26 @@ namespace Phidgets2Prosim
             this.tabLog.Text = "Log";
             this.tabLog.UseVisualStyleBackColor = true;
             // 
+            // btnLogClear
+            // 
+            this.btnLogClear.Location = new System.Drawing.Point(87, 250);
+            this.btnLogClear.Name = "btnLogClear";
+            this.btnLogClear.Size = new System.Drawing.Size(75, 23);
+            this.btnLogClear.TabIndex = 2;
+            this.btnLogClear.Text = "Clear";
+            this.btnLogClear.UseVisualStyleBackColor = true;
+            this.btnLogClear.Click += new System.EventHandler(this.btnLogClear_Click);
+            // 
+            // btnLogOk
+            // 
+            this.btnLogOk.Location = new System.Drawing.Point(6, 250);
+            this.btnLogOk.Name = "btnLogOk";
+            this.btnLogOk.Size = new System.Drawing.Size(75, 23);
+            this.btnLogOk.TabIndex = 1;
+            this.btnLogOk.Text = "OK";
+            this.btnLogOk.UseVisualStyleBackColor = true;
+            this.btnLogOk.Click += new System.EventHandler(this.btnLogOk_Click);
+            // 
             // txtLog
             // 
             this.txtLog.Location = new System.Drawing.Point(6, 6);
@@ -208,7 +228,7 @@ namespace Phidgets2Prosim
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v0.2.0";
+            this.label1.Text = "v0.3.0";
             // 
             // lblPsIP
             // 
@@ -218,26 +238,6 @@ namespace Phidgets2Prosim
             this.lblPsIP.Size = new System.Drawing.Size(51, 13);
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
-            // 
-            // btnLogOk
-            // 
-            this.btnLogOk.Location = new System.Drawing.Point(6, 250);
-            this.btnLogOk.Name = "btnLogOk";
-            this.btnLogOk.Size = new System.Drawing.Size(75, 23);
-            this.btnLogOk.TabIndex = 1;
-            this.btnLogOk.Text = "OK";
-            this.btnLogOk.UseVisualStyleBackColor = true;
-            this.btnLogOk.Click += new System.EventHandler(this.btnLogOk_Click);
-            // 
-            // btnLogClear
-            // 
-            this.btnLogClear.Location = new System.Drawing.Point(87, 250);
-            this.btnLogClear.Name = "btnLogClear";
-            this.btnLogClear.Size = new System.Drawing.Size(75, 23);
-            this.btnLogClear.TabIndex = 2;
-            this.btnLogClear.Text = "Clear";
-            this.btnLogClear.UseVisualStyleBackColor = true;
-            this.btnLogClear.Click += new System.EventHandler(this.btnLogClear_Click);
             // 
             // Form1
             // 

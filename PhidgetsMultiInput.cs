@@ -8,6 +8,7 @@ using System.Collections;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Phidgets2Prosim
 {
@@ -19,6 +20,7 @@ namespace Phidgets2Prosim
         PhidgetsMultiInputItem[] multiInputs;
         string allValues = "";
         Dictionary<string, int> inputsRefs;
+        int[] channels;
 
         public PhidgetsMultiInput(
             int serial,
@@ -33,6 +35,7 @@ namespace Phidgets2Prosim
             this.prosimDataRef = prosimDataRef;
             this.connection = connection;
             this.inputsRefs = inputsRefs;
+            this.channels = channels;
             allValues = new string('0', channels.Length);
             multiInputs = new PhidgetsMultiInputItem[10];
 
@@ -48,6 +51,17 @@ namespace Phidgets2Prosim
                 index++;
             }
         }
+
+        public void Close() 
+        {
+            var index = 0;
+            foreach (var channel in channels)
+            {
+                multiInputs[index].Close();
+                index++;
+            }
+        }
+
         private void HandleInputChanged(object sender, InputChangedEventArgs e)
         {
             // Event handler to receive input change
@@ -142,6 +156,22 @@ namespace Phidgets2Prosim
             catch (Exception ex)
             {
                 SendErrorLog("Multi input Open failed" + ProsimDataRef + " ch:" + Channel);
+                SendErrorLog(ex.ToString());
+            }
+        }
+
+
+        public void Close()
+        {
+            try
+            {
+                digitalInput.Close();
+                SendInfoLog($"--> Multi - {ProsimDataRef} | ch: {Channel} CLOSED" );
+
+            }
+            catch (Exception ex)
+            {
+                SendErrorLog("Multi input Open failed to Close" + ProsimDataRef + " ch:" + Channel);
                 SendErrorLog(ex.ToString());
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System.Diagnostics;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
@@ -22,16 +23,11 @@ namespace Phidgets2Prosim
             Connection = connection;
             Channel = channel;
             HubPort = hubPort;
+            Serial = serial;
 
             OffInputValue = offInputValue;
             InputValue = inputValue;
 
-            digitalInput.HubPort = hubPort;
-            digitalInput.IsRemote = true;
-            digitalInput.Channel = channel;
-            digitalInput.StateChange += StateChange;
-            digitalInput.DeviceSerialNumber = serial;
-            SendInfoLog("->****Attached " + prosimDataRef + " to Ch:" + channel);
             Open();
         }
         private void StateChange(object sender, Phidget22.Events.DigitalInputStateChangeEventArgs e)
@@ -67,6 +63,7 @@ namespace Phidgets2Prosim
         public void Close()
         {
             digitalInput.Close();
+            SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
         }
 
         public async void Open()
@@ -76,8 +73,16 @@ namespace Phidgets2Prosim
             {
                 if (digitalInput.IsOpen == false)
                 {
-                    digitalInput.Open(500);
-                } else
+
+                    digitalInput.HubPort = HubPort;
+                    digitalInput.IsRemote = true;
+                    digitalInput.Channel = Channel;
+                    digitalInput.StateChange += StateChange;
+                    digitalInput.DeviceSerialNumber = Serial;
+                    await Task.Run(() => digitalInput.Open(2000));
+                    SendInfoLog($"-> Attached {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+                }
+                else
                 {
                     SendErrorLog("Error: --> Channel (ALREADY OPEN)" + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
                 }

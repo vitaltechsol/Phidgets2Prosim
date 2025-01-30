@@ -64,24 +64,28 @@ PhidgetsOutputInstances:
     ProsimDataRef: "I_OH_ELT"
   - Serial: 668522
     HubPort: 1
-    Channel: 3
-    ProsimDataRef: I_MIP_ASA_ATR_1
+    Channel: 1
+    ProsimDataRef: I_MIP_GPWS_INOP
   - Serial: 668522
     HubPort: 1
-    Channel: 4
-    ProsimDataRef: I_MIP_ASA_FMC_1
-  - Serial: 668522
-    HubPort: 1
-    Channel: 5
-    ProsimDataRef: I_MIP_ASA_ATA_1
+    Channel: 7
+    ProsimDataRef: I_MIP_ASA_APR_1
   - Serial: 668522
     HubPort: 1
     Channel: 6
     ProsimDataRef: I_MIP_ASA_APA_1
   - Serial: 668522
     HubPort: 1
-    Channel: 7
-    ProsimDataRef: I_MIP_ASA_APR_1
+    Channel: 5
+    ProsimDataRef: I_MIP_ASA_ATR_1
+  - Serial: 668522
+    HubPort: 1
+    Channel: 4
+    ProsimDataRef: I_MIP_ASA_ATA_1
+  - Serial: 668522
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: I_MIP_ASA_FMC_1
   - Serial: 668522
     HubPort: 1
     Channel: 8
@@ -106,6 +110,16 @@ PhidgetsOutputInstances:
     HubPort: 0
     Channel: 1
     ProsimDataRef: I_MIP_LE_FLAP_EXT
+
+  - Serial: 668522
+    HubPort: 3
+    Channel: 0
+    ProsimDataRef: I_MIP_AUTOBRAKE_DISARM
+  - Serial: 668522
+    HubPort: 3
+    Channel: 1
+    ProsimDataRef: I_MIP_ANTI_SKID_INOP
+
   - Serial: 664861
     HubPort: 0
     Channel: 2
@@ -290,6 +304,82 @@ PhidgetsOutputInstances:
     HubPort: 2
     Channel: 11
     ProsimDataRef: I_OH_PASS_OXY_ON
+  - Serial: 618534
+    HubPort: 5
+    Channel: 2
+    ProsimDataRef: I_DOOR_LOCK_FAIL
+  - Serial: 618534
+    HubPort: 5
+    Channel: 3
+    ProsimDataRef: I_DOOR_AUTO_UNLOCK
+  - Serial: 618534
+    HubPort: 3
+    Channel: 7
+    ProsimDataRef: "I_MIP_PARKING_BRAKE"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: "I_FIRE_1"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 1
+    ProsimDataRef: "I_FIRE_APU"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 2
+    ProsimDataRef: "I_FIRE_2"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 3
+    ProsimDataRef: "I_FIRE_L_BOTTLE_DISCHARGE"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 4
+    ProsimDataRef: "I_FIRE_R_BOTTLE_DISCHARGE"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 5
+    ProsimDataRef: "I_FIRE_TEST_APU"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 6
+    ProsimDataRef: "I_FIRE_APU_DET_INOPT"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 11
+    ProsimDataRef: "I_FIRE_ENG_1_OVT"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 12
+    ProsimDataRef: "I_FIRE_ENG_2_OVT"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 13
+    ProsimDataRef: "I_FIRE_WHEEL_WELL_OVT"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 15
+    ProsimDataRef: "I_FIRE_FAULT"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 4
+    ProsimDataRef: "I_FIRE_CARGO_FWD"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 5
+    ProsimDataRef: "I_FIRE_CARGO_AFT"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 6
+    ProsimDataRef: "I_FIRE_CARGO_DISCH"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 0
+    ProsimDataRef: "I_ASP_VHF_1_SEND"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 1
+    ProsimDataRef: "I_ASP_VHF_2_SEND"
 
 PhidgetsGateInstances:
   - Serial: 668066
@@ -328,12 +418,114 @@ PhidgetsGateInstances:
     HubPort: 3
     Channel: 3
     ProsimDataRef: B_AC_POWER
+  - Serial: 668522
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: B_AC_POWER
+    Inverse: true
+  - Serial: 668015
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: B_FLIGHTDECK_DOOR_LOCK
+  - Serial: 618534
+    HubPort: 4
+    Channel: 8
+    ProsimDataRef: "B_FIRE_HANDLE_LEFT_LOCK"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 10
+    ProsimDataRef: "B_FIRE_HANDLE_RIGHT_LOCK"
+  - Serial: 618534
+    HubPort: 4
+    Channel: 14
+    ProsimDataRef: "B_FIRE_HANDLE_APU_LOCK"
 
 PhidgetsInputInstances:
   - Serial: 618534
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: S_FIRE_FAULT_TEST
+    InputValue: 1
+  - Serial: 618534
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: S_FIRE_FAULT_TEST
+    InputValue: 2 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 2
+    ProsimDataRef: S_FIRE_HANDLE1
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: S_FIRE_PULL1
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: S_FIRE_HANDLE1
+    InputValue: 2 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 8
+    ProsimDataRef: S_FIRE_HANDLE_APU
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: S_FIRE_PULL_APU
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 10
+    ProsimDataRef: S_FIRE_HANDLE_APU
+    InputValue: 2 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: S_FIRE_HANDLE2
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 7
+    ProsimDataRef: S_FIRE_PULL2
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: S_FIRE_HANDLE2
+    InputValue: 2 
+  - Serial: 618534
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: "S_THROTTLE_AT_DISENGAGE"
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: "S_THROTTLE_AT_DISENGAGE_2"
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 1
+    Channel: 4
+    ProsimDataRef: "S_THROTTLE_TOGA"
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 1
+    Channel: 8
+    ProsimDataRef: "S_AILERON_TRIM"
+    InputValue: 1 
+  - Serial: 618534
+    HubPort: 1
+    Channel: 9
+    ProsimDataRef: "S_AILERON_TRIM"
+    InputValue: 2 
+
+  - Serial: 618534
     HubPort: 1
     Channel: 10
-    ProsimDataRef: "S_RUDDER_TRIM"
+    ProsimDataRef: S_RUDDER_TRIM
     InputValue: 1
 
   - Serial: 618534
@@ -396,12 +588,6 @@ PhidgetsInputInstances:
   - Serial: 668015
     HubPort: 1
     Channel: 6
-    ProsimDataRef: "S_OH_FUEL_PUMP_CR"
-    InputValue: 1
-
-  - Serial: 668015
-    HubPort: 1
-    Channel: 7
     ProsimDataRef: "S_OH_FUEL_PUMP_CR"
     InputValue: 1
 
@@ -497,6 +683,195 @@ PhidgetsInputInstances:
     Channel: 11
     ProsimDataRef: S_OH_MACH_WARNING_TEST_1
     InputValue: 1
+  - Serial: 618534
+    HubPort: 1
+    Channel: 6
+    InputValue: 1 #Deny
+    ProsimDataRef: S_FLIGHT_DEK_DOOR
+  - Serial: 618534  
+    HubPort: 1
+    Channel: 7
+    ProsimDataRef: S_FLIGHT_DEK_DOOR
+    InputValue: 2 #Unlock
+  - Serial: 668015
+    HubPort: 1
+    Channel: 7
+    ProsimDataRef: S_DOOR_AUTO_UNLOCK_PTT
+  - Serial: 664861
+    HubPort: 1
+    Channel: 4
+    ProsimDataRef: S_MC_ACK_CP
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 5
+    ProsimDataRef: S_FIRE_CUTOUT_CP
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 6
+    ProsimDataRef: S_RECALL_CP
+    InputValue: 1
+
+  # - Serial: 664861
+  #   HubPort: 2
+  #   Channel: 14
+  #   ProsimDataRef: S_MIP_LIGHTTEST
+  #   InputValue: 1
+  - Serial: 664861
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: S_MIP_GS_PUSH_INHIBIT
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 7
+    ProsimDataRef: S_MIP_GS_PUSH_INHIBIT_FO
+    InputValue: 1
+
+  - Serial: 668522
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: S_ASA_AP1
+    InputValue: 1
+  - Serial: 668522
+    HubPort: 4
+    Channel: 1
+    ProsimDataRef: S_ASA_AT1
+    InputValue: 1
+  - Serial: 668522
+    HubPort: 4
+    Channel: 2
+    ProsimDataRef: S_ASA_FMC1
+    InputValue: 1
+
+  - Serial: 618534
+    HubPort: 2
+    Channel: 12
+    InputValue: 1
+    ProsimDataRef: S_FIRE_CARGO_TEST
+  - Serial: 618534
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: S_FIRE_CARGO_DISCH
+    InputValue: 1
+  - Serial: 618534
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: S_FIRE_CARGO_ARM_FWD_LATCHED
+    InputValue: 1
+  - Serial: 618534
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: S_FIRE_CARGO_ARM_AFT_LATCHED
+    InputValue: 1
+
+  - Serial: 664861
+    HubPort: 1
+    Channel: 0
+    ProsimDataRef: S_GPWS_SYS_TEST
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 1
+    ProsimDataRef: S_GPWS_FLAP_INHIBIT
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: S_GPWS_GEAR_INHIBIT
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: S_GPWS_TERRAIN_INHIBIT
+    InputValue: 1
+
+  - Serial: 664861
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: S_MFD_SYS
+    InputValue: 1
+  - Serial: 664861
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: S_MFD_ENG   
+    InputValue: 1
+
+  - Serial: 664861
+    HubPort: 1
+    Channel: 10
+    ProsimDataRef: S_MIP_LOWER_DU_FO
+    InputValue: 1
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 1
+    Channel: 11
+    ProsimDataRef: S_MIP_LOWER_DU_FO
+    InputValue: 2
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 1
+    Channel: 12
+    ProsimDataRef: S_MIP_MAIN_DU_FO
+    InputValue: 4
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 1
+    Channel: 13
+    ProsimDataRef: S_MIP_MAIN_DU_FO
+    InputValue: 3
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 1
+    Channel: 14
+    ProsimDataRef: S_MIP_MAIN_DU_FO
+    InputValue: 2
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 1
+    Channel: 15
+    ProsimDataRef: S_MIP_MAIN_DU_FO
+    InputValue: 1
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 8
+    ProsimDataRef: S_MIP_LOWER_DU_CAPT
+    InputValue: 1
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: S_MIP_LOWER_DU_CAPT
+    InputValue: 2
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 10
+    ProsimDataRef: S_MIP_MAIN_DU_CAPT
+    InputValue: 4
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: S_MIP_MAIN_DU_CAPT
+    InputValue: 3
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 12
+    ProsimDataRef: S_MIP_MAIN_DU_CAPT
+    InputValue: 2
+    OffInputValue: 0
+  - Serial: 664861
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: S_MIP_MAIN_DU_CAPT
+    InputValue: 1
+    OffInputValue: 0
+
 
 PhidgetsBLDCMotorInstances:
   - HubPort: 7
@@ -527,7 +902,34 @@ PhidgetsVoltageOutputInstances:
     ProsimDataRef: "G_OH_EGT"
 
   - Serial: 668015
+    HubPort: 3
+    ScaleFactor: 4
+    Offset: -10  
+    ProsimDataRef: "G_OH_DUCT_PRESS_L"
+  
+  - Serial: 668015
     HubPort: 4
-    ScaleFactor: 4.5
-    ProsimDataRef: "G_OH_CREW_OXYGEN"
+    ScaleFactor: 4
+    Offset: -10
+    ProsimDataRef: "G_OH_DUCT_PRESS_R"
 
+PhidgetsButtonInstances:
+  - Name: "Door Unlock"
+    ProsimDataRef: "S_FLIGHT_DEK_DOOR"
+    InputValue: 2
+    OffInputValue: 0
+
+  - Name: "Door Fail"
+    ProsimDataRef: "S_DOOR_LOCK_FAIL_PTT"
+    InputValue: 1
+    OffInputValue: 0
+
+  - Name: "Ground Power"
+    ProsimDataRef: "S_OH_GROUND_POWER"
+    InputValue: 2
+    OffInputValue: 1
+
+  - Name: "Call"
+    ProsimDataRef: "S_OH_ATTEND"
+    InputValue: 1
+    OffInputValue: 0

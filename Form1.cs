@@ -56,6 +56,7 @@ namespace Phidgets2Prosim
 
         bool simIsPaused = false;
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
+        private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private BindingList<PhidgetsInputInst> phidgetsInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
@@ -87,6 +88,7 @@ namespace Phidgets2Prosim
         void connection_onDisconnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
+            Invoke(new MethodInvoker(UnloadConfigIns));
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
@@ -133,7 +135,7 @@ namespace Phidgets2Prosim
                 }
 
                 // wait for hubs to connect
-                var taskDelay = Task.Delay(config.PhidgetsHubsIntances.Count * 1000);
+                var taskDelay = Task.Delay(config.PhidgetsHubsIntances.Count * 1500);
                 await taskDelay;
 
                 // OUTPUTS
@@ -148,8 +150,48 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsOutput[idx] = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
-                                "system.indicators." + instance.ProsimDataRef, connection, false, null);
+                            phidgetsOutput[idx] = new PhidgestOutput(
+                                    instance.Serial, instance.HubPort, instance.Channel,
+                                    "system.indicators." + instance.ProsimDataRef, connection, false,
+                                    instance.ProsimDataRefOff != null ? "system.indicators." + instance.ProsimDataRefOff : null
+                                );
+                            phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsOutput[idx].InfoLog += DisplayInfoLog;
+                            if (instance.OnDelay != null && instance.OnDelay > 0)
+                            {
+                                phidgetsOutput[idx].Delay = Convert.ToInt32(instance.OnDelay);
+                            }
+                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            {
+                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config line");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
+                // Audio OUTPUTS
+                if (config.PhidgetsAudioInstances != null)
+                {
+                    phidgetsAudioInstances = new BindingList<PhidgetsAudioInst>(config.PhidgetsAudioInstances);
+                    dataGridViewOutputs.DataSource = phidgetsOutputInstances;
+                    dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsAudioInstances)
+                    {
+                        try
+                        {
+                            phidgetsOutput[idx] = new PhidgestOutput(
+                                    instance.Serial, instance.HubPort, instance.Channel,
+                                    "system.audio." + instance.ProsimDataRef, connection, false,
+                                    instance.ProsimDataRefOff != null ? "system.audio." + instance.ProsimDataRefOff : null
+                                 );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
                             if (instance.OnDelay != null && instance.OnDelay > 0)
@@ -245,7 +287,7 @@ namespace Phidgets2Prosim
 
 
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay(3000);
+                var taskDelay2 = Task.Delay(4000);
                 await taskDelay2;
 
                 connectToProSim(config.GeneralConfig.ProSimIP);
@@ -261,8 +303,6 @@ namespace Phidgets2Prosim
 
         private async void LoadConfigIns()
         {
-
-           
             try
             {
                 // Read YAML from file
@@ -283,40 +323,48 @@ namespace Phidgets2Prosim
                 // INPUTS
                 if (config.PhidgetsInputInstances != null)
                 {
+                    DisplayInfoLog("Loading Inputs ... ");
                     phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
                     dataGridViewInputs.DataSource = phidgetsInputInstances;
                     dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
                     {
                         try
                         {
-                            phidgetsInput[idx] = new PhidgetsInput(instance.Serial, instance.HubPort, instance.Channel, connection,
-                                "system.switches." + instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
-                            phidgetsInput[idx].ErrorLog += DisplayErrorLog;
-                            phidgetsInput[idx].InfoLog += DisplayInfoLog;
-                            if (instance.ProsimDataRef2 != null)
+                            if (phidgetsInput[idx] == null ) { 
+                                phidgetsInput[idx] = new PhidgetsInput(instance.Serial, instance.HubPort, instance.Channel, connection,
+                                    "system.switches." + instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
+                                phidgetsInput[idx].ErrorLog += DisplayErrorLog;
+                                phidgetsInput[idx].InfoLog += DisplayInfoLog;
+                                if (instance.ProsimDataRef2 != null)
+                                {
+                                    phidgetsInput[idx].ProsimDataRef2 = instance.ProsimDataRef2;
+                                }
+                                if (instance.ProsimDataRef3 != null)
+                                {
+                                    phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
+                                }
+                            } else
                             {
-                                phidgetsInput[idx].ProsimDataRef2 = instance.ProsimDataRef2;
-                            }
-                            if (instance.ProsimDataRef3 != null)
-                            {
-                                phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
+                                await Task.Run(() => phidgetsInput[idx].Open());
                             }
                         }
                         catch (Exception ex)
                         {
-                            DisplayErrorLog("Error loading config line");
+                            DisplayErrorLog("Error reloading config line");
                             DisplayErrorLog(ex.ToString());
                         }
                         idx++;
                     }
+
+                    DisplayInfoLog("Loading Inputs done");
                 }
 
                 // Buttons
                 if (config.PhidgetsButtonInstances != null)
                 {
+                    DisplayInfoLog("Loading Buttons ... ");
                     phidgetsButtonInstances = config.PhidgetsButtonInstances != null ? new BindingList<PhidgetsButtonInst>(config.PhidgetsButtonInstances) : null;
 
                     var idx = 0;
@@ -357,6 +405,8 @@ namespace Phidgets2Prosim
 
                         buttonsFlowLayoutPanel.Controls.Add(appButton);
                     }
+
+                    DisplayInfoLog("Loading Buttons done ");
                 }
 
                 var hubOH_2_SrlNo = 668015;
@@ -490,6 +540,68 @@ namespace Phidgets2Prosim
                 mu10.ErrorLog += DisplayErrorLog;
                 mu10.InfoLog += DisplayInfoLog;
 
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error loading config");
+                DisplayErrorLog(ex.ToString());
+            }
+
+        }
+
+        private async void UnloadConfigIns()
+        {
+            try
+            {
+                // Read YAML from file
+                string yamlContent = File.ReadAllText("config.yaml");
+
+                // Deserialize YAML to objects
+                var deserializer = new DeserializerBuilder()
+                    .Build();
+
+                // Wait before starting
+                var taskDelay = Task.Delay(300);
+                await taskDelay;
+
+                var config = deserializer.Deserialize<Config>(yamlContent);
+                // Create instances based on the configuration
+
+
+                // INPUTS
+                if (config.PhidgetsInputInstances != null)
+                {
+                    DisplayInfoLog("Unlading inputs...");
+
+                    phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsInputInstances)
+                    {
+                        try
+                        {
+                            phidgetsInput[idx].Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error closing input");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
+                muAPU.Close();
+                mu1.Close();
+                mu2.Close();
+                mu3.Close();
+                mu4.Close();
+                mu5.Close();
+                mu6.Close();
+                mu7.Close();
+                mu8.Close();
+                mu9.Close();
+                mu10.Close();
             }
             catch (Exception ex)
             {
@@ -634,10 +746,7 @@ namespace Phidgets2Prosim
                 };
 
                 string yamlContent = serializer.Serialize(config);
-
                 File.WriteAllText("config2.yaml", yamlContent);
-
-            
             }
             catch (Exception ex)
             {
@@ -707,7 +816,6 @@ namespace Phidgets2Prosim
 
             DataRef dataRef = new DataRef("simulator.pause", 100, connection);
             dataRef.onDataChange += DataRef_onDataChange;
-
         }
 
         private void Form1_Closed(object sender, EventArgs e)
@@ -739,6 +847,7 @@ namespace Phidgets2Prosim
         public GeneralConfig GeneralConfig { get; set; }
         public List<string> PhidgetsHubsIntances { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
+        public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
         public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
@@ -751,7 +860,12 @@ namespace Phidgets2Prosim
         public int? OnDelay { get; set; }
         public bool Inverse { get; set; } = false;
         public int? TurnOffAfterMs { get; set; } = null;
+        public string ProsimDataRefOff { get; set; } = null;
 
+    }
+
+    public class PhidgetsAudioInst : PhidgetsOutputInst
+    {
     }
 
     public class PhidgetsGateInst : PhidgetDevice
