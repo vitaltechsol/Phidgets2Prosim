@@ -23,9 +23,11 @@ namespace Phidgets2Prosim
 
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
+        int logTabIndex = 6;
 
         PhidgetsInput[] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
+        PhidgetsMultiInput[] phidgetsMultiInput = new PhidgetsMultiInput[360];
         PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
         PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
@@ -40,25 +42,12 @@ namespace Phidgets2Prosim
         PhidgetsBLDCMotor bldcm_00;
         PhidgetsBLDCMotor bldcm_01;
 
-        PhidgetsMultiInput muAPU;
-        PhidgetsMultiInput mu1;
-        PhidgetsMultiInput mu2;
-        PhidgetsMultiInput mu3;
-        PhidgetsMultiInput mu4;
-        PhidgetsMultiInput mu5;
-        PhidgetsMultiInput mu6;
-        PhidgetsMultiInput mu7;
-        PhidgetsMultiInput mu8;
-        PhidgetsMultiInput mu9;
-        PhidgetsMultiInput mu10;
-
-        //  static string[] hubs = { "hub5000-1", "hub5000-MIP-1", "hub5000-MIP-2", "hub5000-motors", "hub5000-OH-1", "hub5000-OH-2" };
-
         bool simIsPaused = false;
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
         private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private BindingList<PhidgetsInputInst> phidgetsInputInstances;
+        private BindingList<PhidgetsMultiInputInst> phidgetsMultiInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
 
@@ -135,7 +124,7 @@ namespace Phidgets2Prosim
                 }
 
                 // wait for hubs to connect
-                var taskDelay = Task.Delay(config.PhidgetsHubsIntances.Count * 1500);
+                var taskDelay = Task.Delay(config.PhidgetsHubsIntances.Count * 500);
                 await taskDelay;
 
                 // OUTPUTS
@@ -287,7 +276,7 @@ namespace Phidgets2Prosim
 
 
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay(4000);
+                var taskDelay2 = Task.Delay(2000);
                 await taskDelay2;
 
                 connectToProSim(config.GeneralConfig.ProSimIP);
@@ -318,7 +307,6 @@ namespace Phidgets2Prosim
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
-
 
                 // INPUTS
                 if (config.PhidgetsInputInstances != null)
@@ -360,6 +348,47 @@ namespace Phidgets2Prosim
 
                     DisplayInfoLog("Loading Inputs done");
                 }
+
+                // MULTI INPUTS
+                if (config.PhidgetsMultiInputInstances != null)
+                {
+                    DisplayInfoLog("Loading MultiInputs ... ");
+                    phidgetsMultiInputInstances = config.PhidgetsMultiInputInstances != null ? new BindingList<PhidgetsMultiInputInst>(config.PhidgetsMultiInputInstances) : null;
+                    dataGridViewMultiInputs.DataSource = phidgetsMultiInputInstances;
+                    dataGridViewMultiInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsMultiInputInstances)
+                    {
+                        try
+                        {
+                            //if (phidgetsMultiInput[idx] == null)
+                            //{
+                            phidgetsMultiInput[idx] = new PhidgetsMultiInput(
+                                instance.Serial, 
+                                instance.HubPort,
+                                instance.Channels.ToArray(), 
+                                connection,
+                                "system.switches." + instance.ProsimDataRef,
+                                instance.Mappings);
+                            phidgetsMultiInput[idx].ErrorLog += DisplayErrorLog;
+                            //    phidgetsMultiInput[idx].InfoLog += DisplayInfoLog;
+                            //}
+                            //else
+                            //{
+                            //  //  await Task.Run(() => phidgetsMultiInput[idx].Open());
+                            //}
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error reloading config line");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+
+                    DisplayInfoLog("Loading MultiInputs done");
+                }
+
 
                 // Buttons
                 if (config.PhidgetsButtonInstances != null)
@@ -408,138 +437,6 @@ namespace Phidgets2Prosim
 
                     DisplayInfoLog("Loading Buttons done ");
                 }
-
-                var hubOH_2_SrlNo = 668015;
-                var hubMip_1_SrlNo = 668522;
-                var hubMip_2_SrlNo = 664861;
-
-                muAPU = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 14, 15 }, connection, "system.switches.S_OH_APU",
-                    new Dictionary<string, int>()
-                    {
-                                {"01", 2},
-                                {"10", 0},
-                                {"00", 1}
-                    });
-
-                mu1 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 0, 1 }, connection, "system.switches.S_OH_IRS_SEL_R",
-                    new Dictionary<string, int>()
-                    {
-                            {"11", 0},
-                            {"10", 2},
-                            {"00", 1},
-                            {"01", 3}
-                    });
-
-                mu2 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[2] { 2, 3 }, connection, "system.switches.S_OH_IRS_SEL_L",
-                    new Dictionary<string, int>()
-                    {
-                            {"11", 0},
-                            {"10", 2},
-                            {"00", 1},
-                            {"01", 3}
-                    });
-
-                mu3 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 8, 9, 10 }, connection, "system.switches.S_OH_ENG_START_R",
-                    new Dictionary<string, int>()
-                    {
-                            {"000", 0},
-                            {"011", 1},
-                            {"010", 2},
-                            {"100", 3}
-                    });
-
-                mu4 = new PhidgetsMultiInput(hubOH_2_SrlNo, 0, new int[3] { 11, 12, 13 }, connection, "system.switches.S_OH_ENG_START_L",
-                    new Dictionary<string, int>()
-                    {
-                            {"000", 0},
-                            {"011", 1},
-                            {"010", 2},
-                            {"100", 3}
-                    });
-
-                mu5 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 4, 5, 6 }, connection, "system.switches.S_MIP_N1_SET",
-                    new Dictionary<string, int>()
-                    {
-                            {"100", 2},
-                            {"010", 1},
-                            {"110", 0},
-                            {"001", 3}
-                    });
-
-                mu6 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 7, 8, 9 }, connection, "system.switches.S_MIP_N1_SET_VALUE",
-                    new Dictionary<string, int>()
-                    {
-                            {"001", 4},
-                            {"101", 2},
-                            {"111", 0},
-                            {"110", 1},
-                            {"010", 3}
-                    });
-
-                mu7 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 10, 11, 12 }, connection, "system.switches.S_MIP_SPD_REF_VALUE",
-                    new Dictionary<string, int>()
-                    {
-                            {"001", 4},
-                            {"101", 2},
-                            {"111", 0},
-                            {"110", 1},
-                            {"010", 3}
-                    });
-
-                mu8 = new PhidgetsMultiInput(hubMip_1_SrlNo, 4, new int[3] { 13, 14, 15 }, connection, "system.switches.S_MIP_SPDREF",
-                    new Dictionary<string, int>()
-                    {
-                            {"100", 0},
-                            {"010", 1},
-                            {"110", 2},
-                            {"001", 3},
-                            {"101", 4},
-                            {"011", 5},
-                            {"111", 6}
-                    });
-
-                mu9 = new PhidgetsMultiInput(hubMip_2_SrlNo, 2, new int[5] { 2, 3, 4, 5, 6 }, connection, "system.switches.S_MIP_AUTOBRAKE",
-                    new Dictionary<string, int>()
-                    {
-                            {"00000", 0},
-                            {"10000", 1},
-                            {"01000", 2},
-                            {"00100", 3},
-                            {"00010", 4},
-                            {"00001", 5},
-                    });
-
-                mu10 = new PhidgetsMultiInput(hubMip_2_SrlNo, 1, new int[2] { 8, 9 }, connection, "system.switches.S_MIP_GEAR",
-                    new Dictionary<string, int>()
-                                {
-                            {"00", 0},
-                            {"10", 2},
-                            {"01", 1},
-                    });
-
-                muAPU.ErrorLog += DisplayErrorLog;
-                muAPU.InfoLog += DisplayInfoLog;
-                mu1.ErrorLog += DisplayErrorLog;
-                mu1.InfoLog += DisplayInfoLog;
-                mu2.ErrorLog += DisplayErrorLog;
-                mu2.InfoLog += DisplayInfoLog;
-                mu3.ErrorLog += DisplayErrorLog;
-                mu3.InfoLog += DisplayInfoLog;
-                mu4.ErrorLog += DisplayErrorLog;
-                mu4.InfoLog += DisplayInfoLog;
-                mu5.ErrorLog += DisplayErrorLog;
-                mu5.InfoLog += DisplayInfoLog;
-                mu6.ErrorLog += DisplayInfoLog;
-                mu6.InfoLog += DisplayInfoLog;
-                mu7.ErrorLog += DisplayErrorLog;
-                mu7.InfoLog += DisplayInfoLog;
-                mu8.ErrorLog += DisplayErrorLog;
-                mu8.InfoLog += DisplayInfoLog;
-                mu9.ErrorLog += DisplayErrorLog;
-                mu9.InfoLog += DisplayInfoLog;
-                mu10.ErrorLog += DisplayErrorLog;
-                mu10.InfoLog += DisplayInfoLog;
-
             }
             catch (Exception ex)
             {
@@ -590,18 +487,7 @@ namespace Phidgets2Prosim
                         idx++;
                     }
                 }
-
-                muAPU.Close();
-                mu1.Close();
-                mu2.Close();
-                mu3.Close();
-                mu4.Close();
-                mu5.Close();
-                mu6.Close();
-                mu7.Close();
-                mu8.Close();
-                mu9.Close();
-                mu10.Close();
+                            
             }
             catch (Exception ex)
             {
@@ -768,8 +654,8 @@ namespace Phidgets2Prosim
                 txtLog.ForeColor = Color.Red;
                 tabLog.BackColor = Color.Red;
                 txtLog.Focus();
-                tabGroups.SelectedIndex = 5;
-                tabColors[5] = Color.Red; // Set the color for the second tab (index 1) to red
+                tabGroups.SelectedIndex = logTabIndex; // log tab
+                tabColors[logTabIndex] = Color.Red; // Set the color for the second tab (index 1) to red
                 tabGroups.Invalidate(); // Trigger a redraw to apply the color
                 txtLog.AppendText(DateTime.Now.ToLongTimeString() + " - ** ERROR ** : " + errorMessage + Environment.NewLine);
             }
@@ -827,14 +713,14 @@ namespace Phidgets2Prosim
         {
             txtLog.ForeColor = Color.Black;
             tabLog.BackColor = Color.White;
-            tabColors[5] = Color.Black;
+            tabColors[logTabIndex] = Color.Black;
         }
 
         private void btnLogClear_Click(object sender, EventArgs e)
         {
             txtLog.ForeColor = Color.Black;
             tabLog.BackColor = Color.White;
-            tabColors[5] = Color.Black;
+            tabColors[logTabIndex] = Color.Black;
             txtLog.Text = string.Empty;
         }
     }
@@ -850,6 +736,7 @@ namespace Phidgets2Prosim
         public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
         public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
+        public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
@@ -874,7 +761,6 @@ namespace Phidgets2Prosim
         public bool Inverse { get; set; } = false;
         public string ProsimDataRefOff { get; set; } = null;
         public int? TurnOffAfterMs { get; set; } = null;
-
     }
 
     public class PhidgetsInputInst : PhidgetDevice
@@ -883,7 +769,12 @@ namespace Phidgets2Prosim
         public int OffInputValue { get; set; } = 0;
         public string ProsimDataRef2 { get; set; } = null;
         public string ProsimDataRef3 { get; set; } = null;
+    }
 
+    public class PhidgetsMultiInputInst : PhidgetDevice
+    {
+        public List<int> Channels { get; set; }
+        public Dictionary<string, int> Mappings { get; set; }
     }
 
 
