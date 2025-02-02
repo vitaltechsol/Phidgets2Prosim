@@ -40,7 +40,7 @@ namespace Phidgets2Prosim
                 return;
             }
 
-            DataRef dataRef = new DataRef(ProsimDataRef, 500, Connection);
+            DataRef dataRef = new DataRef(ProsimDataRef, 500, Connection, true);
             try
             {
                 if (e.State == true)
@@ -51,6 +51,7 @@ namespace Phidgets2Prosim
                 {
                     dataRef.value = OffInputValue;
                 }
+
             }
             catch (System.Exception ex)
             {

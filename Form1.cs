@@ -320,7 +320,7 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            if (phidgetsInput[idx] == null ) { 
+                            //if (phidgetsInput[idx] == null ) { 
                                 phidgetsInput[idx] = new PhidgetsInput(instance.Serial, instance.HubPort, instance.Channel, connection,
                                     "system.switches." + instance.ProsimDataRef, instance.InputValue, instance.OffInputValue);
                                 phidgetsInput[idx].ErrorLog += DisplayErrorLog;
@@ -333,10 +333,10 @@ namespace Phidgets2Prosim
                                 {
                                     phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
                                 }
-                            } else
-                            {
-                                await Task.Run(() => phidgetsInput[idx].Open());
-                            }
+                            //} else
+                            //{
+                            //    await Task.Run(() => phidgetsInput[idx].Open());
+                            //}
                         }
                         catch (Exception ex)
                         {
@@ -361,22 +361,17 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            //if (phidgetsMultiInput[idx] == null)
-                            //{
+                            
                             phidgetsMultiInput[idx] = new PhidgetsMultiInput(
-                                instance.Serial, 
+                                instance.Serial,
                                 instance.HubPort,
-                                instance.Channels.ToArray(), 
+                                instance.Channels.ToArray(),
                                 connection,
                                 "system.switches." + instance.ProsimDataRef,
                                 instance.Mappings);
                             phidgetsMultiInput[idx].ErrorLog += DisplayErrorLog;
-                            //    phidgetsMultiInput[idx].InfoLog += DisplayInfoLog;
-                            //}
-                            //else
-                            //{
-                            //  //  await Task.Run(() => phidgetsMultiInput[idx].Open());
-                            //}
+                            phidgetsMultiInput[idx].InfoLog += DisplayInfoLog;
+                           
                         }
                         catch (Exception ex)
                         {
@@ -468,9 +463,8 @@ namespace Phidgets2Prosim
                 // INPUTS
                 if (config.PhidgetsInputInstances != null)
                 {
-                    DisplayInfoLog("Unlading inputs...");
-
-                    phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+                    DisplayInfoLog("Unloading inputs...");
+                    //phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
@@ -487,7 +481,29 @@ namespace Phidgets2Prosim
                         idx++;
                     }
                 }
-                            
+
+                // INPUTS
+                if (config.PhidgetsMultiInputInstances != null)
+                {
+                    DisplayInfoLog("Unloading multi-inputs...");
+                    //phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsMultiInputInstances)
+                    {
+                        try
+                        {
+                            phidgetsMultiInput[idx].Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error closing input");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
