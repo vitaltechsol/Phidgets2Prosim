@@ -7,13 +7,11 @@ using System.Threading;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsBLDCMotor
+    internal class PhidgetsBLDCMotor : PhidgetDevice
     {
         double targetVelFast = 0.4;
         bool reversed;
-        int hubPort;
         int offset = 0;
-
         bool motorOn = false;
         double currentPosition = 0;
         int threshold = 5;
@@ -21,17 +19,17 @@ namespace Phidgets2Prosim
         bool isPaused = false;
 
         BLDCMotor dcMotor = new BLDCMotor();
-        public PhidgetsBLDCMotor(int hubPort, ProSimConnect connection, bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos)
+        public PhidgetsBLDCMotor(int deviceSerialNumber, int hubPort, ProSimConnect connection, bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos, double acceleration)
         {
             try
             {
-                this.hubPort = hubPort;
+                HubPort = hubPort;
 
                 dcMotor.HubPort = hubPort;
                 dcMotor.IsRemote = true;
                 dcMotor.Open(5000);
-                dcMotor.DeviceSerialNumber = 668066;
-                dcMotor.Acceleration = 0.8;
+                dcMotor.DeviceSerialNumber = deviceSerialNumber;
+                dcMotor.Acceleration = acceleration;
                 dcMotor.TargetBrakingStrength = 1;
 
                 this.reversed = reversed;
@@ -135,7 +133,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Open failed for DC Motor " + hubPort);
+                Debug.WriteLine("Open failed for BL DC Motor " + HubPort);
                 Debug.WriteLine(ex.ToString());
             }
         }

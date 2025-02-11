@@ -28,7 +28,7 @@ namespace Phidgets2Prosim
         private double targetPosition = 0;
         private Timer timer;
 
-        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, string prosimDatmRef, ProSimConnect connection)
+        public PhidgetsVoltageOutput(int deviceSerialN, int hubPort, string prosimDataRef, ProSimConnect connection)
         {
             timer = new Timer(Interval);
             timer.Elapsed += OnTimerElapsed;
@@ -43,7 +43,7 @@ namespace Phidgets2Prosim
                 Open();
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRef, 5, connection);
+                DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace Phidgets2Prosim
             {
                 if (voltageOutput.IsOpen == false)
                 {
-                    await Task.Run(() => voltageOutput.Open(500));
+                    await Task.Run(() => voltageOutput.Open(2000));
                     voltageOutput.Voltage = 0;
                 }
             }
@@ -106,8 +106,10 @@ namespace Phidgets2Prosim
             try
             {
                 // Debug.WriteLine($"updating position to {convertedValue}");
-                voltageOutput.Voltage = Convert.ToDouble(convertedValue);
-
+                if (voltageOutput.IsOpen)
+                {
+                    voltageOutput.Voltage = Convert.ToDouble(convertedValue);
+                }
             }
             catch (Exception ex)
             {
