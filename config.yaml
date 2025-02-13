@@ -1,13 +1,47 @@
-﻿GeneralConfig:
+﻿
+GeneralConfig:
   Schema: 1.0    
   ProSimIP: 192.168.1.142
-PhidgetsHubsIntances:
+  BlinkInterval: 300
+  DimmedValue: 0.6
+PhidgetsHubsInstances:
    - hub5000-1
    - hub5000-MIP-1
    - hub5000-MIP-2 
    - hub5000-motors
    - hub5000-OH-1
    - hub5000-OH-2
+
+PhidgetsAudioInstances:
+  - Serial: 618534
+    HubPort: 5
+    Channel: 8
+    ProsimDataRef: "Gear_warning"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 9
+    ProsimDataRef: "Autopilot_Disconnect"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 10
+    ProsimDataRef: "Overspeed"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 11
+    ProsimDataRef: "Takeoff_Config"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 12
+    ProsimDataRef: "Fire_audio"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 13
+    ProsimDataRef: "High-Low_Chime"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 14
+    ProsimDataRef: "No_Smoking_Audio"
+    ProsimDataRefOff: "Seatbelt_Audio"
 
 PhidgetsOutputInstances:
   - Serial: 668522
@@ -69,19 +103,19 @@ PhidgetsOutputInstances:
   - Serial: 668522
     HubPort: 1
     Channel: 7
-    ProsimDataRef: I_MIP_ASA_APR_1
+    ProsimDataRef: I_MIP_ASA_APR_2
   - Serial: 668522
     HubPort: 1
     Channel: 6
-    ProsimDataRef: I_MIP_ASA_APA_1
+    ProsimDataRef: I_MIP_ASA_APA_2
   - Serial: 668522
     HubPort: 1
     Channel: 5
-    ProsimDataRef: I_MIP_ASA_ATR_1
+    ProsimDataRef: I_MIP_ASA_ATR_2
   - Serial: 668522
     HubPort: 1
     Channel: 4
-    ProsimDataRef: I_MIP_ASA_ATA_1
+    ProsimDataRef: I_MIP_ASA_ATA_2
   - Serial: 668522
     HubPort: 1
     Channel: 3
@@ -399,17 +433,17 @@ PhidgetsGateInstances:
     Channel: 8
     ProsimDataRef: B_SPEED_BRAKE_DEPLOY
     ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
-    TurnOffAfterMs: 60000
+    DelayOff: 60000
   - Serial: 618534
     HubPort: 3
     Channel: 1
     ProsimDataRef: B_REVERSER_2_SYNC_LOCK
-    OnDelay: 1500
+    DelayOn: 1500
   - Serial: 618534
     HubPort: 3
     Channel: 2
     ProsimDataRef: B_REVERSER_1_SYNC_LOCK
-    OnDelay: 1500
+    DelayOn: 1500
   - Serial: 618534
     HubPort: 3
     Channel: 0
@@ -423,6 +457,11 @@ PhidgetsGateInstances:
     Channel: 2
     ProsimDataRef: B_AC_POWER
     Inverse: true
+  - Serial: 668522
+    HubPort: 1
+    Channel: 15
+    ProsimDataRef: B_DC_POWER
+    Inverse: true   
   - Serial: 668015
     HubPort: 2
     Channel: 9
@@ -712,12 +751,6 @@ PhidgetsInputInstances:
     Channel: 6
     ProsimDataRef: S_RECALL_CP
     InputValue: 1
-
-  # - Serial: 664861
-  #   HubPort: 2
-  #   Channel: 14
-  #   ProsimDataRef: S_MIP_LIGHTTEST
-  #   InputValue: 1
   - Serial: 664861
     HubPort: 2
     Channel: 15
@@ -728,7 +761,6 @@ PhidgetsInputInstances:
     Channel: 7
     ProsimDataRef: S_MIP_GS_PUSH_INHIBIT_FO
     InputValue: 1
-
   - Serial: 668522
     HubPort: 4
     Channel: 0
@@ -744,7 +776,6 @@ PhidgetsInputInstances:
     Channel: 2
     ProsimDataRef: S_ASA_FMC1
     InputValue: 1
-
   - Serial: 618534
     HubPort: 2
     Channel: 12
@@ -765,7 +796,6 @@ PhidgetsInputInstances:
     Channel: 15
     ProsimDataRef: S_FIRE_CARGO_ARM_AFT_LATCHED
     InputValue: 1
-
   - Serial: 664861
     HubPort: 1
     Channel: 0
@@ -787,7 +817,6 @@ PhidgetsInputInstances:
     Channel: 3
     ProsimDataRef: S_GPWS_TERRAIN_INHIBIT
     InputValue: 1
-
   - Serial: 664861
     HubPort: 2
     Channel: 0
@@ -798,7 +827,6 @@ PhidgetsInputInstances:
     Channel: 1
     ProsimDataRef: S_MFD_ENG   
     InputValue: 1
-
   - Serial: 664861
     HubPort: 1
     Channel: 10
@@ -872,23 +900,121 @@ PhidgetsInputInstances:
     InputValue: 1
     OffInputValue: 0
 
+PhidgetsMultiInputInstances:
+  - Serial: 668015
+    HubPort: 0
+    Channels: [14, 15]
+    ProsimDataRef: "S_OH_APU"
+    Mappings:
+      "01": 2
+      "10": 0
+      "00": 1
 
-PhidgetsBLDCMotorInstances:
-  - HubPort: 7
-    Connection: # ProSimConnect instance details
-    Reversed: true
-    Offset: 8
-    RefTurnOn: "turnOnReference"
-    RefCurrentPos: "currentPosReference"
-    RefTargetPos: "targetPosReference"
+  - Serial: 668015
+    HubPort: 0
+    Channels: [0, 1]
+    ProsimDataRef: "S_OH_IRS_SEL_R"
+    Mappings:
+      "11": 0
+      "10": 2
+      "00": 1
+      "01": 3
 
-  - HubPort: 9
-    Connection: # ProSimConnect instance details
-    Reversed: false
-    Offset: 10
-    RefTurnOn: "turnOnReference2"
-    RefCurrentPos: "currentPosReference2"
-    RefTargetPos: "targetPosReference2"
+  - Serial: 668015
+    HubPort: 0
+    Channels: [2, 3]
+    ProsimDataRef: "S_OH_IRS_SEL_L"
+    Mappings:
+      "11": 0
+      "10": 2
+      "00": 1
+      "01": 3
+
+  - Serial: 668015
+    HubPort: 0
+    Channels: [8, 9, 10]
+    ProsimDataRef: "S_OH_ENG_START_R"
+    Mappings:
+      "000": 0
+      "011": 1
+      "010": 2
+      "100": 3
+
+  - Serial: 668015
+    HubPort: 0
+    Channels: [11, 12, 13]
+    ProsimDataRef: "S_OH_ENG_START_L"
+    Mappings:
+      "000": 0
+      "011": 1
+      "010": 2
+      "100": 3
+
+  - Serial: 668522
+    HubPort: 4
+    Channels: [4, 5, 6]
+    ProsimDataRef: "S_MIP_N1_SET"
+    Mappings:
+      "100": 2
+      "010": 1
+      "110": 0
+      "001": 3
+
+  - Serial: 668522
+    HubPort: 4
+    Channels: [7, 8, 9]
+    ProsimDataRef: "S_MIP_N1_SET_VALUE"
+    Mappings:
+      "001": 4
+      "101": 2
+      "111": 0
+      "110": 1
+      "010": 3
+
+  - Serial: 668522
+    HubPort: 4
+    Channels: [10, 11, 12]
+    ProsimDataRef: "S_MIP_SPD_REF_VALUE"
+    Mappings:
+      "001": 4
+      "101": 2
+      "111": 0
+      "110": 1
+      "010": 3
+
+  - Serial: 668522
+    HubPort: 4
+    Channels: [13, 14, 15]
+    ProsimDataRef: "S_MIP_SPDREF"
+    Mappings:
+      "100": 0
+      "010": 1
+      "110": 2
+      "001": 3
+      "101": 4
+      "011": 5
+      "111": 6
+
+  - Serial: 664861
+    HubPort: 2
+    Channels: [2, 3, 4, 5, 6]
+    ProsimDataRef: "S_MIP_AUTOBRAKE"
+    Mappings:
+      "00000": 0
+      "10000": 1
+      "01000": 2
+      "00100": 3
+      "00010": 4
+      "00001": 5
+
+  - Serial: 664861
+    HubPort: 1
+    Channels: [8, 9]
+    ProsimDataRef: "S_MIP_GEAR"
+    Mappings:
+      "00": 0
+      "10": 2
+      "01": 1
 
 PhidgetsVoltageOutputInstances:
   - Serial: 668522
@@ -913,6 +1039,26 @@ PhidgetsVoltageOutputInstances:
     Offset: -10
     ProsimDataRef: "G_OH_DUCT_PRESS_R"
 
+PhidgetsBLDCMotorInstances:
+  - Serial: 668066
+    HubPort: 0
+    Reversed: false
+    Offset: 0
+    RefTurnOn: system.gates.B_THROTTLE_SERVO_POWER_RIGHT
+    RefCurrentPos: system.analog.A_THROTTLE_RIGHT
+    RefTargetPos: system.gauge.G_THROTTLE_RIGHT
+    Acceleration: 0.8
+
+  - Serial: 668066
+    HubPort: 1
+    Reversed: true
+    Offset: 5
+    RefTurnOn: system.gates.B_THROTTLE_SERVO_POWER_LEFT
+    RefCurrentPos: system.analog.A_THROTTLE_LEFT
+    RefTargetPos: system.gauge.G_THROTTLE_LEFT
+    Acceleration: 0.8
+
+
 PhidgetsButtonInstances:
   - Name: "Door Unlock"
     ProsimDataRef: "S_FLIGHT_DEK_DOOR"
@@ -933,3 +1079,5 @@ PhidgetsButtonInstances:
     ProsimDataRef: "S_OH_ATTEND"
     InputValue: 1
     OffInputValue: 0
+
+        

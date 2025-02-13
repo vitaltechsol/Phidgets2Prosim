@@ -9,11 +9,11 @@ namespace Phidgets2Prosim
     internal class PhidgetsPort
     {
         public PhidgetsInput[] input;
-        public PhidgestOutput[] output;
+        public PhidgetsOutput[] output;
 
         public PhidgetsPort() {
           input = new PhidgetsInput[16];
-          output = new PhidgestOutput[16];
+          output = new PhidgetsOutput[16];
         }
     }
 }

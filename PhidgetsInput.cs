@@ -40,7 +40,7 @@ namespace Phidgets2Prosim
                 return;
             }
 
-            DataRef dataRef = new DataRef(ProsimDataRef, 500, Connection, true);
+            DataRef dataRef = new DataRef(ProsimDataRef, 1000, Connection, true);
             try
             {
                 if (e.State == true)
@@ -80,7 +80,7 @@ namespace Phidgets2Prosim
                     digitalInput.Channel = Channel;
                     digitalInput.StateChange += StateChange;
                     digitalInput.DeviceSerialNumber = Serial;
-                    await Task.Run(() => digitalInput.Open(2000));
+                    await Task.Run(() => digitalInput.Open(5000));
                     SendInfoLog($"-> Attached {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
                 }
                 else

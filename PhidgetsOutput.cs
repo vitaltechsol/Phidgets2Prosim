@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgestOutput : PhidgetDevice
+    internal class PhidgetsOutput : PhidgetDevice
     {
         DigitalOutput digitalOutput = new DigitalOutput();
         private CancellationTokenSource blinkCancellation;
@@ -25,7 +25,7 @@ namespace Phidgets2Prosim
         public int Delay { get; set; } = 0;
 
 
-        public PhidgestOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
+        public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
         {
             IsGate = isGate;
             Channel = channel;
@@ -47,6 +47,7 @@ namespace Phidgets2Prosim
                 }
                 digitalOutput.Channel = channel;
                 digitalOutput.DeviceSerialNumber = serial;
+                //Debug.WriteLine("<-- Listening to " + prosimDataRef + " to channel:" + channel);
                 SendInfoLog("<-- Listening to " + prosimDataRef + " to channel:" + channel);
 
                 Open();
@@ -74,7 +75,6 @@ namespace Phidgets2Prosim
         {
             try
             {
-               // digitalOutput.Open(5000);
                 if (Delay > 0)
                 {
                     var taskDelay = Task.Delay(Delay);
@@ -125,7 +125,8 @@ namespace Phidgets2Prosim
             try
             {
                 digitalOutput.Close();
-                await Task.Run(() => digitalOutput.Open(500));
+                await Task.Run(() => digitalOutput.Open(10000));
+                //Debug.WriteLine("<-- OPENED " + ProsimDataRef + " to channel:" + Channel);
             }
             catch (Exception ex)
             {

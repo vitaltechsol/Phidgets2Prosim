@@ -28,8 +28,8 @@ namespace Phidgets2Prosim
         PhidgetsInput[] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
         PhidgetsMultiInput[] phidgetsMultiInput = new PhidgetsMultiInput[360];
-        PhidgestOutput[] phidgetsOutput = new PhidgestOutput[360];
-        PhidgestOutput[] phidgetsGate = new PhidgestOutput[360];
+        PhidgetsOutput[] phidgetsOutput = new PhidgetsOutput[360];
+        PhidgetsOutput[] phidgetsGate = new PhidgetsOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
@@ -37,7 +37,7 @@ namespace Phidgets2Prosim
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
 
 
-        PhidgestOutput digitalOutput_3_8;
+        PhidgetsOutput digitalOutput_3_8;
 
         Custom_TrimWheel trimWheel;
         PhidgetsBLDCMotor bldcm_00;
@@ -104,12 +104,14 @@ namespace Phidgets2Prosim
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
 
+                var totalOuts = 0;
+
 
                 // Add Phidgets Hub
-                if (config.PhidgetsHubsIntances != null)
+                if (config.PhidgetsHubsInstances != null)
                 {
 
-                    foreach (var hub in config.PhidgetsHubsIntances)
+                    foreach (var hub in config.PhidgetsHubsInstances)
                     {
                         try
                         {
@@ -141,20 +143,20 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsOutput[idx] = new PhidgestOutput(
+                            phidgetsOutput[idx] = new PhidgetsOutput(
                                     instance.Serial, instance.HubPort, instance.Channel,
                                     "system.indicators." + instance.ProsimDataRef, connection, false,
                                     instance.ProsimDataRefOff != null ? "system.indicators." + instance.ProsimDataRefOff : null
                                 );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
-                            if (instance.OnDelay != null && instance.OnDelay > 0)
+                            if (instance.DelayOn != null && instance.DelayOn > 0)
                             {
-                                phidgetsOutput[idx].Delay = Convert.ToInt32(instance.OnDelay);
+                                phidgetsOutput[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            if (instance.DelayOff != null && instance.DelayOff > 0)
                             {
-                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
+                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
                             }
                         }
                         catch (Exception ex)
@@ -164,6 +166,8 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
+
+                    totalOuts += idx;
                 }
 
                 // Audio OUTPUTS
@@ -178,20 +182,20 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsOutput[idx] = new PhidgestOutput(
+                            phidgetsOutput[idx] = new PhidgetsOutput(
                                     instance.Serial, instance.HubPort, instance.Channel,
                                     "system.audio." + instance.ProsimDataRef, connection, false,
                                     instance.ProsimDataRefOff != null ? "system.audio." + instance.ProsimDataRefOff : null
                                  );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
-                            if (instance.OnDelay != null && instance.OnDelay > 0)
+                            if (instance.DelayOn != null && instance.DelayOn > 0)
                             {
-                                phidgetsOutput[idx].Delay = Convert.ToInt32(instance.OnDelay);
+                                phidgetsOutput[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            if (instance.DelayOff != null && instance.DelayOff > 0)
                             {
-                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
+                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
                             }
                         }
                         catch (Exception ex)
@@ -201,6 +205,7 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
+                    totalOuts += idx;
                 }
 
                 // GATES
@@ -216,7 +221,7 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsGate[idx] = new PhidgestOutput(instance.Serial, instance.HubPort, instance.Channel,
+                            phidgetsGate[idx] = new PhidgetsOutput(instance.Serial, instance.HubPort, instance.Channel,
                                 "system.gates." + instance.ProsimDataRef, connection, true, 
                                 instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
                             phidgetsGate[idx].ErrorLog += DisplayErrorLog;
@@ -225,13 +230,13 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsGate[idx].Inverse = true;
                             }
-                            if (instance.OnDelay != null && instance.OnDelay > 0)
+                            if (instance.DelayOn != null && instance.DelayOn > 0)
                             {
-                                phidgetsGate[idx].Delay = Convert.ToInt32(instance.OnDelay);
+                                phidgetsGate[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.TurnOffAfterMs != null && instance.TurnOffAfterMs > 0)
+                            if (instance.DelayOff != null && instance.DelayOff > 0)
                             {
-                                phidgetsGate[idx].TurnOffAfterMs = Convert.ToInt32(instance.TurnOffAfterMs);
+                                phidgetsGate[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
                             }
                         }
                         catch (Exception ex)
@@ -241,6 +246,7 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
+                    totalOuts += idx;
                 }
 
                 // Voltage Output
@@ -271,6 +277,7 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
+                    totalOuts += idx;
                 }
 
                 // BLDC Motors
@@ -302,14 +309,14 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
+                    totalOuts += idx;
                 }
 
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+                DisplayInfoLog("Total outputs:" + totalOuts);
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
-
-
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay(2000);
+                var taskDelay2 = Task.Delay(totalOuts * 80);
                 await taskDelay2;
 
                 connectToProSim(config.GeneralConfig.ProSimIP);
@@ -341,6 +348,22 @@ namespace Phidgets2Prosim
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
 
+                ////Possible code to display inputs
+                //var hub = 668522;
+
+                //// Load for test
+                //var ip_idx = 0;
+                //for (var hubIdx = 4; hubIdx < 5; hubIdx++)
+                //{
+                //    for (var chIdx = 0; chIdx < 16; chIdx++)
+                //    {
+                //        phidgetsInputPreview[ip_idx] = new PhidgetsInput(hub, hubIdx, chIdx, connection, "test", 1);
+                //        phidgetsInputPreview[ip_idx].ErrorLog += DisplayErrorLog;
+                //        phidgetsInputPreview[ip_idx].InfoLog += DisplayInfoLog;
+                //        ip_idx++;
+                //    }
+                //}
+
                 // INPUTS
                 if (config.PhidgetsInputInstances != null)
                 {
@@ -354,8 +377,8 @@ namespace Phidgets2Prosim
                         try
                         {
                             phidgetsInput[idx] = new PhidgetsInput(
-                                instance.Serial, 
-                                instance.HubPort, 
+                                instance.Serial,
+                                instance.HubPort,
                                 instance.Channel,
                                 connection,
                                 "system.switches." + instance.ProsimDataRef,
@@ -371,7 +394,7 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
                             }
-                         
+
                         }
                         catch (Exception ex)
                         {
@@ -396,7 +419,7 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            
+
                             phidgetsMultiInput[idx] = new PhidgetsMultiInput(
                                 instance.Serial,
                                 instance.HubPort,
@@ -406,7 +429,7 @@ namespace Phidgets2Prosim
                                 instance.Mappings);
                             phidgetsMultiInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsMultiInput[idx].InfoLog += DisplayInfoLog;
-                           
+
                         }
                         catch (Exception ex)
                         {
@@ -488,7 +511,7 @@ namespace Phidgets2Prosim
                     .Build();
 
                 // Wait before starting
-                var taskDelay = Task.Delay(300);
+                var taskDelay = Task.Delay(1000);
                 await taskDelay;
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
@@ -539,6 +562,7 @@ namespace Phidgets2Prosim
                     }
                 }
 
+       
             }
             catch (Exception ex)
             {
@@ -556,24 +580,6 @@ namespace Phidgets2Prosim
         private void AddAllPhidgets()
         {
 
-            //var hubPedestalSlrNo = 618534;
-
-            //Possible code to display inputs
-            //var oh1 = 668659;
-
-            //// Load for test
-            //var idx = 0;
-            //for (var hubIdx = 0; hubIdx < inHubs.Length; hubIdx++) 
-            //{
-            //    for (var chIdx = 0; chIdx < 16; chIdx++)
-            //    {
-            //        phidgetsInputPreview[idx] = new PhidgetsInput(oh1, inHubs[hubIdx], chIdx, connection, "test", 1);
-            //        phidgetsInputPreview[idx].ErrorLog += DisplayErrorLog;
-            //        phidgetsInputPreview[idx].InfoLog += DisplayInfoLog;
-            //        idx++;
-            //    }
-            //}   
-            
 
             try
             {
@@ -763,89 +769,4 @@ namespace Phidgets2Prosim
             txtLog.Text = string.Empty;
         }
     }
-
-
-    public class Config
-    {
-        public GeneralConfig GeneralConfig { get; set; }
-        public List<string> PhidgetsHubsIntances { get; set; }
-        public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
-        public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
-        public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }
-        public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
-        public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
-        public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
-        public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
-        public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
-    }
-
-    public class PhidgetsOutputInst : PhidgetDevice
-    {
-        public int? OnDelay { get; set; }
-        public bool Inverse { get; set; } = false;
-        public int? TurnOffAfterMs { get; set; } = null;
-        public string ProsimDataRefOff { get; set; } = null;
-
-    }
-
-    public class PhidgetsAudioInst : PhidgetsOutputInst
-    {
-    }
-
-    public class PhidgetsGateInst : PhidgetDevice
-    {
-        public int? OnDelay { get; set; } = null;
-        public bool Inverse { get; set; } = false;
-        public string ProsimDataRefOff { get; set; } = null;
-        public int? TurnOffAfterMs { get; set; } = null;
-    }
-
-    public class PhidgetsInputInst : PhidgetDevice
-    {
-        public int InputValue { get; set; }
-        public int OffInputValue { get; set; } = 0;
-        public string ProsimDataRef2 { get; set; } = null;
-        public string ProsimDataRef3 { get; set; } = null;
-    }
-
-    public class PhidgetsMultiInputInst : PhidgetDevice
-    {
-        public List<int> Channels { get; set; }
-        public Dictionary<string, int> Mappings { get; set; }
-    }
-
-
-    public class PhidgetsBLDCMotorInst : PhidgetDevice
-    {
-        public int Offset { get; set; }
-        public bool Reversed { get; set; }
-        public string RefTurnOn { get; set; }
-        public string RefCurrentPos { get; set; }
-        public string RefTargetPos { get; set; }
-        public double Acceleration { get; set; }
-
-    }
-
-    public class PhidgetsVoltageOutputInst : PhidgetDevice
-    {
-        public double ScaleFactor { get; set; }
-        public double Offset { get; set; } = 0;
-        
-    }
-
-    public class PhidgetsButtonInst : PhidgetDevice
-    {
-        public string Name { get; set; }
-        public int InputValue { get; set; }
-        public int OffInputValue { get; set; } = 0;
-    }
-
-    public class GeneralConfig
-    {
-        public string ProSimIP { get; set; }
-        public string Schema { get; set; }
-    }
-
-
-
 }
