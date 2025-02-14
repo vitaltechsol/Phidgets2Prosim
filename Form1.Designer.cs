@@ -244,7 +244,7 @@ namespace Phidgets2Prosim
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v0.1.0";
+            this.label1.Text = "v0.2.0";
             // 
             // lblPsIP
             // 

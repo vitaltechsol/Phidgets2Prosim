@@ -57,6 +57,7 @@ namespace Phidgets2Prosim
         public Form1()
         {
             InitializeComponent();
+            this.Icon = Properties.Resources.ph2pr;
             this.Shown += new System.EventHandler(Form1_Shown);
             this.FormClosed += new FormClosedEventHandler(Form1_Closed);
         }

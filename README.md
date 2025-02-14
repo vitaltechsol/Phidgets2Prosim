@@ -1,18 +1,23 @@
 # Phidgets2Prosim
 
-This application allows using many of of the VINT Phidgtes modules with Prosim-AR 737 for Microsoft Flight Simulator and P3D
+This application allows using many of of the  Phidgets VINT modules with Prosim-AR 737 for Microsoft Flight Simulator and P3D
 
-While Prosim has native support for Phidgets I wanted some additional custom functionality that is currently not available.
+While Prosim has native support for Phidgets I wanted some additional custom functionality that is currently not available specially when using OEM panels.
+
+1. **Installation and Manual**
+
+   - Visit the [Manual and Installation page](https://github.com/vitaltechsol/Phidgets2Prosim/manual) page.
 
 
 ## VINT Modules supported and features
 
-### Outputs
+### Outputs / Gates
 
 - On/Off
-- Inverse 
+- Inverse logic
 - Use a different Prosim data ref to turn off value. 
 - Delay: Turn on or off after n amount of milliseconds
+- Blink: Detects blinking state from prosim, makes output blink
 
 ### Inputs
 - Inputs
@@ -31,4 +36,9 @@ While Prosim has native support for Phidgets I wanted some additional custom fun
 
 ### Voltage Output
 - Control OEM gauges/indicators that support analogue voltage
+
+### Custom trim wheel
+- Use a DC motor to control trim wheel
+- Different speeds for all modes (clean config, dirty config, auto pilot on or off)
+- Programmatic break/stop
 
