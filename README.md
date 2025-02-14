@@ -6,7 +6,7 @@ While Prosim has native support for Phidgets I wanted some additional custom fun
 
 1. **Installation and Manual**
 
-   - Visit the [Manual and Installation page](https://github.com/vitaltechsol/Phidgets2Prosim/manual) page.
+   - Visit the [Manual and Installation page](https://github.com/vitaltechsol/Phidgets2Prosim/tree/master/manual#readme) page.
 
 
 ## VINT Modules supported and features
