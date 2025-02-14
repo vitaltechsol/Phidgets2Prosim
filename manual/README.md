@@ -95,6 +95,8 @@ PhidgetsHubsInstances:
   - hub5000-2
 ```
 
+List each hub device server name. Found in Phidgets control panel
+
 ## [Phidgets Inputs](#phidgetsinputinst)
 
 ```yaml
