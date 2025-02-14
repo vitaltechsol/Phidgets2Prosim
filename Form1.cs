@@ -86,7 +86,6 @@ namespace Phidgets2Prosim
         void connection_onConnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            // Invoke(new MethodInvoker(AddAllPhidgets));
             Invoke(new MethodInvoker(LoadConfigIns));
         }
 
@@ -283,7 +282,7 @@ namespace Phidgets2Prosim
                 // BLDC Motors
                 if (config.PhidgetsBLDCMotorInstances != null)
                 {
-                     var idx = 0;
+                    var idx = 0;
                     foreach (var instance in config.PhidgetsBLDCMotorInstances)
                     {
                         try
@@ -312,8 +311,35 @@ namespace Phidgets2Prosim
                     totalOuts += idx;
                 }
 
+                // Custom - Trim wheel
+                if (config.CustomTrimWheelInstance != null)
+                {
+                    var instance  = config.CustomTrimWheelInstance;
+                    try
+                    {
+                        trimWheel = new Custom_TrimWheel(
+                            instance.Serial, 
+                            instance.Channel, 
+                            connection,
+                            instance.DirtyUp,
+                            instance.DirtyDown,
+                            instance.CleanUp,
+                            instance.CleanDown,
+                            instance.APOnDirty,
+                            instance.APOnDirty
+                        );
+                        trimWheel.ErrorLog += DisplayErrorLog;
+                        trimWheel.InfoLog += DisplayInfoLog;
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayErrorLog("Error loading config line for Voltage Output");
+                        DisplayErrorLog(ex.ToString());
+                    }
+                }
+
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
-                DisplayInfoLog("Total outputs:" + totalOuts);
+                DisplayInfoLog("Opening outputs:" + totalOuts);
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
                 var taskDelay2 = Task.Delay(totalOuts * 80);
@@ -477,7 +503,7 @@ namespace Phidgets2Prosim
                     foreach (var app in PhidgetsButtonList)
                     {
                         Button appButton = new Button();
-                        appButton.Width = 160;
+                        appButton.Width = 142;
                         appButton.Height = 45;
                         appButton.Text = app.Name;
                         appButton.MouseDown += new MouseEventHandler(app.StateChangeOn);
@@ -577,23 +603,25 @@ namespace Phidgets2Prosim
             throw new NotImplementedException();
         }
 
-        private void AddAllPhidgets()
-        {
+        //private void AddAllPhidgets()
+        //{
 
 
-            try
-            {
-                if (!phidgetsAdded)
-                {
-                    trimWheel = new Custom_TrimWheel(0, connection, 1, 0.8, 0.6, 0.6, 0.7, 0.5);
-                    phidgetsAdded = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("ERROR: Can't Initialize phidgets " + ex);
-            }
-        }
+        //    try
+        //    {
+        //        if (!phidgetsAdded)
+        //        {
+        //            trimWheel = new Custom_TrimWheel(668534, 0, connection, 1, 0.8, 0.6, 0.6, 0.7, 0.5);
+        //            trimWheel.ErrorLog += DisplayErrorLog;
+        //            trimWheel.InfoLog += DisplayInfoLog;
+        //            phidgetsAdded = true;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine("ERROR: Can't Initialize phidgets " + ex);
+        //    }
+        //}
 
         void updateStatusLabel()
         {
@@ -739,7 +767,6 @@ namespace Phidgets2Prosim
         private void Form1_Shown(object sender, EventArgs e)
         {
             LoadConfigOuts();
-            AddAllPhidgets();
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;

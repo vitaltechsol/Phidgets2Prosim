@@ -20,7 +20,9 @@ namespace Phidgets2Prosim
         public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
+        public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
         public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
+
     }
 
     public class PhidgetsOutputInst : PhidgetDevice
@@ -111,6 +113,28 @@ namespace Phidgets2Prosim
 
         // Offset the value
         public double Offset { get; set; } = 0;
+
+    }
+
+    public class CustomTrimWheelInst : PhidgetDevice
+    {
+        // Speed when dirty config. Nose up
+        public double DirtyUp { get; set; }
+
+        // Speed when dirty config. Nose down
+        public double DirtyDown { get; set; }
+
+        // Speed when clean config. Nose up
+        public double CleanUp { get; set; }
+
+        // Speed when clean config. Nose down
+        public double CleanDown { get; set; }
+
+        // Speed when Auto Pilot is on. Clean config
+        public double APOnClean { get; set; }
+
+        // Speed when Auto Pilot is on. Dirty config
+        public double APOnDirty { get; set; }
 
     }
 

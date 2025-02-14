@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Phidgets2Prosim
 {
 
-    internal class Custom_TrimWheel
+    internal class Custom_TrimWheel : PhidgetDevice
     {
         PhidgetsDCMotor dcm;
         double dirtyUp;
@@ -25,14 +25,16 @@ namespace Phidgets2Prosim
         bool isAPOn = false;
         double flaps = 0;
 
-        public Custom_TrimWheel(int hubPort, ProSimConnect connection, 
+        public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
             double dirtyUp, double dirtyDown, 
             double cleanUp, double cleanDown, 
             double APOnDirty,
             double APOnClean)
         {
-            dcm = new PhidgetsDCMotor(hubPort, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
+            dcm = new PhidgetsDCMotor(serial, hubPort, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
             dcm.pulsateMotor = true;
+            dcm.ErrorLog += SendErrorLog;
+            dcm.InfoLog += SendInfoLog;
 
             DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);

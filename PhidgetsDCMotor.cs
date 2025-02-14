@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsDCMotor
+    internal class PhidgetsDCMotor : PhidgetDevice
     {
         string prosimDatmRefBwd;
         string prosimDatmRefFwd;
@@ -15,7 +15,6 @@ namespace Phidgets2Prosim
         double targetVelBwd = 1;
         double currentVel = 0;
         bool isPaused = false;
-        int hubPort;
         private bool isMotorMoving = false;
         private System.Timers.Timer pulsateTimer;
 
@@ -27,24 +26,24 @@ namespace Phidgets2Prosim
 
 
         DCMotor dcMotor = new DCMotor();
-        public PhidgetsDCMotor(int hubPort, string prosimDatmRefFwd, string prosimDatmRefBwd, ProSimConnect connection)
+        public PhidgetsDCMotor(int serial, int hubPort, string prosimDataRefFwd, string prosimDataRefBwd, ProSimConnect connection)
         {
             try
             {
-                this.hubPort = hubPort;
-                this.prosimDatmRefBwd = prosimDatmRefBwd;
-                this.prosimDatmRefFwd = prosimDatmRefFwd;
+                HubPort = hubPort;
+                this.prosimDatmRefBwd = prosimDataRefBwd;
+                this.prosimDatmRefFwd = prosimDataRefFwd;
 
                 dcMotor.HubPort = hubPort;
                 dcMotor.IsRemote = true;
                 dcMotor.Open(5000);
-                dcMotor.DeviceSerialNumber = 668534;
+                dcMotor.DeviceSerialNumber = serial;
                 dcMotor.Acceleration = 100;
                 dcMotor.TargetBrakingStrength = 1;
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDatmRefFwd, 100, connection);
-                DataRef dataRef2 = new DataRef(prosimDatmRefBwd, 100, connection);
+                DataRef dataRef = new DataRef(prosimDataRefFwd, 100, connection);
+                DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
 
                 dataRef.onDataChange += DataRef_onDataChange;
                 dataRef2.onDataChange += DataRef_onDataChange;
@@ -52,7 +51,7 @@ namespace Phidgets2Prosim
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("prosimDatmRefCW " + prosimDatmRefFwd);
+                Debug.WriteLine("prosimDatmRefCW " + prosimDataRefFwd);
             }
         }
 
@@ -183,11 +182,12 @@ namespace Phidgets2Prosim
             try
             {
                 await Task.Run(() => dcMotor.Open(500));
+                SendErrorLog("DC Motor Connected " + HubPort + "ch" + Channel);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Open failed for DC Motor " + hubPort);
-                Debug.WriteLine(ex.ToString());
+                SendErrorLog("Open failed for DC Motor " + HubPort);
+                SendErrorLog(ex.ToString());
             }
         }
 
