@@ -127,10 +127,6 @@ namespace Phidgets2Prosim
 
                 }
 
-                // wait for hubs to connect
-                //var taskDelay = Task.Delay(config.PhidgetsHubsIntances.Count * 500);
-                //await taskDelay;
-
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
                 {
@@ -343,7 +339,7 @@ namespace Phidgets2Prosim
                 DisplayInfoLog("Opening outputs:" + totalOuts);
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay(totalOuts * 80);
+                var taskDelay2 = Task.Delay((totalOuts + 10) * 80);
                 await taskDelay2;
 
                 connectToProSim(config.GeneralConfig.ProSimIP);
@@ -359,6 +355,8 @@ namespace Phidgets2Prosim
 
         private async void LoadConfigIns()
         {
+            DisplayInfoLog("Loading Inputs configs ... ");
+
             try
             {
                 // Read YAML from file

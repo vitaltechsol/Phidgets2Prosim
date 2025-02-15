@@ -36,6 +36,10 @@ The `config.yaml` file consists of several sections:
 - `PhidgetsHubsInstances`: Lists all hub devices.
 - Various `Phidgets` device sections for different types of instances.
 
+##  Prosim datarefs list
+ 
+[Prosim Data Refs List](https://docs.google.com/spreadsheets/d/1CSBgNBA1x6DjuY8paAMT7_TFc9DFpK48wiUeUQj5Lz8/edit)
+
 ## Index
 
 - [Installation Guide](#installation-guide)
