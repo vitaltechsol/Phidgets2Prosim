@@ -188,7 +188,7 @@ namespace Phidgets2Prosim
 
                     var value = Convert.ToInt32(dataRef.value);
 
-                    if (value == 4)
+                    if (value == 4) //blink
                     {
                         if (blinkCancellation == null)
                         {
@@ -199,17 +199,28 @@ namespace Phidgets2Prosim
                     else
                     {
                         StopBlinking();
-
-                        if (value == 1 || value == 2)
+                        if (Inverse)
                         {
-                            TurnOn();
-                        }
-                        else if (value == 0)
+                            if (value == 1 || value == 2)
+                            {
+                                TurnOff();
+                            }
+                            else if (value == 0)
+                            {
+                                TurnOn();
+                            }
+                        } else
                         {
-                            TurnOff();
+                            if (value == 1 || value == 2)
+                            {
+                                TurnOn();
+                            }
+                            else if (value == 0)
+                            {
+                                TurnOff();
+                            }
                         }
                     }
-                
                 }
             }
             catch (Exception ex)

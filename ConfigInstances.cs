@@ -153,6 +153,7 @@ namespace Phidgets2Prosim
     {
         public string ProSimIP { get; set; }
         public string Schema { get; set; }
+        public int BlinkIntervalMs { get; set; } = 300;
     }
 
 
