@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
@@ -38,6 +39,14 @@ namespace Phidgets2Prosim
 
         // (Optional) Use a different prosim data ref to turn off 
         public string ProsimDataRefOff { get; set; } = null;
+
+        // (Optional) Value when on (1 is 100%), default is 1 
+        public double ValueOn { get; set; } = 1;
+        // (Optional) Value when off (0 is 0%), default is 0
+        public double ValueOff { get; set; } = 0;
+        
+        // (Optional) Value when dim (0.7 is 70%), default is 0.7
+        public double ValueDim { get; set; } = 0.7;
 
     }
 
@@ -153,8 +162,10 @@ namespace Phidgets2Prosim
     {
         public string ProSimIP { get; set; }
         public string Schema { get; set; }
-        public int BlinkIntervalMs { get; set; } = 300;
+        // Default value used for blinking outputs
+        public int OutputBlinkIntervalMs { get; set; } = 300;
+        // Default value used for dim output state when not specified
+        public double OutputDefaultDimValue { get; set; } = 0.7;
     }
-
 
 }

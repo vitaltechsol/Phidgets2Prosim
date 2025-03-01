@@ -24,7 +24,8 @@ namespace Phidgets2Prosim
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
         int logTabIndex = 6;
-        int BlinkIntervalMs = 300;
+        int OutputBlinkIntervalFastMs = 300;
+        double OutputDefaultDimValue = 0.7;
 
         PhidgetsInput [] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
@@ -147,7 +148,7 @@ namespace Phidgets2Prosim
                                 );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
-                            phidgetsOutput[idx].BlinkIntervalMs = BlinkIntervalMs;
+                            phidgetsOutput[idx].BlinkIntervalFastMs = OutputBlinkIntervalFastMs;
                             if (instance.Inverse == true)
                             {
                                 phidgetsOutput[idx].Inverse = true;
@@ -159,6 +160,18 @@ namespace Phidgets2Prosim
                             if (instance.DelayOff != null && instance.DelayOff > 0)
                             {
                                 phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
+                            }
+                            if (instance.ValueOff != 0)
+                            {
+                                phidgetsOutput[idx].ValueOff = instance.ValueOff;
+                            }
+                            if (instance.ValueOn != 1)
+                            {
+                                phidgetsOutput[idx].ValueOn = instance.ValueOn;
+                            }
+                            if (instance.ValueDim != OutputDefaultDimValue)
+                            {
+                                phidgetsOutput[idx].ValueDim = instance.ValueDim;
                             }
                         }
                         catch (Exception ex)
@@ -343,7 +356,11 @@ namespace Phidgets2Prosim
 
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
-                BlinkIntervalMs = config.GeneralConfig.BlinkIntervalMs;
+                OutputBlinkIntervalFastMs = config.GeneralConfig.OutputBlinkIntervalMs;
+                if (config.GeneralConfig.OutputDefaultDimValue > 0)
+                {
+                    OutputDefaultDimValue = config.GeneralConfig.OutputDefaultDimValue;
+                }
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
                 var taskDelay2 = Task.Delay((totalOuts + 10) * 80);

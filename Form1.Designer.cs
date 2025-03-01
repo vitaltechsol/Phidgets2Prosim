@@ -36,6 +36,8 @@ namespace Phidgets2Prosim
             this.dataGridViewOutputs = new System.Windows.Forms.DataGridView();
             this.tabInputs = new System.Windows.Forms.TabPage();
             this.dataGridViewInputs = new System.Windows.Forms.DataGridView();
+            this.tabMultiInputs = new System.Windows.Forms.TabPage();
+            this.dataGridViewMultiInputs = new System.Windows.Forms.DataGridView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridViewGates = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -46,24 +48,22 @@ namespace Phidgets2Prosim
             this.btnLogClear = new System.Windows.Forms.Button();
             this.btnLogOk = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.tabMultiInputs = new System.Windows.Forms.TabPage();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
-            this.dataGridViewMultiInputs = new System.Windows.Forms.DataGridView();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
             this.tabInputs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).BeginInit();
+            this.tabMultiInputs.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).BeginInit();
             this.tabButtons.SuspendLayout();
             this.tabLog.SuspendLayout();
-            this.tabMultiInputs.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).BeginInit();
             this.SuspendLayout();
             // 
             // tabGroups
@@ -118,6 +118,25 @@ namespace Phidgets2Prosim
             this.dataGridViewInputs.Name = "dataGridViewInputs";
             this.dataGridViewInputs.Size = new System.Drawing.Size(618, 267);
             this.dataGridViewInputs.TabIndex = 1;
+            // 
+            // tabMultiInputs
+            // 
+            this.tabMultiInputs.Controls.Add(this.dataGridViewMultiInputs);
+            this.tabMultiInputs.Location = new System.Drawing.Point(4, 22);
+            this.tabMultiInputs.Name = "tabMultiInputs";
+            this.tabMultiInputs.Padding = new System.Windows.Forms.Padding(3);
+            this.tabMultiInputs.Size = new System.Drawing.Size(630, 279);
+            this.tabMultiInputs.TabIndex = 6;
+            this.tabMultiInputs.Text = "Inputs (Multi)";
+            this.tabMultiInputs.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewMultiInputs
+            // 
+            this.dataGridViewMultiInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewMultiInputs.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewMultiInputs.Name = "dataGridViewMultiInputs";
+            this.dataGridViewMultiInputs.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewMultiInputs.TabIndex = 3;
             // 
             // tabPage3
             // 
@@ -217,17 +236,6 @@ namespace Phidgets2Prosim
             this.txtLog.Size = new System.Drawing.Size(618, 237);
             this.txtLog.TabIndex = 0;
             // 
-            // tabMultiInputs
-            // 
-            this.tabMultiInputs.Controls.Add(this.dataGridViewMultiInputs);
-            this.tabMultiInputs.Location = new System.Drawing.Point(4, 22);
-            this.tabMultiInputs.Name = "tabMultiInputs";
-            this.tabMultiInputs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMultiInputs.Size = new System.Drawing.Size(630, 279);
-            this.tabMultiInputs.TabIndex = 6;
-            this.tabMultiInputs.Text = "Inputs (Multi)";
-            this.tabMultiInputs.UseVisualStyleBackColor = true;
-            // 
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
@@ -244,7 +252,7 @@ namespace Phidgets2Prosim
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v0.2.1";
+            this.label1.Text = "v1.0.0";
             // 
             // lblPsIP
             // 
@@ -254,14 +262,6 @@ namespace Phidgets2Prosim
             this.lblPsIP.Size = new System.Drawing.Size(51, 13);
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
-            // 
-            // dataGridViewMultiInputs
-            // 
-            this.dataGridViewMultiInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewMultiInputs.Location = new System.Drawing.Point(6, 6);
-            this.dataGridViewMultiInputs.Name = "dataGridViewMultiInputs";
-            this.dataGridViewMultiInputs.Size = new System.Drawing.Size(618, 267);
-            this.dataGridViewMultiInputs.TabIndex = 3;
             // 
             // Form1
             // 
@@ -280,6 +280,8 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).EndInit();
             this.tabInputs.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).EndInit();
+            this.tabMultiInputs.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).EndInit();
             this.tabPage4.ResumeLayout(false);
@@ -287,8 +289,6 @@ namespace Phidgets2Prosim
             this.tabButtons.ResumeLayout(false);
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
-            this.tabMultiInputs.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
