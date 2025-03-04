@@ -17,6 +17,8 @@ namespace Phidgets2Prosim
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
+    using YamlDotNet.Core.Tokens;
+    using System.Runtime.InteropServices.ComTypes;
 
     public partial class Form1 : Form
     {
@@ -92,7 +94,7 @@ namespace Phidgets2Prosim
             Invoke(new MethodInvoker(LoadConfigIns));
         }
 
-        private async void LoadConfigOuts()
+        private async Task LoadConfigOuts()
         {
             try
             {
@@ -184,6 +186,38 @@ namespace Phidgets2Prosim
 
                     totalOuts += idx;
                 }
+
+
+                //// Code to test all lights on
+                //var t = 0;
+                //while (true)
+                //{
+                //    DateTime startDate = DateTime.Now;
+                //    //Console.WriteLine("Current Time with Milliseconds: " + startDate.ToString("HH:mm:ss.fff"));
+
+                //    for (int i = 0; i < totalOuts; i++)
+                //    {
+                //        // await Task.Run(() => phidgetsOutput[i].TurnOn(t));
+                //        await Task.Run(() =>  phidgetsOutput[i].HandleDataChangeAsync("name", t));
+
+                //    }
+
+
+                //    DateTime endDate = DateTime.Now;
+                //    //Console.WriteLine("Current Time DONE: " + endDate.ToString("HH:mm:ss.fff"));
+                //    TimeSpan difference = endDate - startDate;
+
+                //    // Display the difference
+                //    Console.WriteLine($"Difference:  {difference.Milliseconds} mil, {difference.Seconds} seconds");
+
+                //    t = t == 1 ? 0 : 1;
+                //    //t = t == 1 ? 0 : 1;
+
+
+                //    var taskDelay = Task.Delay(2000);
+                //    await taskDelay;
+                //}
+
 
                 // Audio OUTPUTS
                 if (config.PhidgetsAudioInstances != null)
@@ -789,7 +823,8 @@ namespace Phidgets2Prosim
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            LoadConfigOuts();
+
+            this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;

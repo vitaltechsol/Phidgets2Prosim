@@ -15,11 +15,6 @@ namespace Phidgets2Prosim
         private CancellationTokenSource blinkCancellation;
         public int BlinkIntervalFastMs { get; set; } = 300; // Default blink interval
         public int BlinkIntervalSlowMs { get; set; } = 600; // Default blink interval
-
-
-
-        //bool isGate = false;
-
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
         public bool IsGate { get; set; }
@@ -58,7 +53,7 @@ namespace Phidgets2Prosim
                 Open();
 
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDataRef, 50, connection);
+                DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
 
                 if (prosimDataRefOff != null)
@@ -76,7 +71,7 @@ namespace Phidgets2Prosim
         }
 
 
-        public async void TurnOn(double dimValue)
+        public async Task TurnOn(double dutyCycle)
         {
             try
             {
@@ -86,8 +81,14 @@ namespace Phidgets2Prosim
                     await taskDelay;
                 }
 
-                digitalOutput.DutyCycle = dimValue;
-                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dimValue})] | Ref: {ProsimDataRef}");
+
+                digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
+                {
+                    digitalOutput.EndSetDutyCycle(result);
+
+                }, null);
+
+                 SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
 
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
@@ -95,7 +96,7 @@ namespace Phidgets2Prosim
                     SendInfoLog("Start OFF Delay " + TurnOffAfterMs + " for " + ProsimDataRef + " - Channel " + Channel);
                     var taskDelay2 = Task.Delay(TurnOffAfterMs);
                     await taskDelay2;
-                    TurnOff(ValueOff);
+                    await TurnOff(ValueOff);
                 }
             }
             catch (Exception ex)
@@ -103,14 +104,20 @@ namespace Phidgets2Prosim
                 SendErrorLog("Turn On Failed for " + ProsimDataRef + " - Channel " + Channel);
                 SendErrorLog(ex.ToString());
             }
+
         }
 
-        public void TurnOff(double offValue)
+        public async Task TurnOff(double dutyCycle)
         {
             try
             {
-                digitalOutput.DutyCycle = offValue;
-                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [OFF ({offValue})] | Ref: {ProsimDataRef}");
+                digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
+                {
+
+                    digitalOutput.EndSetDutyCycle(result);
+
+                }, null);
+                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
 
             }
             catch (Exception ex)
@@ -142,38 +149,40 @@ namespace Phidgets2Prosim
 
         private void DataRef_onDataChange(DataRef dataRef)
         {
-            var name = dataRef.name;
+            _ = HandleDataChangeAsync(dataRef.name, dataRef.value);
+        }
 
-            Debug.WriteLine($"OUT Changed: {dataRef.name} {dataRef.value}");
-            SendInfoLog($"OUT Changed: {dataRef.name} {dataRef.value}");
+
+        public async Task HandleDataChangeAsync(string name, object refValue)
+        {
 
             try
             {
                 if (IsGate)
                 {
-                    var value = Convert.ToBoolean(dataRef.value);
+                    var value = Convert.ToBoolean(refValue);
                     if (value == true && name == ProsimDataRef)
                     {
                         if (Inverse)
                         {
-                            TurnOff(ValueOff);
+                            await TurnOff(ValueOff);
                         }
                         else
                         {
-                            TurnOn(ValueOn);
+                            await TurnOn(ValueOn);
                         }
                     }
 
                     if (value == true && name == ProsimDataRefOff)
                     {
-                        SendInfoLog("Turn Off from ProsimDataRefOff" + dataRef.value + " " + dataRef.name);
+                        SendInfoLog("Turn Off from ProsimDataRefOff" + refValue + " " + name);
                         if (Inverse)
                         {
-                            TurnOn(ValueOn);
+                            await TurnOn(ValueOn);
                         }
                         else
                         {
-                            TurnOff(ValueOff);
+                            await TurnOff(ValueOff);
                         }
                     }
 
@@ -181,17 +190,17 @@ namespace Phidgets2Prosim
                     {
                         if (Inverse)
                         {
-                            TurnOn(ValueOn);
+                            await TurnOn(ValueOn);
                         }
                         else
                         {
-                            TurnOff(ValueOff);
+                            await TurnOff(ValueOff);
                         }
                     }
                 }
-                else { 
-                    var value = Convert.ToInt32(dataRef.value);
-
+                else
+                {
+                    var value = Convert.ToInt32(refValue);
                     if (value == 4) //blink fast
                     {
                         if (blinkCancellation == null)
@@ -201,48 +210,50 @@ namespace Phidgets2Prosim
                         }
                     }
                     else if (value == 3) //blink slow
-                        {
-                            if (blinkCancellation == null)
-                            {
-                                blinkCancellation = new CancellationTokenSource();
-                                _ = BlinkAsyncSlow(blinkCancellation.Token);
-                            }
-                        }
-                        else
                     {
-                        StopBlinking();
+                        if (blinkCancellation == null)
+                        {
+                            blinkCancellation = new CancellationTokenSource();
+                            _ = BlinkAsyncSlow(blinkCancellation.Token);
+                        }
+                    }
+                    else
+                    {
                         if (Inverse)
                         {   // Dim
                             if (value == 1)
                             {
-                                TurnOn(ValueDim);
+                                await TurnOn(ValueDim);
                             }
                             // On
                             if (value == 2)
                             {
-                                TurnOff(ValueOff);
+                                await TurnOff(ValueOff);
+                                await StopBlinking();
                             }
                             // Off
                             else if (value == 0)
                             {
-                                TurnOn(ValueOn);
+                                 await TurnOn(ValueOn);
                             }
-                        } else
+                        }
+                        else
                         {
                             // Dim
                             if (value == 1)
                             {
-                                TurnOn(ValueDim);
+                                 await TurnOn(ValueDim);
                             }
                             // On
                             if (value == 2)
                             {
-                                TurnOn(ValueOn);
+                               await TurnOn(ValueOn);
                             }
                             // Off
                             else if (value == 0)
                             {
-                                TurnOff(ValueOff);
+                                await TurnOff(ValueOff);
+                                await StopBlinking();
                             }
                         }
                     }
@@ -251,7 +262,7 @@ namespace Phidgets2Prosim
             catch (Exception ex)
             {
                 SendErrorLog("DataRef_onDataChange failed for " + ProsimDataRef + " ch:" + Channel);
-                SendErrorLog("value " + dataRef.value);
+                SendErrorLog("value " + refValue);
                 SendErrorLog(ex.ToString());
             }
         }
@@ -287,11 +298,10 @@ namespace Phidgets2Prosim
                 digitalOutput.DutyCycle = 0; // Ensure output is off when stopping
             }
         }
-        private void StopBlinking()
+        private async Task StopBlinking()
         {
             blinkCancellation?.Cancel();
             blinkCancellation = null;
-            digitalOutput.DutyCycle = 0;
         }
     }
 }
