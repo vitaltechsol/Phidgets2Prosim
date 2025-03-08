@@ -75,8 +75,14 @@ namespace Phidgets2Prosim
                 if (digitalInput.IsOpen == false)
                 {
 
-                    digitalInput.HubPort = HubPort;
-                    digitalInput.IsRemote = true;
+                    if (HubPort >= 0)
+                    {
+                        digitalInput.HubPort = HubPort;
+                        digitalInput.IsRemote = true;
+                        // use -1 for channel when is a IsHubPortDevice
+                        digitalInput.IsHubPortDevice = Channel == -1;
+                    }
+
                     digitalInput.Channel = Channel;
                     digitalInput.StateChange += StateChange;
                     digitalInput.DeviceSerialNumber = Serial;
