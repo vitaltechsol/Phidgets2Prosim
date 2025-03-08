@@ -43,6 +43,10 @@ PhidgetsAudioInstances:
     ProsimDataRefOff: "Seatbelt_Audio"
 
 PhidgetsOutputInstances:
+  - Serial: 741087
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: I_OH_FILTER_BYPASS2
   - Serial: 668522
     HubPort: 1
     Channel: 9
@@ -51,50 +55,22 @@ PhidgetsOutputInstances:
     HubPort: 1
     Channel: 10
     ProsimDataRef: I_MIP_GEAR_RIGHT_DOWN
-  - Serial: 668015
-    HubPort: 2
-    Channel: 0
-    ProsimDataRef: I_OH_REVERSER2
-  - Serial: 668015
-    HubPort: 2
-    Channel: 1
-    ProsimDataRef: I_OH_ENGINE_CONTROL2
-  - Serial: 668015
-    HubPort: 2
-    Channel: 2
-    ProsimDataRef: I_OH_EEC_ALTN2
-  - Serial: 668015
-    HubPort: 2
-    Channel: 3
-    ProsimDataRef: I_OH_PSEU
-  - Serial: 668015
-    HubPort: 2
-    Channel: 4
-    ProsimDataRef: I_OH_GEAR_LEFT_DOWN
-  - Serial: 668015
-    HubPort: 2
-    Channel: 5
-    ProsimDataRef: I_OH_GEAR_RIGHT_DOWN
-  - Serial: 668015
-    HubPort: 2
-    Channel: 6
-    ProsimDataRef: I_OH_GEAR_NOSE_DOWN
-  - Serial: 668015
-    HubPort: 2
-    Channel: 13
-    ProsimDataRef: I_OH_EEC_ALTN1
-  - Serial: 668015
-    HubPort: 2
-    Channel: 14
-    ProsimDataRef: I_OH_ENGINE_CONTROL1
-  - Serial: 668015
-    HubPort: 2
-    Channel: 15
-    ProsimDataRef: I_OH_REVERSER1
-  - Serial: 668015
-    HubPort: 2
+  - Serial: 668522
+    HubPort: 1
+    Channel: 8
+    ProsimDataRef: I_MIP_GEAR_RIGHT_TRANSIT
+  - Serial: 668522
+    HubPort: 1
+    Channel: 11
+    ProsimDataRef: I_MIP_GEAR_NOSE_TRANSIT
+  - Serial: 668522
+    HubPort: 1
     Channel: 12
-    ProsimDataRef: I_OH_ELT
+    ProsimDataRef: I_MIP_GEAR_LEFT_TRANSIT
+  - Serial: 668522
+    HubPort: 1
+    Channel: 13
+    ProsimDataRef: I_MIP_GEAR_LEFT_DOWN
   - Serial: 668522
     HubPort: 1
     Channel: 1
@@ -119,22 +95,6 @@ PhidgetsOutputInstances:
     HubPort: 1
     Channel: 3
     ProsimDataRef: I_MIP_ASA_FMC_1
-  - Serial: 668522
-    HubPort: 1
-    Channel: 8
-    ProsimDataRef: I_MIP_GEAR_RIGHT_TRANSIT
-  - Serial: 668522
-    HubPort: 1
-    Channel: 11
-    ProsimDataRef: I_MIP_GEAR_NOSE_TRANSIT
-  - Serial: 668522
-    HubPort: 1
-    Channel: 12
-    ProsimDataRef: I_MIP_GEAR_LEFT_TRANSIT
-  - Serial: 668522
-    HubPort: 1
-    Channel: 13
-    ProsimDataRef: I_MIP_GEAR_LEFT_DOWN
   - Serial: 664861
     HubPort: 0
     Channel: 0
@@ -205,6 +165,431 @@ PhidgetsOutputInstances:
     HubPort: 0
     Channel: 14
     ProsimDataRef: I_MIP_TAKEOFF_CONFIG
+
+  - Serial: 668015
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: I_OH_GEAR_LEFT_DOWN
+  - Serial: 668015
+    HubPort: 2
+    Channel: 5
+    ProsimDataRef: I_OH_GEAR_RIGHT_DOWN
+  - Serial: 668015
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: I_OH_GEAR_NOSE_DOWN  
+  - Serial: 668015
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: I_OH_REVERSER2
+  - Serial: 668015
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: I_OH_ENGINE_CONTROL2
+  - Serial: 668015
+    HubPort: 2
+    Channel: 2
+    ProsimDataRef: I_OH_EEC_ALTN2
+  - Serial: 668015
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: I_OH_PSEU
+  - Serial: 668015
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: I_OH_EEC_ALTN1
+  - Serial: 668015
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: I_OH_ENGINE_CONTROL1
+  - Serial: 668015
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: I_OH_REVERSER1
+  - Serial: 668015
+    HubPort: 2
+    Channel: 12
+    ProsimDataRef: I_OH_ELT
+  - Serial: 668015
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: I_OH_PASS_OXY_ON
+  - Serial: 741087
+    HubPort: 0
+    Channel: 0
+    ProsimDataRef: I_OH_FEEL_DIFF_PRESS
+  - Serial: 741087
+    HubPort: 0
+    Channel: 1
+    ProsimDataRef: I_OH_HYD_STBY_LOW_PRESS
+  - Serial: 741087
+    HubPort: 0
+    Channel: 2
+    ProsimDataRef: I_OH_FLT_CTRL_LOW_PRESS_A
+  - Serial: 741087
+    HubPort: 0
+    Channel: 3
+    ProsimDataRef: I_OH_HYD_STBY_LOW_QUANT
+  - Serial: 741087
+    HubPort: 0
+    Channel: 4
+    ProsimDataRef: I_OH_FLT_CTRL_LOW_PRESS_B
+  - Serial: 741087
+    HubPort: 0
+    Channel: 5
+    ProsimDataRef: I_OH_YAW_DAMPER
+  - Serial: 741087
+    HubPort: 0
+    Channel: 6
+    Inverse: true
+    ProsimDataRef: I_OH_MACH_TRIM
+  - Serial: 741087
+    HubPort: 0
+    Channel: 7
+    Inverse: true
+    ProsimDataRef: I_OH_SPEED_TRIM
+  - Serial: 668015
+    HubPort: 2
+    Channel: 8
+    Inverse: true
+    ProsimDataRef: I_OH_AUTO_SLAT
+  - Serial: 668015
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: I_OH_STDBY_RUD_ON
+  - Serial: 741087
+    HubPort: 1
+    Channel: 13
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_L
+  - Serial: 741087
+    HubPort: 1
+    Channel: 15
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_L
+  - Serial: 741087
+    HubPort: 1
+    Channel: 9
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_R
+  - Serial: 741087
+    HubPort: 1
+    Channel: 10
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_R
+  - Serial: 741087
+    HubPort: 1
+    Channel: 12
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
+  - Serial: 741087
+    HubPort: 1
+    Channel: 14
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
+  - Serial: 741087
+    HubPort: 3
+    Channel: 5
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
+  - Serial: 741087
+    HubPort: 1
+    Channel: 8
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
+  - Serial: 741087
+    HubPort: 1
+    Channel: 11
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
+  - Serial: 741087
+    HubPort: 3
+    Channel: 6
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
+  - Serial: 741087
+    HubPort: 2
+    Channel: 7
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_CROSSFEED
+  - Serial: 741087
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: I_OH_FUEL_PUMP_CR
+  - Serial: 741087
+    HubPort: 2
+    Channel: 2
+    ProsimDataRef: I_OH_FUEL_PUMP_RF
+  - Serial: 741087
+    HubPort: 2
+    Channel: 5
+    ProsimDataRef: I_OH_EMERG_EXIT_LIGHTS
+  - Serial: 741087
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: I_OH_CALL
+  - Serial: 741087
+    HubPort: 3
+    Channel: 7
+    ProsimDataRef: I_OH_GPS
+  - Serial: 741087
+    HubPort: 4
+    Channel: 8
+    ProsimDataRef: I_OH_IRS_DCFAIL_R
+  - Serial: 741087
+    HubPort: 4
+    Channel: 9
+    ProsimDataRef: I_OH_IRS_ONDC_R
+  - Serial: 741087
+    HubPort: 4
+    Channel: 10
+    ProsimDataRef: I_OH_IRS_FAULT_R
+  - Serial: 741087
+    HubPort: 4
+    Channel: 11
+    ProsimDataRef: I_OH_IRS_ALIGN_R
+  - Serial: 741087
+    HubPort: 4
+    Channel: 12
+    ProsimDataRef: I_OH_IRS_DCFAIL_L
+  - Serial: 741087
+    HubPort: 4
+    Channel: 13
+    ProsimDataRef: I_OH_IRS_ONDC_L
+  - Serial: 741087
+    HubPort: 4
+    Channel: 14
+    ProsimDataRef: I_OH_IRS_FAULT_L
+  - Serial: 741087
+    HubPort: 4
+    Channel: 15
+    ProsimDataRef: I_OH_IRS_ALIGN_L
+
+  - Serial: 741087
+    HubPort: 3
+    Channel: 0
+    ProsimDataRef: I_OH_FUEL_PUMP_CL
+  - Serial: 741087
+    HubPort: 3
+    Channel: 1
+    ProsimDataRef: I_OH_FUEL_PUMP_RA
+  - Serial: 741087
+    HubPort: 3
+    Channel: 2
+    ProsimDataRef: I_OH_FUEL_PUMP_LF
+  - Serial: 741087
+    HubPort: 3
+    Channel: 3
+    ProsimDataRef: I_OH_FILTER_BYPASS1
+  - Serial: 741087
+    HubPort: 3
+    Channel: 4
+    ProsimDataRef: I_OH_FUEL_PUMP_LA
+  - Serial: 741087
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: I_OH_APU_LOW_OIL_PRESSURE
+  - Serial: 741087
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: I_OH_APU_FAULT
+  - Serial: 741087
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: I_OH_APU_OVERSPEED
+  - Serial: 741087
+    HubPort: 2
+    Channel: 12
+    ProsimDataRef: I_OH_APU_MAINT
+  - Serial: 741087
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: I_OH_GEN_BUS_OFF1
+  - Serial: 741087
+    HubPort: 2
+    Channel: 10
+    ProsimDataRef: I_OH_GROUND_POWER_AVAILABLE
+  - Serial: 741087
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: I_OH_TRANS_OFF1
+  - Serial: 741087
+    HubPort: 2
+    Channel: 8
+    ProsimDataRef: I_OH_SOURCE_OFF1
+  - Serial: 741087
+    HubPort: 3
+    Channel: 15
+    ProsimDataRef: I_OH_APU_GEN_OFF
+  - Serial: 741087
+    HubPort: 3
+    Channel: 14
+    ProsimDataRef: I_OH_GEN_BUS_OFF2
+  - Serial: 741087
+    HubPort: 3
+    Channel: 13
+    ProsimDataRef: I_OH_SOURCE_OFF2
+  - Serial: 741087
+    HubPort: 3
+    Channel: 12
+    ProsimDataRef: I_OH_TRANS_OFF2
+  - Serial: 741087
+    HubPort: 3
+    Channel: 11
+    Inverse: true
+    ProsimDataRef: I_OH_TR_UNIT
+  - Serial: 741087
+    HubPort: 3
+    Channel: 10
+    ProsimDataRef: I_OH_BATT_DISCHARGE
+  - Serial: 741087
+    HubPort: 3
+    Channel: 9
+    ProsimDataRef: I_OH_EQUIP_COOLING_SUPPLY
+  - Serial: 741087
+    HubPort: 3
+    Channel: 8
+    ProsimDataRef: I_OH_EQUIP_COOLING_EXHAUST
+  - Serial: 741087
+    HubPort: 4
+    Channel: 7
+    ProsimDataRef: I_OH_LAV_SMOKE
+  - Serial: 741087
+    HubPort: 4
+    Channel: 6
+    ProsimDataRef: I_OH_DRIVE2
+  - Serial: 741087
+    HubPort: 4
+    Channel: 5
+    ProsimDataRef: I_OH_DRIVE1
+  - Serial: 741087
+    HubPort: 4
+    Channel: 4
+    ProsimDataRef: I_OH_STDBY_POWER_OFF
+  - Serial: 741087
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: I_OH_ENG_HYD_PUMP_L
+  - Serial: 741087
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: I_OH_ENG_HYD_PUMP_R
+  - Serial: 741087
+    HubPort: 1
+    Channel: 4
+    ProsimDataRef: I_OH_ELEC_HYD_PUMP_OVHT_1
+  - Serial: 741087
+    HubPort: 1
+    Channel: 5
+    ProsimDataRef: I_OH_ELEC_HYD_PUMP_OVHT_2
+  - Serial: 741087
+    HubPort: 1
+    Channel: 6
+    ProsimDataRef: I_OH_ELEC_HYD_PUMP_1
+  - Serial: 741087
+    HubPort: 1
+    Channel: 7
+    ProsimDataRef: I_OH_ELEC_HYD_PUMP_2
+
+  - Serial: 618534
+    HubPort: 5
+    Channel: 2
+    ProsimDataRef: I_DOOR_LOCK_FAIL
+  - Serial: 618534
+    HubPort: 5
+    Channel: 3
+    ProsimDataRef: I_DOOR_AUTO_UNLOCK
+  - Serial: 618534
+    HubPort: 3
+    Channel: 7
+    ProsimDataRef: I_MIP_PARKING_BRAKE
+  - Serial: 618534
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: I_FIRE_1
+  - Serial: 618534
+    HubPort: 4
+    Channel: 1
+    ProsimDataRef: I_FIRE_APU
+  - Serial: 618534
+    HubPort: 4
+    Channel: 2
+    ProsimDataRef: I_FIRE_2
+  - Serial: 618534
+    HubPort: 4
+    Channel: 3
+    ProsimDataRef: I_FIRE_L_BOTTLE_DISCHARGE
+  - Serial: 618534
+    HubPort: 4
+    Channel: 4
+    ProsimDataRef: I_FIRE_R_BOTTLE_DISCHARGE
+  - Serial: 618534
+    HubPort: 4
+    Channel: 5
+    ProsimDataRef: I_FIRE_TEST_APU
+  - Serial: 618534
+    HubPort: 4
+    Channel: 6
+    ProsimDataRef: I_FIRE_APU_DET_INOPT
+  - Serial: 618534
+    HubPort: 4
+    Channel: 11
+    ProsimDataRef: I_FIRE_ENG_1_OVT
+  - Serial: 618534
+    HubPort: 4
+    Channel: 12
+    ProsimDataRef: I_FIRE_ENG_2_OVT
+  - Serial: 618534
+    HubPort: 4
+    Channel: 13
+    ProsimDataRef: I_FIRE_WHEEL_WELL_OVT
+  - Serial: 618534
+    HubPort: 4
+    Channel: 15
+    ProsimDataRef: I_FIRE_FAULT
+  - Serial: 618534
+    HubPort: 5
+    Channel: 4
+    ProsimDataRef: I_FIRE_CARGO_FWD
+  - Serial: 618534
+    HubPort: 5
+    Channel: 5
+    ProsimDataRef: I_FIRE_CARGO_AFT
+  - Serial: 618534
+    HubPort: 5
+    Channel: 6
+    ProsimDataRef: I_FIRE_CARGO_DISCH
+  - Serial: 618534
+    HubPort: 5
+    Channel: 0
+    ProsimDataRef: I_ASP_VHF_1_SEND
+  - Serial: 618534
+    HubPort: 5
+    Channel: 1
+    ProsimDataRef: I_ASP_VHF_2_SEND
+  
   - Serial: 668659
     HubPort: 3
     Channel: 0
@@ -333,249 +718,6 @@ PhidgetsOutputInstances:
     HubPort: 4
     Channel: 15
     ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT8
-  - Serial: 668015
-    HubPort: 2
-    Channel: 11
-    ProsimDataRef: I_OH_PASS_OXY_ON
-
-  - Serial: 741087
-    HubPort: 0
-    Channel: 0
-    ProsimDataRef: I_OH_FEEL_DIFF_PRESS
-  - Serial: 741087
-    HubPort: 0
-    Channel: 1
-    ProsimDataRef: I_OH_HYD_STBY_LOW_PRESS
-  - Serial: 741087
-    HubPort: 0
-    Channel: 2
-    ProsimDataRef: I_OH_FLT_CTRL_LOW_PRESS_A
-  - Serial: 741087
-    HubPort: 0
-    Channel: 3
-    ProsimDataRef: I_OH_HYD_STBY_LOW_QUANT
-  - Serial: 741087
-    HubPort: 0
-    Channel: 4
-    ProsimDataRef: I_OH_FLT_CTRL_LOW_PRESS_B
-  - Serial: 741087
-    HubPort: 0
-    Channel: 5
-    ProsimDataRef: I_OH_YAW_DAMPER
-  - Serial: 741087
-    HubPort: 0
-    Channel: 6
-    Inverse: true
-    ProsimDataRef: I_OH_MACH_TRIM
-  - Serial: 741087
-    HubPort: 0
-    Channel: 7
-    Inverse: true
-    ProsimDataRef: I_OH_SPEED_TRIM
-  - Serial: 668015
-    HubPort: 2
-    Channel: 8
-    Inverse: true
-    ProsimDataRef: I_OH_AUTO_SLAT
-  - Serial: 668015
-    HubPort: 2
-    Channel: 9
-    ProsimDataRef: I_OH_STDBY_RUD_ON
-    
-  - Serial: 618534
-    HubPort: 5
-    Channel: 2
-    ProsimDataRef: I_DOOR_LOCK_FAIL
-  - Serial: 618534
-    HubPort: 5
-    Channel: 3
-    ProsimDataRef: I_DOOR_AUTO_UNLOCK
-  - Serial: 618534
-    HubPort: 3
-    Channel: 7
-    ProsimDataRef: I_MIP_PARKING_BRAKE
-  - Serial: 618534
-    HubPort: 4
-    Channel: 0
-    ProsimDataRef: I_FIRE_1
-  - Serial: 618534
-    HubPort: 4
-    Channel: 1
-    ProsimDataRef: I_FIRE_APU
-  - Serial: 618534
-    HubPort: 4
-    Channel: 2
-    ProsimDataRef: I_FIRE_2
-  - Serial: 618534
-    HubPort: 4
-    Channel: 3
-    ProsimDataRef: I_FIRE_L_BOTTLE_DISCHARGE
-  - Serial: 618534
-    HubPort: 4
-    Channel: 4
-    ProsimDataRef: I_FIRE_R_BOTTLE_DISCHARGE
-  - Serial: 618534
-    HubPort: 4
-    Channel: 5
-    ProsimDataRef: I_FIRE_TEST_APU
-  - Serial: 618534
-    HubPort: 4
-    Channel: 6
-    ProsimDataRef: I_FIRE_APU_DET_INOPT
-  - Serial: 618534
-    HubPort: 4
-    Channel: 11
-    ProsimDataRef: I_FIRE_ENG_1_OVT
-  - Serial: 618534
-    HubPort: 4
-    Channel: 12
-    ProsimDataRef: I_FIRE_ENG_2_OVT
-  - Serial: 618534
-    HubPort: 4
-    Channel: 13
-    ProsimDataRef: I_FIRE_WHEEL_WELL_OVT
-  - Serial: 618534
-    HubPort: 4
-    Channel: 15
-    ProsimDataRef: I_FIRE_FAULT
-  - Serial: 618534
-    HubPort: 5
-    Channel: 4
-    ProsimDataRef: I_FIRE_CARGO_FWD
-  - Serial: 618534
-    HubPort: 5
-    Channel: 5
-    ProsimDataRef: I_FIRE_CARGO_AFT
-  - Serial: 618534
-    HubPort: 5
-    Channel: 6
-    ProsimDataRef: I_FIRE_CARGO_DISCH
-  - Serial: 618534
-    HubPort: 5
-    Channel: 0
-    ProsimDataRef: I_ASP_VHF_1_SEND
-  - Serial: 618534
-    HubPort: 5
-    Channel: 1
-    ProsimDataRef: I_ASP_VHF_2_SEND
-  - Serial: 741087
-    HubPort: 1
-    Channel: 13
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_L
-  - Serial: 741087
-    HubPort: 1
-    Channel: 15
-    ValueOn: 0
-    ValueDim: 0
-    ValueOff: 1
-    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_L
-  - Serial: 741087
-    HubPort: 1
-    Channel: 9
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_R
-  - Serial: 741087
-    HubPort: 1
-    Channel: 10
-    ValueOn: 0
-    ValueDim: 0
-    ValueOff: 1
-    ProsimDataRef: I_OH_SPAR_VALVE_CLOSED_R
-  - Serial: 741087
-    HubPort: 1
-    Channel: 12
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
-  - Serial: 741087
-    HubPort: 1
-    Channel: 14
-    ValueOn: 0
-    ValueDim: 0
-    ValueOff: 1
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
-  - Serial: 741087
-    HubPort: 3
-    Channel: 5
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_L
-  - Serial: 741087
-    HubPort: 1
-    Channel: 8
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
-  - Serial: 741087
-    HubPort: 1
-    Channel: 11
-    ValueOn: 0
-    ValueDim: 0
-    ValueOff: 1
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
-  - Serial: 741087
-    HubPort: 3
-    Channel: 6
-    ValueOn: 0
-    ValueDim: 1
-    ValueOff: 0
-    ProsimDataRef: I_OH_ENG_VALVE_CLOSED_R
-  - Serial: 741087
-    HubPort: 2
-    Channel: 7
-    ValueOn: 0
-    ValueDim: 0
-    ValueOff: 1
-    ProsimDataRef: I_OH_CROSSFEED
-  - Serial: 741087
-    HubPort: 2
-    Channel: 0
-    ProsimDataRef: I_OH_FUEL_PUMP_CR
-  - Serial: 741087
-    HubPort: 2
-    Channel: 1
-    ProsimDataRef: I_OH_FILTER_BYPASS2
-  - Serial: 741087
-    HubPort: 2
-    Channel: 2
-    ProsimDataRef: I_OH_FUEL_PUMP_RF
-  - Serial: 741087
-    HubPort: 2
-    Channel: 5
-    ProsimDataRef: I_OH_EMERG_EXIT_LIGHTS
-  - Serial: 741087
-    HubPort: 2
-    Channel: 6
-    ProsimDataRef: I_OH_CALL
-
-  - Serial: 741087
-    HubPort: 3
-    Channel: 0
-    ProsimDataRef: I_OH_FUEL_PUMP_CL
-  - Serial: 741087
-    HubPort: 3
-    Channel: 1
-    ProsimDataRef: I_OH_FUEL_PUMP_RA
-  - Serial: 741087
-    HubPort: 3
-    Channel: 2
-    ProsimDataRef: I_OH_FUEL_PUMP_LF
-  - Serial: 741087
-    HubPort: 3
-    Channel: 3
-    ProsimDataRef: I_OH_FILTER_BYPASS1
-  - Serial: 741087
-    HubPort: 3
-    Channel: 4
-    ProsimDataRef: I_OH_FUEL_PUMP_LA
     
 PhidgetsGateInstances:
   - Serial: 668066
@@ -648,6 +790,14 @@ PhidgetsGateInstances:
     HubPort: 2
     Channel: 10
     ProsimDataRef: B_YAW_DAMPER_HOLD_ACTUATOR
+  - Serial: 741087
+    HubPort: 1
+    Channel: 0
+    ProsimDataRef: B_STARTER_SOLENOID_2
+  - Serial: 741087
+    HubPort: 1
+    Channel: 1
+    ProsimDataRef: B_STARTER_SOLENOID_1
 
 PhidgetsInputInstances:
   - Serial: 618534
@@ -1285,8 +1435,8 @@ PhidgetsButtonInstances:
     InputValue: 1
     OffInputValue: 0
 
-  - Name: Dim
+  - Name: Light Test
     ProsimDataRef: S_MIP_LIGHTTEST
-    InputValue: 1
+    InputValue: 2
     OffInputValue: 0 
         
