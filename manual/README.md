@@ -86,10 +86,16 @@ PhidgetsInputInstances:
 GeneralConfig:
   Schema: 1.0
   ProSimIP: <ProSim_IP_Address>
+  OutputBlinkFastIntervalMs: 300
+  OutputBlinkSlowIntervalMs: 600
+  OutputDefaultDimValue: 0.7
 ```
 
 - `Schema`: Version of the configuration schema (DO NOT CHANGE).
-- `ProSimIP`: IP address for the ProSim connection. Update with your prosim server IP
+- `ProSimIP`: IP address for the ProSim connection. Update with your prosim server IP.
+- `OutputBlinkFastIntervalMs`: (Optional) Default value used for fast blinking outputs in milliseconds. Default is 300.
+- `OutputBlinkSlowIntervalMs`: (Optional) Default value used for slow blinking outputs in milliseconds. Default is 600.
+- `OutputDefaultDimValue`:  (Optional) Default value used for dim output state, when not specified in the output itself. Default is 0.7 (0 is full dim, 1 is full bright)
 
 ## [Hub Instances](#hub-instances)
 
@@ -169,10 +175,13 @@ PhidgetsOutputInstances:
 - `Channel`: Channel number.
 - `ProsimDataRef`: Data reference for ProSim.
  
-- `DelayOn`: (optional) Delay in milliseconds before turning on.
 - `Inverse`: (optional) Inverts the on/off behavior.
+- `DelayOn`: (optional) Delay in milliseconds before turning on.
 - `DelayOff`: (optional) Delay before turning off.
 - `ProsimDataRefOff`: (optional) Alternate data reference to turn off.
+- `ValueOn`: (optional) Value when prosim output is on (1 is 100%), default is 1
+- `ValueOff`: (optional) Value when prosim output is off (0 is 0%), default is 0
+- `ValueDim`: (optional) Value when prosim output is dim (0.7 is 70%), default is 0.7
 
 ## [Phidgets Gates](#phidgetsgateinst)
 

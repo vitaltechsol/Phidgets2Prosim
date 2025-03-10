@@ -13,8 +13,8 @@ namespace Phidgets2Prosim
     {
         DigitalOutput digitalOutput = new DigitalOutput();
         private CancellationTokenSource blinkCancellation;
-        public int BlinkIntervalFastMs { get; set; } = 300; // Default blink interval
-        public int BlinkIntervalSlowMs { get; set; } = 600; // Default blink interval
+        public int BlinkFastIntervalMs { get; set; } = 300; // Default blink interval
+        public int BlinkSlowIntervalMs { get; set; } = 600; // Default blink interval
         public int TurnOffAfterMs { get; set; } = 0;
         public bool Inverse { get; set; } = false;
         public bool IsGate { get; set; }
@@ -29,6 +29,7 @@ namespace Phidgets2Prosim
         {
             IsGate = isGate;
             Channel = channel;
+            HubPort = hubPort;
             // Set ProSim dataref
             ProsimDataRef = prosimDataRef;
             ProsimDataRefOff = prosimDataRefOff;
@@ -36,21 +37,17 @@ namespace Phidgets2Prosim
       
             try
             {
-                // use -1 for hubPort when is not a network hub
-
-                if (hubPort >= 0)
-                { 
-                    digitalOutput.HubPort = hubPort;
+                if (HubPort >= 0)
+                {
+                    digitalOutput.HubPort = HubPort;
                     digitalOutput.IsRemote = true;
                     // use -1 for channel when is a IsHubPortDevice
-                    digitalOutput.IsHubPortDevice = channel == -1;
+                    digitalOutput.IsHubPortDevice = Channel == -1;
                 }
-                digitalOutput.Channel = channel;
-                digitalOutput.DeviceSerialNumber = serial;
-                //Debug.WriteLine("<-- Listening to " + prosimDataRef + " to channel:" + channel);
-                SendInfoLog("<-- Listening to " + prosimDataRef + " to channel:" + channel);
-
-                Open();
+                digitalOutput.Channel = Channel;
+                digitalOutput.DeviceSerialNumber = Serial;
+                
+                SyncOpen();
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
@@ -69,7 +66,10 @@ namespace Phidgets2Prosim
             }
 
         }
-
+        public void SyncOpen()
+        {
+            _ = Open();
+        }
 
         public async Task TurnOn(double dutyCycle)
         {
@@ -88,7 +88,7 @@ namespace Phidgets2Prosim
 
                 }, null);
 
-                 SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
+                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
 
                 // Turn off after specified time(ms)
                 if (TurnOffAfterMs > 0)
@@ -132,13 +132,13 @@ namespace Phidgets2Prosim
             digitalOutput.Close();
         }
 
-        private async void Open()
+        public async Task Open()
         {
+           //  Debug.WriteLine("<-- OPENING " + ProsimDataRef + " to channel:" + Channel);
             try
             {
-                digitalOutput.Close();
                 await Task.Run(() => digitalOutput.Open(10000));
-                //Debug.WriteLine("<-- OPENED " + ProsimDataRef + " to channel:" + Channel);
+             //   Debug.WriteLine("<-- OPENED " + ProsimDataRef + " to channel:" + Channel);
             }
             catch (Exception ex)
             {
@@ -152,7 +152,7 @@ namespace Phidgets2Prosim
             _ = HandleDataChangeAsync(dataRef.name, dataRef.value);
         }
 
-
+  
         public async Task HandleDataChangeAsync(string name, object refValue)
         {
 
@@ -242,12 +242,12 @@ namespace Phidgets2Prosim
                             // Dim
                             if (value == 1)
                             {
-                                 await TurnOn(ValueDim);
+                                await TurnOn(ValueDim);
                             }
                             // On
                             if (value == 2)
                             {
-                               await TurnOn(ValueOn);
+                                await TurnOn(ValueOn);
                             }
                             // Off
                             else if (value == 0)
@@ -274,7 +274,7 @@ namespace Phidgets2Prosim
                 while (!token.IsCancellationRequested)
                 {
                     digitalOutput.DutyCycle = digitalOutput.DutyCycle == 1 ? 0 : 1;
-                    await Task.Delay(BlinkIntervalSlowMs, token);
+                    await Task.Delay(BlinkSlowIntervalMs, token);
                 }
             }
             catch (TaskCanceledException)
@@ -290,7 +290,7 @@ namespace Phidgets2Prosim
                 while (!token.IsCancellationRequested)
                 {
                     digitalOutput.DutyCycle = digitalOutput.DutyCycle == 1 ? 0 : 1;
-                    await Task.Delay(BlinkIntervalFastMs, token);
+                    await Task.Delay(BlinkFastIntervalMs, token);
                 }
             }
             catch (TaskCanceledException)

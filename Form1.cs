@@ -26,7 +26,8 @@ namespace Phidgets2Prosim
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
         int logTabIndex = 6;
-        int OutputBlinkIntervalFastMs = 300;
+        int OutputBlinkFastIntervalMs = 300;
+        int OutputBlinkSlowIntervalMs = 600;
         double OutputDefaultDimValue = 0.7;
 
         PhidgetsInput [] phidgetsInputPreview = new PhidgetsInput[360];
@@ -108,6 +109,15 @@ namespace Phidgets2Prosim
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
 
+                OutputBlinkFastIntervalMs = config.GeneralConfig.OutputBlinkFastIntervalMs;
+                OutputBlinkSlowIntervalMs = config.GeneralConfig.OutputBlinkSlowIntervalMs;
+
+                if (config.GeneralConfig.OutputDefaultDimValue > 0)
+                {
+                    OutputDefaultDimValue = config.GeneralConfig.OutputDefaultDimValue;
+                }
+
+
                 var totalOuts = 0;
 
 
@@ -150,7 +160,9 @@ namespace Phidgets2Prosim
                                 );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
-                            phidgetsOutput[idx].BlinkIntervalFastMs = OutputBlinkIntervalFastMs;
+                            phidgetsOutput[idx].BlinkFastIntervalMs = OutputBlinkFastIntervalMs;
+                            phidgetsOutput[idx].BlinkSlowIntervalMs = OutputBlinkSlowIntervalMs;
+
                             if (instance.Inverse == true)
                             {
                                 phidgetsOutput[idx].Inverse = true;
@@ -390,16 +402,12 @@ namespace Phidgets2Prosim
 
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
-                OutputBlinkIntervalFastMs = config.GeneralConfig.OutputBlinkIntervalMs;
-                if (config.GeneralConfig.OutputDefaultDimValue > 0)
-                {
-                    OutputDefaultDimValue = config.GeneralConfig.OutputDefaultDimValue;
-                }
+          
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay((totalOuts + 10) * 80);
+                var taskDelay2 = Task.Delay((totalOuts + 10) * 100);
                 await taskDelay2;
-
+                DisplayInfoLog("Connecting to Prosim");
                 connectToProSim(config.GeneralConfig.ProSimIP);
 
             }
@@ -824,7 +832,8 @@ namespace Phidgets2Prosim
         private void Form1_Shown(object sender, EventArgs e)
         {
 
-            this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
+           //  LoadConfigOuts();
+           this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;

@@ -162,8 +162,10 @@ namespace Phidgets2Prosim
     {
         public string ProSimIP { get; set; }
         public string Schema { get; set; }
-        // Default value used for blinking outputs
-        public int OutputBlinkIntervalMs { get; set; } = 300;
+        // Default value used for fast blinking outputs
+        public int OutputBlinkFastIntervalMs { get; set; } = 300;
+        // Default value used for fast blinking outputs
+        public int OutputBlinkSlowIntervalMs { get; set; } = 600;
         // Default value used for dim output state when not specified
         public double OutputDefaultDimValue { get; set; } = 0.7;
     }
