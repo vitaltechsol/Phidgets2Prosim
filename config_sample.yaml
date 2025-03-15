@@ -737,7 +737,7 @@ PhidgetsGateInstances:
     Channel: 8
     ProsimDataRef: B_SPEED_BRAKE_DEPLOY
     ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
-    DelayOff: 60000
+    MaxTimeOn: 60000
   - Serial: 618534
     HubPort: 3
     Channel: 1
@@ -1219,13 +1219,11 @@ PhidgetsInputInstances:
     ProsimDataRef: S_MIP_MAIN_DU_CAPT
     InputValue: 1
     OffInputValue: 0
-
   - Serial: 664861
     HubPort: 2
     Channel: 14
     ProsimDataRef: S_MIP_LIGHTTEST
     InputValue: 2
-
   - Serial: 741087
     HubPort: 5
     Channel: 7
@@ -1440,4 +1438,9 @@ PhidgetsButtonInstances:
     ProsimDataRef: S_OH_ATTEND
     InputValue: 1
     OffInputValue: 0
+
+  - Name: Light Test
+    ProsimDataRef: S_MIP_LIGHTTEST
+    InputValue: 2
+    OffInputValue: 0 
         
