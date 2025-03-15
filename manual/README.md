@@ -177,7 +177,7 @@ PhidgetsOutputInstances:
  
 - `Inverse`: (optional) Inverts the on/off behavior.
 - `DelayOn`: (optional) Delay in milliseconds before turning on.
-- `DelayOff`: (optional) Delay before turning off.
+- `MaxTimeOn`: (optional) Maximum time to stay on in milliseconds before turning off.
 - `ProsimDataRefOff`: (optional) Alternate data reference to turn off.
 - `ValueOn`: (optional) Value when prosim output is on (1 is 100%), default is 1
 - `ValueOff`: (optional) Value when prosim output is off (0 is 0%), default is 0
@@ -189,11 +189,8 @@ PhidgetsOutputInstances:
 PhidgetsGateInstances:
   - Serial: 668066
     HubPort: 4
-    Channel: -1
+    Channel: 1
     ProsimDataRef: B_STICKSHAKER_FO
-    DelayOn: 1000
-    Inverse: true
-    ProsimDataRefOff: B_STICKSHAKER_OFF
 ```
 
 **Properties:** Same as `PhidgetsOutputInstances`. But used for ProSim Gate refs

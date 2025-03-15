@@ -171,9 +171,9 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsOutput[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.DelayOff != null && instance.DelayOff > 0)
+                            if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
                             {
-                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
+                                phidgetsOutput[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
                             }
                             if (instance.ValueOff != 0)
                             {
@@ -254,9 +254,9 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsOutput[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.DelayOff != null && instance.DelayOff > 0)
+                            if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
                             {
-                                phidgetsOutput[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
+                                phidgetsOutput[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
                             }
                         }
                         catch (Exception ex)
@@ -295,9 +295,9 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsGate[idx].Delay = Convert.ToInt32(instance.DelayOn);
                             }
-                            if (instance.DelayOff != null && instance.DelayOff > 0)
+                            if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
                             {
-                                phidgetsGate[idx].TurnOffAfterMs = Convert.ToInt32(instance.DelayOff);
+                                phidgetsGate[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
                             }
                         }
                         catch (Exception ex)

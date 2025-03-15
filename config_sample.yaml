@@ -1220,6 +1220,12 @@ PhidgetsInputInstances:
     InputValue: 1
     OffInputValue: 0
 
+  - Serial: 664861
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: S_MIP_LIGHTTEST
+    InputValue: 2
+
   - Serial: 741087
     HubPort: 5
     Channel: 7
@@ -1434,9 +1440,4 @@ PhidgetsButtonInstances:
     ProsimDataRef: S_OH_ATTEND
     InputValue: 1
     OffInputValue: 0
-
-  - Name: Light Test
-    ProsimDataRef: S_MIP_LIGHTTEST
-    InputValue: 2
-    OffInputValue: 0 
         

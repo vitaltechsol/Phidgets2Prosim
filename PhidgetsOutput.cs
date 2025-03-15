@@ -15,7 +15,7 @@ namespace Phidgets2Prosim
         private CancellationTokenSource blinkCancellation;
         public int BlinkFastIntervalMs { get; set; } = 300; // Default blink interval
         public int BlinkSlowIntervalMs { get; set; } = 600; // Default blink interval
-        public int TurnOffAfterMs { get; set; } = 0;
+        public int MaxTimeOn { get; set; } = 0;
         public bool Inverse { get; set; } = false;
         public bool IsGate { get; set; }
         public string ProsimDataRefOff { get; set; }
@@ -91,10 +91,10 @@ namespace Phidgets2Prosim
                 SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
 
                 // Turn off after specified time(ms)
-                if (TurnOffAfterMs > 0)
+                if (MaxTimeOn > 0)
                 {
-                    SendInfoLog("Start OFF Delay " + TurnOffAfterMs + " for " + ProsimDataRef + " - Channel " + Channel);
-                    var taskDelay2 = Task.Delay(TurnOffAfterMs);
+                    SendInfoLog("Start OFF Delay " + MaxTimeOn + " for " + ProsimDataRef + " - Channel " + Channel);
+                    var taskDelay2 = Task.Delay(MaxTimeOn);
                     await taskDelay2;
                     await TurnOff(ValueOff);
                 }

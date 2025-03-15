@@ -34,8 +34,8 @@ namespace Phidgets2Prosim
         // (Optional) turn off when prosim shows on 
         public bool? Inverse { get; set; } = false;
 
-        // (Optional) Wait specified amount of milliseconds and then turn off 
-        public int? DelayOff { get; set; } = null;
+        // (Optional) Wait maximum amount of milliseconds and then turn off if gate is still on
+        public int? MaxTimeOn { get; set; } = null;
 
         // (Optional) Use a different prosim data ref to turn off 
         public string ProsimDataRefOff { get; set; } = null;
@@ -65,7 +65,7 @@ namespace Phidgets2Prosim
         public string ProsimDataRefOff { get; set; } = null;
 
         // (Optional) Wait specified amount of milliseconds and then turn off 
-        public int? DelayOff { get; set; } = null;
+        public int? MaxTimeOn { get; set; } = null;
     }
 
     public class PhidgetsInputInst : PhidgetDevice
