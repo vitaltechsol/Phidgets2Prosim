@@ -16,8 +16,10 @@ While Prosim has native support for Phidgets I wanted some additional custom fun
 - On/Off
 - Inverse logic
 - Use a different Prosim data ref to turn off value. 
-- Delay: Turn on or off after n amount of milliseconds
-- Blink: Detects blinking state from prosim, makes output blink
+- Delay: Turn on after n amount of milliseconds
+- Maximum Time On: Turn off after n amount off milliseconds
+- Fast and Slow Blink: Detects blinking state from prosim, makes output blink
+- Individual brightness control for On, Off and Dim
 
 ### Inputs
 - Inputs
