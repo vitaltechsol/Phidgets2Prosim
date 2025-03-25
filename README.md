@@ -4,6 +4,9 @@ This application allows using many of of the  Phidgets VINT modules with Prosim-
 
 While Prosim has native support for Phidgets I wanted some additional custom functionality that is currently not available specially when using OEM panels.
 
+I use this software for my 737 simulator [oc737.com](https://www.oc737.com)
+
+
 1. **Installation and Manual**
 
    - Visit the [Manual and Installation page](https://github.com/vitaltechsol/Phidgets2Prosim/tree/master/manual#readme) page.
