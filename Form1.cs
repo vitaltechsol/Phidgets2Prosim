@@ -196,6 +196,11 @@ namespace Phidgets2Prosim
                         idx++;
                     }
 
+                    foreach (var instance in phidgetsOutput)
+                    {
+                        await Task.Run(() => instance.Open());
+                    }
+
                     totalOuts += idx;
                 }
 
@@ -405,8 +410,8 @@ namespace Phidgets2Prosim
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay((totalOuts + 10) * 100);
-                await taskDelay2;
+                //var taskDelay2 = Task.Delay((totalOuts + 10) * 100);
+                //await taskDelay2;
                 DisplayInfoLog("Connecting to Prosim");
                 connectToProSim(config.GeneralConfig.ProSimIP);
 

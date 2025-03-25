@@ -34,6 +34,7 @@ namespace Phidgets2Prosim
             ProsimDataRef = prosimDataRef;
             ProsimDataRefOff = prosimDataRefOff;
             Serial = serial;
+            Connection = connection;
       
             try
             {
@@ -46,18 +47,16 @@ namespace Phidgets2Prosim
                 }
                 digitalOutput.Channel = Channel;
                 digitalOutput.DeviceSerialNumber = Serial;
-                
-                SyncOpen();
-
+                Debug.WriteLine("<-- INIT " + ProsimDataRef + " to channel:" + Channel);
                 // Set ProSim dataref
-                DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
-                dataRef.onDataChange += DataRef_onDataChange;
+                //DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
+                //dataRef.onDataChange += DataRef_onDataChange;
 
-                if (prosimDataRefOff != null)
-                {
-                    DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);
-                    dataRef2.onDataChange += DataRef_onDataChange;
-                }
+                //if (prosimDataRefOff != null)
+                //{
+                //    DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);
+                //    dataRef2.onDataChange += DataRef_onDataChange;
+                //}
 
             }
             catch (Exception ex)
@@ -65,10 +64,6 @@ namespace Phidgets2Prosim
                 SendErrorLog(ex.ToString());
             }
 
-        }
-        public void SyncOpen()
-        {
-            _ = Open();
         }
 
         public async Task TurnOn(double dutyCycle)
@@ -134,11 +129,10 @@ namespace Phidgets2Prosim
 
         public async Task Open()
         {
-           //  Debug.WriteLine("<-- OPENING " + ProsimDataRef + " to channel:" + Channel);
+            Debug.WriteLine("<-- OPENING " + ProsimDataRef + " to channel:" + Channel);
             try
             {
-                await Task.Run(() => digitalOutput.Open(10000));
-             //   Debug.WriteLine("<-- OPENED " + ProsimDataRef + " to channel:" + Channel);
+                await Task.Run(()=>digitalOutput.Open(10000));
             }
             catch (Exception ex)
             {
