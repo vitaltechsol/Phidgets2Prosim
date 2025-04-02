@@ -47,7 +47,7 @@ namespace Phidgets2Prosim
                 digitalOutput.Channel = Channel;
                 digitalOutput.DeviceSerialNumber = Serial;
                 
-                SyncOpen();
+                Open();
 
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
@@ -134,10 +134,10 @@ namespace Phidgets2Prosim
 
         public async Task Open()
         {
-           //  Debug.WriteLine("<-- OPENING " + ProsimDataRef + " to channel:" + Channel);
+            Debug.WriteLine("<-- OPENING " + ProsimDataRef + " to channel:" + Channel);
             try
             {
-                await Task.Run(() => digitalOutput.Open(10000));
+                await Task.Run(() => digitalOutput.Open());
              //   Debug.WriteLine("<-- OPENED " + ProsimDataRef + " to channel:" + Channel);
             }
             catch (Exception ex)

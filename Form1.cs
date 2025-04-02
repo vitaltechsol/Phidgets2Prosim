@@ -405,7 +405,7 @@ namespace Phidgets2Prosim
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
                 // Wait for outs to finish
-                var taskDelay2 = Task.Delay((totalOuts + 10) * 100);
+                var taskDelay2 = Task.Delay((totalOuts + 10) * 40);
                 await taskDelay2;
                 DisplayInfoLog("Connecting to Prosim");
                 connectToProSim(config.GeneralConfig.ProSimIP);
