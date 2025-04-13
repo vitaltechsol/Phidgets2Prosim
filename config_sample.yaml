@@ -10,6 +10,7 @@ PhidgetsHubsInstances:
    - hub5000-OH-1
    - hub5000-OH-2
    - hub5000-OH-3
+   - hub5000-OH-4
  
 PhidgetsAudioInstances:
   - Serial: 618534
@@ -483,11 +484,11 @@ PhidgetsOutputInstances:
   - Serial: 741087
     HubPort: 4
     Channel: 5
-    ProsimDataRef: I_OH_DRIVE1
+    ProsimDataRef: I_OH_STDBY_POWER_OFF
   - Serial: 741087
     HubPort: 4
     Channel: 4
-    ProsimDataRef: I_OH_STDBY_POWER_OFF
+    ProsimDataRef: I_OH_DRIVE1
   - Serial: 741087
     HubPort: 1
     Channel: 2
@@ -512,6 +513,198 @@ PhidgetsOutputInstances:
     HubPort: 1
     Channel: 7
     ProsimDataRef: I_OH_ELEC_HYD_PUMP_2
+
+  - Serial: 742112
+    HubPort: 2
+    Channel: 8
+    ProsimDataRef: I_OH_DOOR_FWD_CARGO
+  - Serial: 742112
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: I_OH_DOOR_EQUIP
+  - Serial: 742112
+    HubPort: 2
+    Channel: 10
+    ProsimDataRef: I_OH_DOOR_LEFT_AFT_OVERWING
+  - Serial: 742112
+    HubPort: 2
+    Channel: 11
+    ProsimDataRef: I_OH_DOOR_FWD_ENTRY
+  - Serial: 742112
+    HubPort: 2
+    Channel: 12
+    ProsimDataRef: I_OH_DOOR_AFT_ENTRY
+  - Serial: 742112
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: I_OH_DOOR_AIRSTAIRS
+  - Serial: 742112
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: I_OH_DOOR_RIGHT_AFT_OVERWING
+  - Serial: 742112
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: I_OH_DOOR_LEFT_FWD_OVERWING    
+  - Serial: 742112
+    HubPort: 4
+    Channel: 12
+    ProsimDataRef: I_OH_DOOR_RIGHT_FWD_OVERWING 
+  - Serial: 742112
+    HubPort: 4
+    Channel: 13
+    ProsimDataRef: I_OH_DOOR_FWD_SERVICE 
+  - Serial: 742112
+    HubPort: 4
+    Channel: 14
+    ProsimDataRef: I_OH_DOOR_AFT_SERVICE 
+  - Serial: 742112
+    HubPort: 4
+    Channel: 15
+    ProsimDataRef: I_OH_DOOR_AFT_CARGO 
+
+  - Serial: 742112
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FL
+  - Serial: 742112
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: I_OH_WINDOW_HEAT_SL
+  - Serial: 742112
+    HubPort: 2
+    Channel: 2
+    ProsimDataRef: I_OH_WINDOW_HEAT_SR
+  - Serial: 742112
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: I_OH_WINDOW_HEAT_FR
+  - Serial: 742112
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_SR
+  - Serial: 742112
+    HubPort: 2
+    Channel: 5
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FR
+  - Serial: 742112
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: I_OH_WINDOW_HEAT_FL
+  - Serial: 742112
+    HubPort: 2
+    Channel: 7
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_SL
+
+  - Serial: 742112
+    HubPort: 4
+    Channel: 4 #pin 12 (P1)
+    ValueOn: 1
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_COWL_VALVE_R
+  - Serial: 742112
+    HubPort: 4
+    Channel: 5 #pin 15 (P1)
+    ValueOn: 1
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_COWL_VALVE_R
+  - Serial: 742112
+    HubPort: 4
+    Channel: 6 #pin 12 (P2)
+    ValueOn: 1
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_COWL_VALVE_L
+  - Serial: 742112
+    HubPort: 4
+    Channel: 7 #pin 14 (P2)
+    ValueOn: 1
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_COWL_VALVE_L
+
+  - Serial: 742112
+    HubPort: 1
+    Channel: 9
+    ProsimDataRef: I_OH_COWL_AI_R
+  - Serial: 742112
+    HubPort: 1
+    Channel: 10
+    ProsimDataRef: I_OH_COWL_AI_L
+  - Serial: 742112
+    HubPort: 1
+    Channel: 11 #pin 5
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_WAI_VALVE_R 
+  - Serial: 742112
+    HubPort: 1
+    Channel: 12 #pin 6
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_WAI_VALVE_R
+  - Serial: 742112
+    HubPort: 1
+    Channel: 13 #pin 3
+    ValueOn: 0
+    ValueDim: 1
+    ValueOff: 0
+    ProsimDataRef: I_OH_WAI_VALVE_l 
+  - Serial: 742112
+    HubPort: 1
+    Channel: 14 #pin 4 
+    ValueOn: 0
+    ValueDim: 0
+    ValueOff: 1
+    ProsimDataRef: I_OH_WAI_VALVE_L
+  - Serial: 741087
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: I_OH_PRES_MANUAL
+  - Serial: 741087
+    HubPort: 4
+    Channel: 1
+    ProsimDataRef: I_OH_PRES_AUTO_FAIL
+  - Serial: 741087
+    HubPort: 4
+    Channel: 2
+    ProsimDataRef: I_OH_DUALBLEED
+  - Serial: 741087
+    HubPort: 4
+    Channel: 3
+    ProsimDataRef: I_OH_RAMDOOR_L
+  - Serial: 742112
+    HubPort: 1
+    Channel: 1
+    ProsimDataRef: I_OH_PRES_ALTN
+  - Serial: 742112
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: I_OH_PACK_L
+  - Serial: 742112
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: I_OH_BLEED_TRIP_R
+  - Serial: 742112
+    HubPort: 1
+    Channel: 4
+    ProsimDataRef: I_OH_PRES_OFFSCHED
+  - Serial: 742112
+    HubPort: 1
+    Channel: 5
+    ProsimDataRef: I_OH_RAMDOOR_R
+  - Serial: 742112
+    HubPort: 1
+    Channel: 6
+    ProsimDataRef: I_OH_BLEED_TRIP_L
+  - Serial: 742112
+    HubPort: 1
+    Channel: 7
+    ProsimDataRef: I_OH_PACK_R
 
   - Serial: 618534
     HubPort: 5
@@ -589,7 +782,6 @@ PhidgetsOutputInstances:
     HubPort: 5
     Channel: 1
     ProsimDataRef: I_ASP_VHF_2_SEND
-  
   - Serial: 668659
     HubPort: 3
     Channel: 0
@@ -798,6 +990,23 @@ PhidgetsGateInstances:
     HubPort: 1
     Channel: 1
     ProsimDataRef: B_STARTER_SOLENOID_1
+  - Serial: 742112
+    HubPort: 1
+    Channel: 8
+    ProsimDataRef: B_WING_ANTI_ICE_OFF_ACTUATOR
+  - Serial: 741087
+    HubPort: 0
+    Channel: 12
+    Inverse: true 
+    ProsimDataRef: B_STANDBY_POWER #overhead
+  - Serial: 741087
+    HubPort: 0
+    Channel: 13
+    ProsimDataRef: B_AC_POWER #overhead
+  - Serial: 741087
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: B_LIGHT_TEST
 
 PhidgetsInputInstances:
   - Serial: 618534
@@ -1367,6 +1576,24 @@ PhidgetsMultiInputInstances:
       "00": 0
       "10": 1
       "01": 2
+  
+  - Serial: 742112
+    HubPort: 0
+    Channels: [6, 7]
+    ProsimDataRef: S_OH_OUTFLOW_VALVE
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [4, 5]
+    ProsimDataRef: S_OH_PRESS_MODE
+    Mappings:
+      "00": 1
+      "10": 0
+      "01": 2
 
 PhidgetsVoltageOutputInstances:
   - Serial: 668522
@@ -1390,6 +1617,11 @@ PhidgetsVoltageOutputInstances:
     ScaleFactor: 4
     Offset: -10
     ProsimDataRef: G_OH_DUCT_PRESS_R
+
+  - Serial: 742112
+    HubPort: 3
+    ScaleFactor: 26
+    ProsimDataRef: G_OH_OUTFLOW_VALVE
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
