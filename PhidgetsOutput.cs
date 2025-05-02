@@ -81,7 +81,6 @@ namespace Phidgets2Prosim
                     await taskDelay;
                 }
 
-
                 digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
                 {
                     digitalOutput.EndSetDutyCycle(result);
@@ -101,8 +100,8 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                SendErrorLog("Turn On Failed for " + ProsimDataRef + " - Channel " + Channel);
-                SendErrorLog(ex.ToString());
+                SendErrorLog($">>> Turn On Output Failed, Port [{HubPort}] | Ch [{Channel}]: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
+                SendErrorLog(ex.Message.ToString());
             }
 
         }
@@ -113,7 +112,6 @@ namespace Phidgets2Prosim
             {
                 digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
                 {
-
                     digitalOutput.EndSetDutyCycle(result);
 
                 }, null);
@@ -122,8 +120,8 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                SendErrorLog("Turn Off Failed for channel " + ProsimDataRef + " - Channel " + Channel);
-                SendErrorLog(ex.ToString());
+                SendErrorLog($">>> Turn Off Output Failed, Port [{HubPort}] | Ch [{Channel}]: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
+                SendErrorLog(ex.Message.ToString());
             }
         }
 

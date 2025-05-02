@@ -16,7 +16,7 @@ namespace Phidgets2Prosim
 
         public int OffInputValue { get; set; } = 0;
 
-        public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
+        public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue = 1, int offInputValue = 0)
         {
 
             ProsimDataRef = prosimDataRef;

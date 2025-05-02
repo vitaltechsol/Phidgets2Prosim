@@ -21,10 +21,10 @@ PhidgetsAudioInstances:
     HubPort: 5
     Channel: 9
     ProsimDataRef: "Autopilot_Disconnect"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 10
-    ProsimDataRef: "Overspeed"
+  # - Serial: 618534
+  #   HubPort: 5
+  #   Channel: 10
+  #   ProsimDataRef: "Overspeed"
   - Serial: 618534
     HubPort: 5
     Channel: 11
@@ -215,6 +215,10 @@ PhidgetsOutputInstances:
     HubPort: 2
     Channel: 11
     ProsimDataRef: I_OH_PASS_OXY_ON
+  - Serial: 742112
+    HubPort: 1
+    Channel: 0
+    ProsimDataRef: I_OH_FLIGHT_REC
   - Serial: 741087
     HubPort: 0
     Channel: 0
@@ -332,7 +336,7 @@ PhidgetsOutputInstances:
     HubPort: 2
     Channel: 7
     ValueOn: 0
-    ValueDim: 0
+    ValueDim: 1
     ValueOff: 1
     ProsimDataRef: I_OH_CROSSFEED
   - Serial: 741087
@@ -566,15 +570,15 @@ PhidgetsOutputInstances:
   - Serial: 742112
     HubPort: 2
     Channel: 0
-    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FL
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_SR # I_OH_WINDOW_HEAT_OVT_FL
   - Serial: 742112
     HubPort: 2
     Channel: 1
-    ProsimDataRef: I_OH_WINDOW_HEAT_SL
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FL  #I_OH_WINDOW_HEAT_SL
   - Serial: 742112
     HubPort: 2
     Channel: 2
-    ProsimDataRef: I_OH_WINDOW_HEAT_SR
+    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FR
   - Serial: 742112
     HubPort: 2
     Channel: 3
@@ -582,19 +586,51 @@ PhidgetsOutputInstances:
   - Serial: 742112
     HubPort: 2
     Channel: 4
-    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_SR
+    ProsimDataRef: I_OH_WINDOW_HEAT_SR 
   - Serial: 742112
     HubPort: 2
     Channel: 5
-    ProsimDataRef: I_OH_WINDOW_HEAT_OVT_FR
+    ProsimDataRef: I_OH_WINDOW_HEAT_FL
   - Serial: 742112
     HubPort: 2
     Channel: 6
-    ProsimDataRef: I_OH_WINDOW_HEAT_FL
+    ProsimDataRef: I_OH_WINDOW_HEAT_SL
   - Serial: 742112
     HubPort: 2
     Channel: 7
     ProsimDataRef: I_OH_WINDOW_HEAT_OVT_SL
+  - Serial: 742112
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: I_OH_TEMP_PROBE
+  - Serial: 742112
+    HubPort: 4
+    Channel: 1
+    ProsimDataRef: I_OH_ALPHA_VANE1
+  - Serial: 742112
+    HubPort: 4
+    Channel: 2
+    ProsimDataRef: I_OH_ELEV_PITOT1
+  - Serial: 742112
+    HubPort: 4
+    Channel: 3
+    ProsimDataRef: I_OH_CAPT_PITOT
+  - Serial: 742112
+    HubPort: 4
+    Channel: 8
+    ProsimDataRef: I_OH_AUX_PITOT
+  - Serial: 742112
+    HubPort: 4
+    Channel: 9
+    ProsimDataRef: I_OH_ALPHA_VANE2
+  - Serial: 742112
+    HubPort: 4
+    Channel: 10
+    ProsimDataRef: I_OH_ELEV_PITOT2
+  - Serial: 742112
+    HubPort: 4
+    Channel: 11
+    ProsimDataRef: I_OH_CO_PITOT
 
   - Serial: 742112
     HubPort: 4
@@ -705,6 +741,14 @@ PhidgetsOutputInstances:
     HubPort: 1
     Channel: 7
     ProsimDataRef: I_OH_PACK_R
+  - Serial: 741087
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: I_OH_WINGBODY_OVT_L
+  # - Serial: 741087
+  #   HubPort: 2
+  #   Channel: 4
+  #   ProsimDataRef: I_OH_WINGBODY_OVT_R
 
   - Serial: 618534
     HubPort: 5
@@ -1101,7 +1145,7 @@ PhidgetsInputInstances:
     Channel: 11
     ProsimDataRef: S_RUDDER_TRIM
     InputValue: 2
-
+  
   - Serial: 668015
     HubPort: 0
     Channel: 4
@@ -1251,6 +1295,43 @@ PhidgetsInputInstances:
     Channel: 11
     ProsimDataRef: S_OH_MACH_WARNING_TEST_1
     InputValue: 1
+
+  - Serial: 668659
+    HubPort: 0
+    Channel: 2
+    ProsimDataRef: S_OH_WINDOW_HEAT_FR
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 3
+    ProsimDataRef: S_OH_WINDOW_HEAT_SR
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 4
+    ProsimDataRef: S_OH_WINDOW_HEAT_FL
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 5
+    ProsimDataRef: S_OH_WINDOW_HEAT_SL
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 6
+    ProsimDataRef: S_OH_PROBE_HEAT_B
+    InputValue: 1
+  - Serial: 668659
+    HubPort: 0
+    Channel: 7
+    ProsimDataRef: S_OH_PROBE_HEAT_A
+    InputValue: 1
+  - Serial: 742112
+    HubPort: 0
+    Channel: 9
+    ProsimDataRef: S_OH_TAT_TEST
+    InputValue: 1
+     
   - Serial: 618534
     HubPort: 1
     Channel: 6
@@ -1591,9 +1672,99 @@ PhidgetsMultiInputInstances:
     Channels: [4, 5]
     ProsimDataRef: S_OH_PRESS_MODE
     Mappings:
-      "00": 1
-      "10": 0
+      "00": 0
+      "10": 1
       "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [12, 1]
+    ProsimDataRef: S_OH_VHF_NAV
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [11, 0]
+    ProsimDataRef: S_OH_IRS_SEL
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 668659
+    HubPort: 0
+    Channels: [0, 1]
+    ProsimDataRef: S_OH_WINDOW_HEAT_TEST
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [10, 2]
+    ProsimDataRef: S_OH_DISPLAY_SOURCE  
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [13, 3]
+    ProsimDataRef: S_OH_DISP_PAN
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 742112
+    HubPort: 0
+    Channels: [14, 15]
+    ProsimDataRef: S_OH_FMC
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+  
+  - Serial: 668659
+    HubPort: 5
+    Channels: [0, 1]
+    ProsimDataRef: S_OH_SOURCE_APU1
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 668659
+    HubPort: 5
+    Channels: [2, 3]
+    ProsimDataRef: S_OH_SOURCE_APU2
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 668659
+    HubPort: 5
+    Channels: [4, 5]
+    ProsimDataRef: S_OH_SOURCE_GEN1
+    Mappings:
+      "00": 0
+      "10": 1
+      "01": 2
+
+  - Serial: 668659
+    HubPort: 5
+    Channels: [6, 7]
+    ProsimDataRef: S_OH_SOURCE_GEN2
+    Mappings:
+      "00": 0
+      "01": 1
+      "10": 2
 
 PhidgetsVoltageOutputInstances:
   - Serial: 668522

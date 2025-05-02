@@ -141,6 +141,78 @@ namespace Phidgets2Prosim
 
                 }
 
+                //// Code to test all lights on
+                //var t = 0;
+                //while (true)
+                //{
+                //    DateTime startDate = DateTime.Now;
+                //    //Console.WriteLine("Current Time with Milliseconds: " + startDate.ToString("HH:mm:ss.fff"));
+
+                //    for (int i = 0; i < totalOuts; i++)
+                //    {
+                //        // await Task.Run(() => phidgetsOutput[i].TurnOn(t));
+                //        await Task.Run(() =>  phidgetsOutput[i].HandleDataChangeAsync("name", t));
+
+                //    }
+
+
+                //    DateTime endDate = DateTime.Now;
+                //    //Console.WriteLine("Current Time DONE: " + endDate.ToString("HH:mm:ss.fff"));
+                //    TimeSpan difference = endDate - startDate;
+
+                //    // Display the difference
+                //    Console.WriteLine($"Difference:  {difference.Milliseconds} mil, {difference.Seconds} seconds");
+
+                //    t = t == 1 ? 0 : 1;
+                //    //t = t == 1 ? 0 : 1;
+
+
+                //    var taskDelay = Task.Delay(2000);
+                //    await taskDelay;
+                //}
+
+
+                // GATES
+                if (config.PhidgetsGateInstances != null)
+                {
+
+                    phidgetsGateInstances = new BindingList<PhidgetsGateInst>(config.PhidgetsGateInstances);
+                    dataGridViewGates.DataSource = phidgetsGateInstances;
+                    dataGridViewGates.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsGateInstances)
+                    {
+                        try
+                        {
+                            phidgetsGate[idx] = new PhidgetsOutput(instance.Serial, instance.HubPort, instance.Channel,
+                                "system.gates." + instance.ProsimDataRef, connection, true,
+                                instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
+                            phidgetsGate[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsGate[idx].InfoLog += DisplayInfoLog;
+                            if (instance.Inverse == true)
+                            {
+                                phidgetsGate[idx].Inverse = true;
+                            }
+                            if (instance.DelayOn != null && instance.DelayOn > 0)
+                            {
+                                phidgetsGate[idx].Delay = Convert.ToInt32(instance.DelayOn);
+                            }
+                            if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
+                            {
+                                phidgetsGate[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config line");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                    totalOuts += idx;
+                }
+
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
                 {
@@ -199,38 +271,6 @@ namespace Phidgets2Prosim
                     totalOuts += idx;
                 }
 
-
-                //// Code to test all lights on
-                //var t = 0;
-                //while (true)
-                //{
-                //    DateTime startDate = DateTime.Now;
-                //    //Console.WriteLine("Current Time with Milliseconds: " + startDate.ToString("HH:mm:ss.fff"));
-
-                //    for (int i = 0; i < totalOuts; i++)
-                //    {
-                //        // await Task.Run(() => phidgetsOutput[i].TurnOn(t));
-                //        await Task.Run(() =>  phidgetsOutput[i].HandleDataChangeAsync("name", t));
-
-                //    }
-
-
-                //    DateTime endDate = DateTime.Now;
-                //    //Console.WriteLine("Current Time DONE: " + endDate.ToString("HH:mm:ss.fff"));
-                //    TimeSpan difference = endDate - startDate;
-
-                //    // Display the difference
-                //    Console.WriteLine($"Difference:  {difference.Milliseconds} mil, {difference.Seconds} seconds");
-
-                //    t = t == 1 ? 0 : 1;
-                //    //t = t == 1 ? 0 : 1;
-
-
-                //    var taskDelay = Task.Delay(2000);
-                //    await taskDelay;
-                //}
-
-
                 // Audio OUTPUTS
                 if (config.PhidgetsAudioInstances != null)
                 {
@@ -257,47 +297,6 @@ namespace Phidgets2Prosim
                             if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
                             {
                                 phidgetsOutput[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            DisplayErrorLog("Error loading config line");
-                            DisplayErrorLog(ex.ToString());
-                        }
-                        idx++;
-                    }
-                    totalOuts += idx;
-                }
-
-                // GATES
-                if (config.PhidgetsGateInstances != null)
-                {
-
-                    phidgetsGateInstances = new BindingList<PhidgetsGateInst>(config.PhidgetsGateInstances);
-                    dataGridViewGates.DataSource = phidgetsGateInstances;
-                    dataGridViewGates.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-
-                    var idx = 0;
-                    foreach (var instance in config.PhidgetsGateInstances)
-                    {
-                        try
-                        {
-                            phidgetsGate[idx] = new PhidgetsOutput(instance.Serial, instance.HubPort, instance.Channel,
-                                "system.gates." + instance.ProsimDataRef, connection, true, 
-                                instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
-                            phidgetsGate[idx].ErrorLog += DisplayErrorLog;
-                            phidgetsGate[idx].InfoLog += DisplayInfoLog;
-                            if (instance.Inverse == true)
-                            {
-                                phidgetsGate[idx].Inverse = true;
-                            }
-                            if (instance.DelayOn != null && instance.DelayOn > 0)
-                            {
-                                phidgetsGate[idx].Delay = Convert.ToInt32(instance.DelayOn);
-                            }
-                            if (instance.MaxTimeOn != null && instance.MaxTimeOn > 0)
-                            {
-                                phidgetsGate[idx].MaxTimeOn = Convert.ToInt32(instance.MaxTimeOn);
                             }
                         }
                         catch (Exception ex)
