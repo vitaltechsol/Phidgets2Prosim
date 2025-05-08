@@ -8,7 +8,7 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
 
 1. **Download the Software**
 
-   - Visit the [GitHub Releases](https://github.com/vitaltechsol/Phidgets2Prosim/releases) page.
+   - Visit the [GitHub Releases](https://github.com/vitaltechsol/Phidgets2Prosim/releases) page. (Don't need to download the source files)
    - Download the latest `.zip` file.
 
 2. **Install the Software**
@@ -52,6 +52,7 @@ The `config.yaml` file consists of several sections:
 - [Phidgets Audio Gates](#phidgetsaudioinst)
 - [Phidgets BL DC Motors](#phidgetsbldcmotorinst)
 - [Phidgets Voltage Outputs (For gauges)](#phidgetsvoltageoutputinst)
+- [Phidgets Voltage Input (For pots)](#phidgetsvoltageinputinst)
 - [Custom Trim Wheel](#customtrimwheelinst)
 - [Phidgets Buttons](#phidgetsbuttoninst)
 - [Validation](#validation)
@@ -150,7 +151,6 @@ PhidgetsMultiInputInstances:
 
 - `Channels`: List of channels grouped together.
 - `Mappings`: Key-value pairs for input combinations.
-- 
 
 
 ## [Phidgets Outputs](#phidgetsoutputinst)
@@ -247,6 +247,38 @@ PhidgetsVoltageOutputInstances:
 
 - `ScaleFactor`: Adjusts ProSim input to analogue voltage output.
 - `Offset`: Offset applied to the output.
+
+## [Phidgets Voltage Input](#phidgetsvoltageinputinst)
+
+*Voltage ration input is used here**
+
+```yaml
+PhidgetsVoltageInputInstances: 
+  - Serial: 742112
+    HubPort: 5
+    Channel: 0
+    ProsimDataRef: A_ASP2_VHF_1_VOLUME
+
+  - Serial: 742112
+    HubPort: 5
+    Channel: 1
+    InputPoints: [0, 0.2, 0.4, 0.8, 1]
+    OutputPoints: [0,100, 500, 800, 1024]
+    DataInterval: 20
+    InterpolationMode: Curve
+    CurvePower: 3.0
+    ProsimDataRef: A_ASP2_VHF_2_VOLUME
+    MinChangeTriggerValue: 0.005
+```
+
+**Properties:**
+
+- `InputPoints`: (optional) Array of input values to interpolate from phidgets. The default is `[0, 1]` This means the minimum input value from phidgets is 0, and max is 1. The range in between can have up to 4 decimal points. for example `[0, 0.2543, 1]`  
+- `OutputPoints`: (optional) Array of output values to interpolate to prosim. The default is `[0, 255]` This means the minimum input value sent to prosim is 0, and max is 255. The output is while integer numbers  `[0, 100, 255]`  .
+- `DataInterval`: (optional) How long to wait to send the next data in ms. The default is 50. Minimum is 20. Lower values sends data faster. 
+- `InterpolationMode`: (optional) `Linear`, `Curve`, or `Spline`. Default is `Linear`
+- `CurvePower`: (optional). Applies exponential curve between points using a power factor. Default is 2.0
+- `MinChangeTriggerValue`: (optional) Minimum value detected to send data. Default is 0.002. This mean value needs to change by at least 0.002 for it to show up. Use higher values to filter out noise.
 
 ## [Custom Trim Wheel](#customtrimwheelinst)
 

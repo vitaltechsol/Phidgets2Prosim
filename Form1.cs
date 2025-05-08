@@ -25,7 +25,7 @@ namespace Phidgets2Prosim
 
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
-        int logTabIndex = 6;
+        int logTabIndex = 7;
         int OutputBlinkFastIntervalMs = 300;
         int OutputBlinkSlowIntervalMs = 600;
         double OutputDefaultDimValue = 0.7;
@@ -33,6 +33,7 @@ namespace Phidgets2Prosim
         PhidgetsInput [] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
         PhidgetsMultiInput[] phidgetsMultiInput = new PhidgetsMultiInput[360];
+        PhidgetsVoltageInput[] phidgetsVoltageInput = new PhidgetsVoltageInput[360];
         PhidgetsOutput[] phidgetsOutput = new PhidgetsOutput[360];
         PhidgetsOutput[] phidgetsGate = new PhidgetsOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
@@ -54,6 +55,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private BindingList<PhidgetsInputInst> phidgetsInputInstances;
         private BindingList<PhidgetsMultiInputInst> phidgetsMultiInputInstances;
+        private BindingList<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
         private BindingList<PhidgetsBLDCMotorInst> phidgetsBLDCMotorInstances;
@@ -533,6 +535,45 @@ namespace Phidgets2Prosim
                 }
 
 
+                // VOLTAGE INPUTS
+                if (config.PhidgetsVoltageInputInstances != null)
+                {
+                    DisplayInfoLog("Loading Voltage Inputs ... ");
+                    PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
+                    dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
+                    dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsVoltageInputInstances)
+                    {
+                        try
+                        {
+                            phidgetsVoltageInput[idx] = new PhidgetsVoltageInput(
+                                instance.Serial,
+                                instance.HubPort,
+                                instance.Channel,
+                                connection,
+                                "system.analog." + instance.ProsimDataRef,
+                                instance.InputPoints.ToArray(),
+                                instance.OutputPoints.ToArray(),
+                                instance.InterpolationMode,
+                                instance.CurvePower,
+                                instance.DataInterval,
+                                instance.MinChangeTriggerValue);
+                            phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsVoltageInput[idx].InfoLog += DisplayInfoLog;
+
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading config line for Voltage Inputs");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+
+                    DisplayInfoLog("Loading Voltage Inputs done");
+                }
+
                 // Buttons
                 if (config.PhidgetsButtonInstances != null)
                 {
@@ -652,7 +693,28 @@ namespace Phidgets2Prosim
                     }
                 }
 
-       
+                // VOLTAGE INPUTS
+                if (config.PhidgetsVoltageInputInstances != null)
+                {
+                    DisplayInfoLog("Unloading voltage-inputs...");
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsVoltageInputInstances)
+                    {
+                        try
+                        {
+                            phidgetsVoltageInput[idx].Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error closing voltage input");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
+
             }
             catch (Exception ex)
             {

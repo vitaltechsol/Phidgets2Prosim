@@ -19,6 +19,7 @@ namespace Phidgets2Prosim
         public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }
         public List<PhidgetsInputInst> PhidgetsInputInstances { get; set; }
         public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
+        public List<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
@@ -81,6 +82,18 @@ namespace Phidgets2Prosim
         
         // (Optional) Other additional prosim ref to change with same input
         public string ProsimDataRef3 { get; set; } = null;
+    }
+
+    public class PhidgetsVoltageInputInst : PhidgetDevice
+    {
+        public List<double> InputPoints { get; set; } = new List<double> { 0.0, 1.0 };
+        public List<int> OutputPoints { get; set; } = new List<int> { 0, 255 };
+
+        public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
+        public double MinChangeTriggerValue { get; set; } = 0.002;
+        public int DataInterval { get; set; } = 50;
+        public double CurvePower { get; set; } = 2.0;
+
     }
 
     public class PhidgetsMultiInputInst : PhidgetDevice

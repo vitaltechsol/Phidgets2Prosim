@@ -40,7 +40,7 @@ namespace Phidgets2Prosim
             this.dataGridViewMultiInputs = new System.Windows.Forms.DataGridView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridViewGates = new System.Windows.Forms.DataGridView();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabVoltageOut = new System.Windows.Forms.TabPage();
             this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
             this.tabButtons = new System.Windows.Forms.TabPage();
             this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -48,6 +48,8 @@ namespace Phidgets2Prosim
             this.btnLogClear = new System.Windows.Forms.Button();
             this.btnLogOk = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.tabVoltageIn = new System.Windows.Forms.TabPage();
+            this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
@@ -60,10 +62,12 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).BeginInit();
-            this.tabPage4.SuspendLayout();
+            this.tabVoltageOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).BeginInit();
             this.tabButtons.SuspendLayout();
             this.tabLog.SuspendLayout();
+            this.tabVoltageIn.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).BeginInit();
             this.SuspendLayout();
             // 
             // tabGroups
@@ -72,7 +76,8 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabInputs);
             this.tabGroups.Controls.Add(this.tabMultiInputs);
             this.tabGroups.Controls.Add(this.tabPage3);
-            this.tabGroups.Controls.Add(this.tabPage4);
+            this.tabGroups.Controls.Add(this.tabVoltageOut);
+            this.tabGroups.Controls.Add(this.tabVoltageIn);
             this.tabGroups.Controls.Add(this.tabButtons);
             this.tabGroups.Controls.Add(this.tabLog);
             this.tabGroups.Location = new System.Drawing.Point(16, 73);
@@ -157,16 +162,16 @@ namespace Phidgets2Prosim
             this.dataGridViewGates.Size = new System.Drawing.Size(618, 267);
             this.dataGridViewGates.TabIndex = 2;
             // 
-            // tabPage4
+            // tabVoltageOut
             // 
-            this.tabPage4.Controls.Add(this.dataGridViewVoltageOut);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(630, 279);
-            this.tabPage4.TabIndex = 4;
-            this.tabPage4.Text = "Voltage Out";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.tabVoltageOut.Controls.Add(this.dataGridViewVoltageOut);
+            this.tabVoltageOut.Location = new System.Drawing.Point(4, 22);
+            this.tabVoltageOut.Name = "tabVoltageOut";
+            this.tabVoltageOut.Padding = new System.Windows.Forms.Padding(3);
+            this.tabVoltageOut.Size = new System.Drawing.Size(630, 279);
+            this.tabVoltageOut.TabIndex = 4;
+            this.tabVoltageOut.Text = "Voltage Out";
+            this.tabVoltageOut.UseVisualStyleBackColor = true;
             // 
             // dataGridViewVoltageOut
             // 
@@ -236,6 +241,25 @@ namespace Phidgets2Prosim
             this.txtLog.Size = new System.Drawing.Size(618, 237);
             this.txtLog.TabIndex = 0;
             // 
+            // tabVoltageIn
+            // 
+            this.tabVoltageIn.Controls.Add(this.dataGridViewVoltageIn);
+            this.tabVoltageIn.Location = new System.Drawing.Point(4, 22);
+            this.tabVoltageIn.Name = "tabVoltageIn";
+            this.tabVoltageIn.Padding = new System.Windows.Forms.Padding(3);
+            this.tabVoltageIn.Size = new System.Drawing.Size(630, 279);
+            this.tabVoltageIn.TabIndex = 7;
+            this.tabVoltageIn.Text = "Voltage In";
+            this.tabVoltageIn.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewVoltageIn
+            // 
+            this.dataGridViewVoltageIn.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewVoltageIn.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewVoltageIn.Name = "dataGridViewVoltageIn";
+            this.dataGridViewVoltageIn.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewVoltageIn.TabIndex = 4;
+            // 
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
@@ -284,11 +308,13 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewGates)).EndInit();
-            this.tabPage4.ResumeLayout(false);
+            this.tabVoltageOut.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageOut)).EndInit();
             this.tabButtons.ResumeLayout(false);
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
+            this.tabVoltageIn.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -311,7 +337,7 @@ namespace Phidgets2Prosim
         private Label lblPsIP;
         private TabPage tabPage3;
         private DataGridView dataGridViewGates;
-        private TabPage tabPage4;
+        private TabPage tabVoltageOut;
         private DataGridView dataGridViewVoltageOut;
         private TabPage tabButtons;
         private FlowLayoutPanel buttonsFlowLayoutPanel;
@@ -319,5 +345,7 @@ namespace Phidgets2Prosim
         private Button btnLogClear;
         private TabPage tabMultiInputs;
         private DataGridView dataGridViewMultiInputs;
+        private TabPage tabVoltageIn;
+        private DataGridView dataGridViewVoltageIn;
     }
 }

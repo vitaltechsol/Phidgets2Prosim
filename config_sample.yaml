@@ -11,37 +11,6 @@ PhidgetsHubsInstances:
    - hub5000-OH-2
    - hub5000-OH-3
    - hub5000-OH-4
- 
-PhidgetsAudioInstances:
-  - Serial: 618534
-    HubPort: 5
-    Channel: 8
-    ProsimDataRef: "Gear_warning"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 9
-    ProsimDataRef: "Autopilot_Disconnect"
-  # - Serial: 618534
-  #   HubPort: 5
-  #   Channel: 10
-  #   ProsimDataRef: "Overspeed"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 11
-    ProsimDataRef: "Takeoff_Config"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 12
-    ProsimDataRef: "Fire_audio"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 13
-    ProsimDataRef: "High-Low_Chime"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 14
-    ProsimDataRef: "No_Smoking_Audio"
-    ProsimDataRefOff: "Seatbelt_Audio"
 
 PhidgetsOutputInstances:
   - Serial: 741087
@@ -1051,6 +1020,37 @@ PhidgetsGateInstances:
     HubPort: 2
     Channel: 3
     ProsimDataRef: B_LIGHT_TEST
+ 
+PhidgetsAudioInstances:
+  - Serial: 618534
+    HubPort: 5
+    Channel: 8
+    ProsimDataRef: "Gear_warning"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 9
+    ProsimDataRef: "Autopilot_Disconnect"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 10
+    ProsimDataRef: "Overspeed"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 11
+    ProsimDataRef: "Takeoff_Config"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 12
+    ProsimDataRef: "Fire_audio"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 13
+    ProsimDataRef: "High-Low_Chime"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 14
+    ProsimDataRef: "No_Smoking_Audio"
+    ProsimDataRefOff: "Seatbelt_Audio"
 
 PhidgetsInputInstances:
   - Serial: 618534
@@ -1793,6 +1793,12 @@ PhidgetsVoltageOutputInstances:
     HubPort: 3
     ScaleFactor: 26
     ProsimDataRef: G_OH_OUTFLOW_VALVE
+
+PhidgetsVoltageInputInstances: 
+  - Serial: 742112
+    HubPort: 5
+    Channel: 0
+    ProsimDataRef: A_ASP2_VHF_1_VOLUME
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
