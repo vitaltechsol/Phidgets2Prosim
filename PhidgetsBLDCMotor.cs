@@ -25,8 +25,11 @@ namespace Phidgets2Prosim
             {
                 HubPort = hubPort;
 
-                dcMotor.HubPort = hubPort;
-                dcMotor.IsRemote = true;
+                if (HubPort >= 0)
+                {
+                    dcMotor.HubPort = HubPort;
+                    dcMotor.IsRemote = true;
+                }
                 dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = deviceSerialNumber;
                 dcMotor.Acceleration = acceleration;

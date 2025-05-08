@@ -34,8 +34,11 @@ namespace Phidgets2Prosim
                 this.prosimDatmRefBwd = prosimDataRefBwd;
                 this.prosimDatmRefFwd = prosimDataRefFwd;
 
-                dcMotor.HubPort = hubPort;
-                dcMotor.IsRemote = true;
+                if (HubPort >= 0)
+                {
+                    dcMotor.HubPort = HubPort;
+                    dcMotor.IsRemote = true;
+                }
                 dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = serial;
                 dcMotor.Acceleration = 100;

@@ -33,15 +33,12 @@ namespace Phidgets2Prosim
             timer = new Timer(Interval);
             timer.Elapsed += OnTimerElapsed;
             timer.AutoReset = true;
-            
+            Serial = deviceSerialN;
+            HubPort = hubPort;
+            ProsimDataRef = prosimDataRef;
             try
             {
-                voltageOutput.DeviceSerialNumber = deviceSerialN; 
-                voltageOutput.HubPort = hubPort;
-                voltageOutput.IsRemote = true;
-                
                 Open();
-
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
@@ -59,15 +56,20 @@ namespace Phidgets2Prosim
             {
                 if (voltageOutput.IsOpen == false)
                 {
+                    voltageOutput.DeviceSerialNumber = Serial;
+                    if (HubPort >= 0)
+                    {
+                        voltageOutput.HubPort = HubPort;
+                        voltageOutput.IsRemote = true;
+                    }
                     await Task.Run(() => voltageOutput.Open(2000));
                     voltageOutput.Voltage = 0;
                 }
             }
             catch (System.Exception ex)
             {
-                SendErrorLog("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
-                SendErrorLog(ex.ToString());
-                Debug.WriteLine("Error: Voltage Channel " + Channel + " Input " + ProsimDataRef);
+                SendErrorLog($"Voltage output Open failed - {ProsimDataRef} to {Serial} [{HubPort}]");
+                SendErrorLog(ex.Message.ToString());
                 Debug.WriteLine(ex.ToString());
             }
         }

@@ -146,8 +146,11 @@ namespace Phidgets2Prosim
         {
             try
             {
-                digitalInput.HubPort = hubPort;
-                digitalInput.IsRemote = true;
+                if (hubPort >= 0)
+                {
+                    digitalInput.HubPort = hubPort;
+                    digitalInput.IsRemote = true;
+                }
                 digitalInput.Channel = Channel;
                 digitalInput.StateChange += StateChange;
                 digitalInput.DeviceSerialNumber = serial;
@@ -155,7 +158,7 @@ namespace Phidgets2Prosim
             }
             catch (Exception ex)
             {
-                SendErrorLog("Multi input Open failed" + ProsimDataRef + " ch:" + Channel);
+                SendErrorLog($"Multi input Open failed - {ProsimDataRef} to {serial} [{hubPort}] Ch:{Channel}");
                 SendErrorLog(ex.ToString());
             }
         }
