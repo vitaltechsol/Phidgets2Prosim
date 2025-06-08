@@ -553,6 +553,7 @@ namespace Phidgets2Prosim
                                 instance.Channel,
                                 connection,
                                 "system.analog." + instance.ProsimDataRef,
+                                instance.ProsimDataRefOnOff != "" ? "system.switches." + instance.ProsimDataRefOnOff : "",
                                 instance.InputPoints.ToArray(),
                                 instance.OutputPoints.ToArray(),
                                 instance.InterpolationMode,

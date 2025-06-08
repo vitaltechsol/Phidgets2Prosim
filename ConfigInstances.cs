@@ -86,6 +86,7 @@ namespace Phidgets2Prosim
 
     public class PhidgetsVoltageInputInst : PhidgetDevice
     {
+        public string ProsimDataRefOnOff { get; set; } = "";
         public List<double> InputPoints { get; set; } = new List<double> { 0.0, 1.0 };
         public List<int> OutputPoints { get; set; } = new List<int> { 0, 255 };
 

@@ -2,6 +2,7 @@
 using ProSimSDK;
 using System;
 using System.Threading.Tasks;
+using YamlDotNet.Core.Tokens;
 
 namespace Phidgets2Prosim
 {
@@ -28,20 +29,21 @@ namespace Phidgets2Prosim
     internal class PhidgetsVoltageInput : PhidgetDevice
     {
         private VoltageRatioInput voltageInput = new VoltageRatioInput();
+        public string ProsimDataRefOnOff { get; set; } = "";
         public double[] InputPoints { get; set; }
         public int[] OutputPoints { get; set; }
         public int DataInterval { get; set; }
-
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
-        public double CurvePower { get; set; } = 2.0;
-
-        public double MinChangeTriggerValue { get; set; }
-
+        public double CurvePower { get; set; } = 2.0;public double MinChangeTriggerValue { get; set; }
         private double[] splineA, splineB, splineC, splineD;
         private bool splineInitialized = false;
+        private System.Timers.Timer debounceTimer;
+        private object debounceLock = new object();
+        private int? pendingStateChange = null;
 
         public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
             string prosimDataRef,
+            string prosimDataRefOnOff,
             double[] inputPoints,
             int[] outputPoints,
             InterpolationMode interpolationMode = InterpolationMode.Spline,
@@ -51,6 +53,7 @@ namespace Phidgets2Prosim
            )
         {
             ProsimDataRef = prosimDataRef;
+            ProsimDataRefOnOff = prosimDataRefOnOff;
             Connection = connection;
             Channel = channel;
             HubPort = hubPort;
@@ -67,6 +70,20 @@ namespace Phidgets2Prosim
                 ComputeSplineCoefficients();
             }
             Open();
+
+            debounceTimer = new System.Timers.Timer(180); // 180ms debounce
+            debounceTimer.AutoReset = false; // Only fire once per change
+            debounceTimer.Elapsed += (sender, e) =>
+            {
+                lock (debounceLock)
+                {
+                    if (pendingStateChange.HasValue)
+                    {
+                        debouncedSwitch(pendingStateChange.Value);
+                        pendingStateChange = null;
+                    }
+                }
+            };
         }
 
         private void StateChange(object sender, Phidget22.Events.VoltageRatioInputVoltageRatioChangeEventArgs e)
@@ -80,11 +97,35 @@ namespace Phidgets2Prosim
             { 
                 SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
                 dataRef.value = valueScaled;
-               
             }
             catch (Exception ex)
             {
                 SendInfoLog($"Error: Voltage Input  [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");
+                SendErrorLog(ex.ToString());
+            }
+            if (ProsimDataRefOnOff != "")
+            {
+                lock (debounceLock)
+                {
+                    pendingStateChange = valueScaled == 0 ? 0 : 1;
+                    debounceTimer.Stop();  // Reset timer
+                    debounceTimer.Start(); // Start again
+                }
+            }
+        }
+
+        // Turn switch on off after voltage changes have stopped
+        private void debouncedSwitch(int state)
+        {
+            DataRef dataRef = new DataRef(ProsimDataRefOnOff, 200, Connection, true);
+            try
+            {
+                SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {state} || OnOffRef: {ProsimDataRefOnOff}");
+                dataRef.value = state;
+            }
+            catch (Exception ex)
+            {
+                SendInfoLog($"Error: Voltage Input  ProsimDataRefOnOff [{HubPort}] Ch {Channel}: {state} | Ref: {ProsimDataRefOnOff}");
                 SendErrorLog(ex.ToString());
             }
         }
