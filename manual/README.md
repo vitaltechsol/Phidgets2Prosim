@@ -284,6 +284,9 @@ PhidgetsVoltageInputInstances:
 
 ```yaml
 CustomTrimWheelInstance:
+  - Serial: 742112
+    HubPort: 5
+    Channel: 0
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
