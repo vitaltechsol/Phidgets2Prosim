@@ -106,7 +106,7 @@ PhidgetsHubsInstances:
   - hub5000-2
 ```
 
-List each hub device server name. Found in Phidgets control panel
+List each hub device server name. Found in Phidgets control panel. You can change the hub name using the Phidgets hub web interface and use a more descriptive name.
 
 ## [Phidgets Inputs](#phidgetsinputinst)
 
