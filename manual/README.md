@@ -294,6 +294,7 @@ CustomTrimWheelInstance:
     APOnClean: 0.7
     APOnDirty: 0.5
 ```
+Values are for speed, where 1 is 100% and 0 is 0%. Up and down speeds are different because of the air forces it takes to move the trim tab.
 
 **Properties:**
 
