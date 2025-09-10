@@ -225,7 +225,7 @@ PhidgetsBLDCMotorInstances:
 
 **Properties:**
 
-- `Offset`: Adjust position offset.
+- `Offset`: Adjust position offset. If one Motor is not synced with the other, a little offset can even them out.
 - `Reversed`: Invert motor direction.
 - `RefTurnOn`: ProSim ref to activate motor.
 - `RefCurrentPos`: Current position ref.
