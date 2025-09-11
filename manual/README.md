@@ -284,9 +284,8 @@ PhidgetsVoltageInputInstances:
 
 ```yaml
 CustomTrimWheelInstance:
-  - Serial: 742112
-    HubPort: 5
-    Channel: 0
+    Serial: 742112
+    Channel: 5
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
@@ -297,7 +296,7 @@ CustomTrimWheelInstance:
 Values are for speed, where 1 is 100% and 0 is 0%. Up and down speeds are different because of the air forces it takes to move the trim tab.
 
 **Properties:**
-
+- `Channel`: Use this for the hub port
 - `DirtyUp/Down`: Speed with dirty configuration.
 - `CleanUp/Down`: Speed with clean configuration.
 - `APOnClean/Dirty`: Speed under autopilot.
