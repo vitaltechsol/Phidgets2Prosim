@@ -2,6 +2,7 @@
 using ProSimSDK;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,7 @@ namespace Phidgets2Prosim
         double APOnClean;
         double targetFwdVelocity;
         double targetBwdVelocity;
+        double prevTrim = 0;
 
         bool isAPOn = false;
         double flaps = 0;
@@ -38,6 +40,9 @@ namespace Phidgets2Prosim
 
             DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
+
+            var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
+            dataRefTrim.onDataChange += DataRef_trim_onDataChange;
 
             this.dirtyUp = dirtyUp;
             this.dirtyDown = dirtyDown;
@@ -65,6 +70,15 @@ namespace Phidgets2Prosim
             Debug.WriteLine("AP changed  " + dataRef.value);
             isAPOn = value;
             UpdateVelocity();
+        }
+
+        private void DataRef_trim_onDataChange(DataRef dataRef)
+        {
+            // txtCDU1.Text = dataRef.name;
+            var newTrim = Math.Round((double)dataRef.value, 2);
+            Debug.WriteLine("trim changed  " + (prevTrim - newTrim).ToString());
+            prevTrim = newTrim;
+
         }
 
         private async void UpdateVelocity()

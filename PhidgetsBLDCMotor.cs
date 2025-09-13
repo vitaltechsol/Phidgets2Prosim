@@ -9,9 +9,9 @@ namespace Phidgets2Prosim
 {
     internal class PhidgetsBLDCMotor : PhidgetDevice
     {
+        public bool Reversed { get; set; } = false;
+        public int Offset { get; set; } = 0;
         double targetVelFast = 0.4;
-        bool reversed;
-        int offset = 0;
         bool motorOn = false;
         double currentPosition = 0;
         int threshold = 5;
@@ -35,8 +35,8 @@ namespace Phidgets2Prosim
                 dcMotor.Acceleration = acceleration;
                 dcMotor.TargetBrakingStrength = 1;
 
-                this.reversed = reversed;
-                this.offset = offset;
+                Reversed = reversed;
+                Offset = offset;
 
                 // Set ProSim datarefs
                 DataRef dataRef_currentPos = new DataRef(refCurrentPos, 100, connection);
@@ -78,13 +78,13 @@ namespace Phidgets2Prosim
         {
             if (motorOn)
             {
-                var targetPosition = Convert.ToDouble(dataRef.value) - offset;
+                var targetPosition = Convert.ToDouble(dataRef.value) - Offset;
                 //  Debug.WriteLine("Targetfor " + hubPort + " is " + targetPosition);
                 // Calculate the direction based on the difference between current and target positions
 
                 // Check if the motor is within the acceptable range
                 double diff = Math.Abs(currentPosition - targetPosition);
-                Debug.WriteLine("diff " + diff);
+                // Debug.WriteLine("diff " + diff);
 
                 if (Math.Abs(diff) <= threshold)
 
@@ -94,7 +94,7 @@ namespace Phidgets2Prosim
                     dcMotor.TargetVelocity = currentVel;
                 } else
                 {
-                    int direction = Math.Sign(targetPosition - currentPosition) * (reversed ? -1 : 1);
+                    int direction = Math.Sign(targetPosition - currentPosition) * (Reversed ? -1 : 1);
                    // Debug.WriteLine("direction " + direction);
 
                     double targetVel = targetVelFast;

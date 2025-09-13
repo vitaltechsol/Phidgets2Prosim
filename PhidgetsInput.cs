@@ -63,8 +63,16 @@ namespace Phidgets2Prosim
 
         public void Close()
         {
-            digitalInput.Close();
-            SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+            try
+            {
+                digitalInput.Close();
+                SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+            }
+            catch (System.Exception ex)
+            {
+                SendInfoLog($"ERROR Detaching / Closing {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+                SendErrorLog(ex.Message);
+            }
         }
 
         public async void Open()
