@@ -19,7 +19,9 @@ namespace Phidgets2Prosim
         bool isPaused = false;
 
         BLDCMotor dcMotor = new BLDCMotor();
-        public PhidgetsBLDCMotor(int deviceSerialNumber, int hubPort, ProSimConnect connection, bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos, double acceleration)
+        public PhidgetsBLDCMotor(int deviceSerialNumber, int hubPort, ProSimConnect connection, 
+            bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos, 
+            double acceleration, double velocity)
         {
             try
             {
@@ -33,7 +35,8 @@ namespace Phidgets2Prosim
                 dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = deviceSerialNumber;
                 dcMotor.Acceleration = acceleration;
-                dcMotor.TargetBrakingStrength = 1;
+				dcMotor.Velocity = velocity;
+				dcMotor.TargetBrakingStrength = 1;
 
                 Reversed = reversed;
                 Offset = offset;

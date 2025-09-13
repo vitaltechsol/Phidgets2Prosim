@@ -127,7 +127,10 @@ namespace Phidgets2Prosim
         // Acceleration values between 0.1 and 1.0
         public double Acceleration { get; set; }
 
-    }
+        //Velocity values between 0.1 and 1.0
+        public double Velocity { get; set; } = 0.4;
+
+	}
 
     public class PhidgetsVoltageOutputInst : PhidgetDevice
     {
