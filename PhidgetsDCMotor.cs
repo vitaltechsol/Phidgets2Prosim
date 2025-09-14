@@ -24,8 +24,25 @@ namespace Phidgets2Prosim
 
         private int pulseIntervalPauseReduced = 0;
 
+		private double[] range = new double[] { -1, 1 };
 
-        DCMotor dcMotor = new DCMotor();
+		public double[] Range
+		{
+			get => range;
+			set
+			{
+				if (value == null || value.Length != 2)
+					throw new ArgumentException("Range must be a double[2], e.g., new[] { -1, 1 } or new[] { 0, 1 }.");
+				if (value[0] == value[1])
+					throw new ArgumentException("Range min and max cannot be the same.");
+
+				// normalize order
+				double a = value[0], b = value[1];
+				range = a <= b ? new double[] { a, b } : new double[] { b, a };
+			}
+		}
+
+		DCMotor dcMotor = new DCMotor();
         public PhidgetsDCMotor(int serial, int hubPort, string prosimDataRefFwd, string prosimDataRefBwd, ProSimConnect connection)
         {
             try
@@ -194,8 +211,17 @@ namespace Phidgets2Prosim
             }
         }
 
+		/// Map a logical velocity in [Range[0], Range[1]] to physical [-1, 1].
+		private double MapToPhysical(double logical)
+		{
+			double rMin = range[0], rMax = range[1];
+			double t = (logical - rMin) / (rMax - rMin); // 0..1
+			double physical = -1 + (t * 2);              // -1..1
+			if (double.IsNaN(physical) || double.IsInfinity(physical)) return 0;
+			return Math.Max(-1, Math.Min(1, physical));  // clamp
+		}
 
-        private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
+		private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (isMotorMoving)
             {

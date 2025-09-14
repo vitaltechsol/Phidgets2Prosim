@@ -360,8 +360,8 @@ namespace Phidgets2Prosim
                                 instance.RefCurrentPos,
                                 instance.RefTargetPos,
                                 instance.Acceleration,
-                                instance.Velocity
-                            );
+                                instance.MaxTargetVelocity
+							);
                             phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
                         }

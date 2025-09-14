@@ -11,14 +11,16 @@ namespace Phidgets2Prosim
     {
         public bool Reversed { get; set; } = false;
         public int Offset { get; set; } = 0;
-        double targetVelFast = 0.4;
+        //double MaxTargetVelocity = 0.4;
         bool motorOn = false;
         double currentPosition = 0;
         int threshold = 5;
         double currentVel = 0;
         bool isPaused = false;
+		public double MaxTargetVelocity { get; set; } = 0.4; //// Maximum velocity (0.1 to 1) where 1 is 100%
 
-        BLDCMotor dcMotor = new BLDCMotor();
+
+		BLDCMotor dcMotor = new BLDCMotor();
         public PhidgetsBLDCMotor(int deviceSerialNumber, int hubPort, ProSimConnect connection, 
             bool reversed, int offset, string refTurnOn, string refCurrentPos, string refTargetPos, 
             double acceleration, double velocity)
@@ -35,7 +37,7 @@ namespace Phidgets2Prosim
                 dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = deviceSerialNumber;
                 dcMotor.Acceleration = acceleration;
-				dcMotor.Velocity = velocity;
+				MaxTargetVelocity = velocity;
 				dcMotor.TargetBrakingStrength = 1;
 
                 Reversed = reversed;
@@ -100,7 +102,7 @@ namespace Phidgets2Prosim
                     int direction = Math.Sign(targetPosition - currentPosition) * (Reversed ? -1 : 1);
                    // Debug.WriteLine("direction " + direction);
 
-                    double targetVel = targetVelFast;
+                    double targetVel = MaxTargetVelocity;
                     targetVel = diff > 100 ? 100 : diff;
                     targetVel = targetVel / 100;
 
@@ -115,7 +117,7 @@ namespace Phidgets2Prosim
 
         public void changeTargetVelocity(double vel)
         {
-            targetVelFast = vel;
+			MaxTargetVelocity = vel;
         }
 
         public void pause(bool isPaused)

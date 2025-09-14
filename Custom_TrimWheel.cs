@@ -20,7 +20,8 @@ namespace Phidgets2Prosim
         double cleanDown;
         double APOnDirty;
         double APOnClean;
-        double targetFwdVelocity;
+		double[] range = new double[] { -1, 1 };
+		double targetFwdVelocity;
         double targetBwdVelocity;
         double prevTrim = 0;
 
