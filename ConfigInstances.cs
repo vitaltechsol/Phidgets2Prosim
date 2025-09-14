@@ -130,6 +130,49 @@ namespace Phidgets2Prosim
         //Maximum velocity values between 0.1 and 1.0
         public double MaxTargetVelocity { get; set; } = 0.4;
 
+		//Maximum allowed motor velocity (0..1). Used when the error is large
+		public double MaxVelocity { get; set; } = 0.20;
+
+		//Minimum velocity to overcome static friction when error is small
+		public double MinVelocity { get; set; } = 0.03;
+
+		//Error distance (in position units) at which the motor reaches MaxVelocity
+		public double VelocityBand { get; set; } = 250.0;
+
+		//Curve shaping factor for error-to-velocity mapping (0.5–1.0 = softer near zero)
+		public double CurveGamma { get; set; } = 0.6;
+
+		//Distance threshold to enter the settled (stopped) zone.
+		public double DeadbandEnter { get; set; } = 2.0;
+
+		//Distance threshold to exit the settled (stopped) zone (should be > DeadbandEnter)
+		public double DeadbandExit { get; set; } = 4.0;
+
+		//Maximum allowed change in commanded velocity per control loop tick (slew limiter)
+		public double MaxVelStepPerTick { get; set; } = 0.008;
+
+		//Proportional gain (optional) to reduce steady-state error
+		public double Kp { get; set; } = 0.001;
+
+		//Integral gain (optional) to remove small bias error (start at 0.0)
+		public double Ki { get; set; } = 0.0005;
+
+		//Derivative gain (damping) on error rate to suppress oscillations
+		public double Kd { get; set; } = 0.0;
+
+		// Only integrate when |error| ≤ this band (prevents wind-up and hunting).
+		// Tune ~6–12 in your position units.
+		public double IOnBand { get; set; } = 8.0;
+
+		//Maximum absolute integral term value to prevent wind-up
+		public double IntegralLimit { get; set; } = 0.3;
+
+		//Smoothing factor for low-pass filtering of position feedback (0..1, higher = less filtering)
+		public double PositionFilterAlpha { get; set; } = 0.30;
+
+		//Interval (in milliseconds) for the control loop tick. Lower = faster updates
+		public int TickMs { get; set; } = 20;
+
 	}
 
     public class PhidgetsVoltageOutputInst : PhidgetDevice

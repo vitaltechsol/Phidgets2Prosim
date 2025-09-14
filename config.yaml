@@ -18,7 +18,7 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.2
-    MaxTargetVelocity: 0.2
+    MaxTargetVelocity: 0.1
     
   - Serial: 746062
     HubPort: 1
@@ -28,7 +28,7 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_RIGHT
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.2
-    MaxTargetVelocity: 0.2
+    MaxTargetVelocity: 0.1
 
 # Need to add the speedbrake BLDC Motor?? how to set Velocity Variable?
 

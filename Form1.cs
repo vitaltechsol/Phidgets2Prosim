@@ -361,6 +361,21 @@ namespace Phidgets2Prosim
                                 instance.RefTargetPos,
                                 instance.Acceleration,
                                 instance.MaxTargetVelocity
+								/*instance.MaxVelocity,
+								instance.MinVelocity,
+								instance.VelocityBand,
+								instance.CurveGamma,
+								instance.DeadbandEnter,
+								instance.DeadbandExit,
+								instance.MaxVelStepPerTick,
+								instance.Kp,
+								instance.Ki,
+								instance.Kd,
+								instance.IOnBand,
+								instance.IntegralLimit,
+								instance.PositionFilterAlpha,
+								instance.TickMs*/
+							
 							);
                             phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
@@ -793,8 +808,8 @@ namespace Phidgets2Prosim
                     {
                         trimWheel?.pause(simIsPaused);
                     }
-                    bldcm_00?.pause(simIsPaused);
-                    bldcm_01?.pause(simIsPaused);
+                    bldcm_00?.Pause(simIsPaused);
+                    bldcm_01?.Pause(simIsPaused);
 
                     Invoke(new MethodInvoker(updateStatusLabel));
                 }
