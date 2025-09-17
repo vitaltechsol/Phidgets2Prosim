@@ -350,34 +350,33 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
-                                instance.Serial, 
-                                instance.HubPort, 
-                                connection, 
-                                instance.Reversed,
-                                instance.Offset,
-                                instance.RefTurnOn,
-                                instance.RefCurrentPos,
-                                instance.RefTargetPos,
-                                instance.Acceleration,
-                                instance.MaxTargetVelocity
-								/*instance.MaxVelocity,
-								instance.MinVelocity,
-								instance.VelocityBand,
-								instance.CurveGamma,
-								instance.DeadbandEnter,
-								instance.DeadbandExit,
-								instance.MaxVelStepPerTick,
-								instance.Kp,
-								instance.Ki,
-								instance.Kd,
-								instance.IOnBand,
-								instance.IntegralLimit,
-								instance.PositionFilterAlpha,
-								instance.TickMs*/
-							
-							);
-                            phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
+							phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
+	                            deviceSerialNumber: instance.Serial,
+	                            hubPort: instance.HubPort,
+	                            connection: connection,
+	                            reversed: instance.Reversed,
+	                            offset: instance.Offset,
+	                            refTurnOn: instance.RefTurnOn,
+	                            refCurrentPos: instance.RefCurrentPos,
+	                            refTargetPos: instance.RefTargetPos,
+	                            acceleration: instance.Acceleration,
+
+	                            // only use MaxVelocity from config
+	                            maxVelocity: instance.MaxVelocity,
+	                            minVelocity: instance.MinVelocity,
+	                            velocityBand: instance.VelocityBand,
+	                            curveGamma: instance.CurveGamma,
+	                            deadbandEnter: instance.DeadbandEnter,
+	                            deadbandExit: instance.DeadbandExit,
+	                            maxVelStepPerTick: instance.MaxVelStepPerTick,
+	                            kp: instance.Kp,
+	                            ki: instance.Ki,
+	                            kd: instance.Kd,
+	                            integralLimit: instance.IntegralLimit,
+	                            positionFilterAlpha: instance.PositionFilterAlpha,
+	                            tickMs: instance.TickMs
+                            );
+							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
                         }
                         catch (Exception ex)

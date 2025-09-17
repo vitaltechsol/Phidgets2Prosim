@@ -127,9 +127,6 @@ namespace Phidgets2Prosim
         // Acceleration values between 0.1 and 1.0
         public double Acceleration { get; set; }
 
-        //Maximum velocity values between 0.1 and 1.0
-        public double MaxTargetVelocity { get; set; } = 0.4;
-
 		//Maximum allowed motor velocity (0..1). Used when the error is large
 		public double MaxVelocity { get; set; } = 0.20;
 

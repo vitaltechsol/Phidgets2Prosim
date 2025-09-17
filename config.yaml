@@ -18,8 +18,22 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.2
-    MaxTargetVelocity: 0.1
-    
+        
+    MaxVelocity: 0.20
+    MinVelocity: 0.03
+    VelocityBand: 250.0
+    CurveGamma: 0.6
+    DeadbandEnter: 2.0
+    DeadbandExit: 4.0
+    MaxVelStepPerTick: 0.008
+    Kp: 0.001
+    Ki: 0.0005
+    Kd: 0.0
+    IOnBand: 8.0
+    IntegralLimit: 0.3
+    PositionFilterAlpha: 0.30
+    TickMs: 20
+
   - Serial: 746062
     HubPort: 1
     Reversed: true
@@ -28,7 +42,23 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_RIGHT
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.2
-    MaxTargetVelocity: 0.1
+    
+    MaxVelocity: 0.20
+    MinVelocity: 0.03
+    VelocityBand: 250.0
+    CurveGamma: 0.6
+    DeadbandEnter: 2.0
+    DeadbandExit: 4.0
+    MaxVelStepPerTick: 0.008
+    Kp: 0.001
+    Ki: 0.0005
+    Kd: 0.0
+    IOnBand: 8.0
+    IntegralLimit: 0.3
+    PositionFilterAlpha: 0.30
+    TickMs: 20
+
+
 
 # Need to add the speedbrake BLDC Motor?? how to set Velocity Variable?
 

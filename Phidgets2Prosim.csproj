@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Phidget22.NET.1.16.20230707\build\Phidget22.NET.props" Condition="Exists('packages\Phidget22.NET.1.16.20230707\build\Phidget22.NET.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,8 +57,8 @@
     <ApplicationIcon>ph2pr.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Phidget22.NET, Version=1.1.16.6, Culture=neutral, PublicKeyToken=aefa9ee0bcd237af, processorArchitecture=MSIL">
-      <HintPath>packages\Phidget22.NET.1.16.20230707\lib\net46\Phidget22.NET.dll</HintPath>
+    <Reference Include="Phidget22.NET, Version=1.1.23.3, Culture=neutral, PublicKeyToken=aefa9ee0bcd237af, processorArchitecture=MSIL">
+      <HintPath>packages\Phidget22.NET.1.23.20250911\lib\net462\Phidget22.NET.dll</HintPath>
     </Reference>
     <Reference Include="ProSimSDK, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -160,10 +159,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Phidget22.NET.1.23.20250911\build\net462\Phidget22.NET.targets" Condition="Exists('packages\Phidget22.NET.1.23.20250911\build\net462\Phidget22.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Phidget22.NET.1.16.20230707\build\Phidget22.NET.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Phidget22.NET.1.16.20230707\build\Phidget22.NET.props'))" />
+    <Error Condition="!Exists('packages\Phidget22.NET.1.23.20250911\build\net462\Phidget22.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Phidget22.NET.1.23.20250911\build\net462\Phidget22.NET.targets'))" />
   </Target>
 </Project>
