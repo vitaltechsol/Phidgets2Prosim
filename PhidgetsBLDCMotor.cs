@@ -6,6 +6,24 @@ using System.Timers;
 
 namespace Phidgets2Prosim
 {
+
+	public class MotorTuningOptions
+	{
+		public double? MaxVelocity { get; set; }
+		public double? MinVelocity { get; set; }
+		public double? VelocityBand { get; set; }
+		public double? CurveGamma { get; set; }
+		public double? DeadbandEnter { get; set; }
+		public double? DeadbandExit { get; set; }
+		public double? MaxVelStepPerTick { get; set; }
+		public double? Kp { get; set; }
+		public double? Ki { get; set; }
+		public double? Kd { get; set; }
+		public double? IntegralLimit { get; set; }
+		public double? PositionFilterAlpha { get; set; }
+		public int? TickMs { get; set; }
+	}
+
 	internal class PhidgetsBLDCMotor : PhidgetDevice, IDisposable
 	{
 		///If true, reverses the motor direction logic (inverts sign of the error)
@@ -36,10 +54,10 @@ namespace Phidgets2Prosim
 		public double MaxVelStepPerTick { get; set; } = 0.008;
 
 		///Proportional gain (optional) to reduce steady-state error
-		public double Kp { get; set; } = 0.001;
+		public double Kp { get; set; } = 0.0;
 
 		///Integral gain (optional) to remove small bias error (start at 0.0)
-		public double Ki { get; set; } = 0.0005;
+		public double Ki { get; set; } = 0.0;
 
 		///Derivative gain (damping) on error rate to suppress oscillations
 		public double Kd { get; set; } = 0.0;
@@ -83,38 +101,28 @@ namespace Phidgets2Prosim
 			string refCurrentPos,
 			string refTargetPos,
 			double acceleration,
-
-			// Optional overrides
-			double? maxVelocity = null,
-			double? minVelocity = null,
-			double? velocityBand = null,
-			double? curveGamma = null,
-			double? deadbandEnter = null,
-			double? deadbandExit = null,
-			double? maxVelStepPerTick = null,
-			double? kp = null,
-			double? ki = null,
-			double? kd = null,
-			double? integralLimit = null,
-			double? positionFilterAlpha = null,
-			int? tickMs = null
+			MotorTuningOptions options = null
 		)
 		{
 			try
 			{
-				if (maxVelocity.HasValue) MaxVelocity = maxVelocity.Value;
-				if (minVelocity.HasValue) MinVelocity = minVelocity.Value;
-				if (velocityBand.HasValue) VelocityBand = velocityBand.Value;
-				if (curveGamma.HasValue) CurveGamma = curveGamma.Value;
-				if (deadbandEnter.HasValue) DeadbandEnter = deadbandEnter.Value;
-				if (deadbandExit.HasValue) DeadbandExit = deadbandExit.Value;
-				if (maxVelStepPerTick.HasValue) MaxVelStepPerTick = maxVelStepPerTick.Value;
-				if (kp.HasValue) Kp = kp.Value;
-				if (ki.HasValue) Ki = ki.Value;
-				if (kd.HasValue) Kd = kd.Value;
-				if (integralLimit.HasValue) IntegralLimit = integralLimit.Value;
-				if (positionFilterAlpha.HasValue) PositionFilterAlpha = positionFilterAlpha.Value;
-				if (tickMs.HasValue) TickMs = tickMs.Value;
+				// Apply optional overrides if provided
+
+				if (options != null)
+				{
+					if (options.MaxVelocity.HasValue) MaxVelocity = options.MaxVelocity.Value;
+					if (options.MinVelocity.HasValue) MinVelocity = options.MinVelocity.Value;
+					if (options.VelocityBand.HasValue) VelocityBand = options.VelocityBand.Value;
+					if (options.CurveGamma.HasValue) CurveGamma = options.CurveGamma.Value;
+					if (options.DeadbandEnter.HasValue) DeadbandEnter = options.DeadbandEnter.Value;
+					if (options.DeadbandExit.HasValue) DeadbandExit = options.DeadbandExit.Value;
+					if (options.MaxVelStepPerTick.HasValue) MaxVelStepPerTick = options.MaxVelStepPerTick.Value;
+					if (options.Kp.HasValue) Kp = options.Kp.Value;
+					if (options.Ki.HasValue) Ki = options.Ki.Value;
+					if (options.IntegralLimit.HasValue) IntegralLimit = options.IntegralLimit.Value;
+					if (options.PositionFilterAlpha.HasValue) PositionFilterAlpha = options.PositionFilterAlpha.Value;
+					if (options.TickMs.HasValue) TickMs = options.TickMs.Value;
+				}
 
 				Reversed = reversed;
 				Offset = offset;

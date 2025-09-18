@@ -128,47 +128,47 @@ namespace Phidgets2Prosim
         public double Acceleration { get; set; }
 
 		//Maximum allowed motor velocity (0..1). Used when the error is large
-		public double MaxVelocity { get; set; } = 0.20;
+		public double? MaxVelocity { get; set; }
 
 		//Minimum velocity to overcome static friction when error is small
-		public double MinVelocity { get; set; } = 0.03;
+		public double? MinVelocity { get; set; }
 
 		//Error distance (in position units) at which the motor reaches MaxVelocity
-		public double VelocityBand { get; set; } = 250.0;
+		public double? VelocityBand { get; set; }
 
 		//Curve shaping factor for error-to-velocity mapping (0.5–1.0 = softer near zero)
-		public double CurveGamma { get; set; } = 0.6;
+		public double? CurveGamma { get; set; }
 
 		//Distance threshold to enter the settled (stopped) zone.
-		public double DeadbandEnter { get; set; } = 2.0;
+		public double? DeadbandEnter { get; set; }
 
 		//Distance threshold to exit the settled (stopped) zone (should be > DeadbandEnter)
-		public double DeadbandExit { get; set; } = 4.0;
+		public double? DeadbandExit { get; set; }
 
 		//Maximum allowed change in commanded velocity per control loop tick (slew limiter)
-		public double MaxVelStepPerTick { get; set; } = 0.008;
+		public double?  MaxVelStepPerTick { get; set; }
 
 		//Proportional gain (optional) to reduce steady-state error
-		public double Kp { get; set; } = 0.001;
+		public double? Kp { get; set; }
 
 		//Integral gain (optional) to remove small bias error (start at 0.0)
-		public double Ki { get; set; } = 0.0005;
+		public double? Ki { get; set; }
 
 		//Derivative gain (damping) on error rate to suppress oscillations
-		public double Kd { get; set; } = 0.0;
+		public double? Kd { get; set; }
 
 		// Only integrate when |error| ≤ this band (prevents wind-up and hunting).
 		// Tune ~6–12 in your position units.
-		public double IOnBand { get; set; } = 8.0;
+		public double? IOnBand { get; set; }
 
 		//Maximum absolute integral term value to prevent wind-up
-		public double IntegralLimit { get; set; } = 0.3;
+		public double? IntegralLimit { get; set; }
 
 		//Smoothing factor for low-pass filtering of position feedback (0..1, higher = less filtering)
-		public double PositionFilterAlpha { get; set; } = 0.30;
+		public double? PositionFilterAlpha { get; set; }
 
 		//Interval (in milliseconds) for the control loop tick. Lower = faster updates
-		public int TickMs { get; set; } = 20;
+		public int? TickMs { get; set; }
 
 	}
 

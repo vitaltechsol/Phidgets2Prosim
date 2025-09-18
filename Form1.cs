@@ -350,32 +350,37 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-							phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
-	                            deviceSerialNumber: instance.Serial,
-	                            hubPort: instance.HubPort,
-	                            connection: connection,
-	                            reversed: instance.Reversed,
-	                            offset: instance.Offset,
-	                            refTurnOn: instance.RefTurnOn,
-	                            refCurrentPos: instance.RefCurrentPos,
-	                            refTargetPos: instance.RefTargetPos,
-	                            acceleration: instance.Acceleration,
+							var opts = new MotorTuningOptions
+							{
+								MaxVelocity = instance.MaxVelocity,
+								MinVelocity = instance.MinVelocity,
+								VelocityBand = instance.VelocityBand,
+								CurveGamma = instance.CurveGamma,
+								DeadbandEnter = instance.DeadbandEnter,
+								DeadbandExit = instance.DeadbandExit,
+								MaxVelStepPerTick = instance.MaxVelStepPerTick,
+								Kp = instance.Kp,
+								Ki = instance.Ki,
+								Kd = instance.Kd,
+								IntegralLimit = instance.IntegralLimit,
+								PositionFilterAlpha = instance.PositionFilterAlpha,
+								TickMs = instance.TickMs
+							};
 
-	                            // only use MaxVelocity from config
-	                            maxVelocity: instance.MaxVelocity,
-	                            minVelocity: instance.MinVelocity,
-	                            velocityBand: instance.VelocityBand,
-	                            curveGamma: instance.CurveGamma,
-	                            deadbandEnter: instance.DeadbandEnter,
-	                            deadbandExit: instance.DeadbandExit,
-	                            maxVelStepPerTick: instance.MaxVelStepPerTick,
-	                            kp: instance.Kp,
-	                            ki: instance.Ki,
-	                            kd: instance.Kd,
-	                            integralLimit: instance.IntegralLimit,
-	                            positionFilterAlpha: instance.PositionFilterAlpha,
-	                            tickMs: instance.TickMs
-                            );
+							phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
+								deviceSerialNumber: instance.Serial,
+								hubPort: instance.HubPort,
+								connection: connection,
+								reversed: instance.Reversed,
+								offset: instance.Offset,
+								refTurnOn: instance.RefTurnOn,
+								refCurrentPos: instance.RefCurrentPos,
+								refTargetPos: instance.RefTargetPos,
+								acceleration: instance.Acceleration,
+								options: opts
+							);
+
+
 							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
                         }

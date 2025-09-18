@@ -18,16 +18,17 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.2
-        
+
+    #The following are fine tunning Options they are optional#    
     MaxVelocity: 0.20
-    MinVelocity: 0.03
+    MinVelocity: 0.02
     VelocityBand: 250.0
-    CurveGamma: 0.6
+    CurveGamma: 0.55
     DeadbandEnter: 2.0
     DeadbandExit: 4.0
     MaxVelStepPerTick: 0.008
-    Kp: 0.001
-    Ki: 0.0005
+    Kp: 0.0
+    Ki: 0.0
     Kd: 0.0
     IOnBand: 8.0
     IntegralLimit: 0.3
@@ -43,15 +44,16 @@ PhidgetsBLDCMotorInstances:
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.2
     
+    #The following are fine tunning Options they are optional# 
     MaxVelocity: 0.20
-    MinVelocity: 0.03
+    MinVelocity: 0.02
     VelocityBand: 250.0
-    CurveGamma: 0.6
+    CurveGamma: 0.55
     DeadbandEnter: 2.0
     DeadbandExit: 4.0
     MaxVelStepPerTick: 0.008
-    Kp: 0.001
-    Ki: 0.0005
+    Kp: 0.0
+    Ki: 0.0
     Kd: 0.0
     IOnBand: 8.0
     IntegralLimit: 0.3
