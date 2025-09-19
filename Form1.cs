@@ -411,7 +411,17 @@ namespace Phidgets2Prosim
                             instance.APOnDirty,
                             instance.APOnDirty
                         );
-                        trimWheel.ErrorLog += DisplayErrorLog;
+
+						if (instance.Range != null && instance.Range.Count == 2)
+						{
+							trimWheel.Range = instance.Range.ToArray();
+						}
+						else
+						{
+							trimWheel.Range = new double[] { -1.0, 1.0 };
+						}
+
+						trimWheel.ErrorLog += DisplayErrorLog;
                         trimWheel.InfoLog += DisplayInfoLog;
                     }
                     catch (Exception ex)

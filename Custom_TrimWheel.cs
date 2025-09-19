@@ -20,7 +20,6 @@ namespace Phidgets2Prosim
         double cleanDown;
         double APOnDirty;
         double APOnClean;
-		double[] range = new double[] { -1, 1 };
 		double targetFwdVelocity;
         double targetBwdVelocity;
         double prevTrim = 0;
@@ -28,7 +27,24 @@ namespace Phidgets2Prosim
         bool isAPOn = false;
         double flaps = 0;
 
-        public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
+		private double[] _range = new double[] { -1, 1 };
+
+		public double[] Range
+		{
+			get => _range;
+			set
+			{
+				if (value == null || value.Length != 2)
+					throw new ArgumentException("Range must be double[2], e.g., new[] { -1, 1 } or new[] { 0, 1 }.");
+				var a = Math.Min(value[0], value[1]);
+				var b = Math.Max(value[0], value[1]);
+				_range = new[] { a, b };
+				if (dcm != null) dcm.Range = _range;   // propagate to the motor
+			}
+		}
+
+
+		public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
             double dirtyUp, double dirtyDown, 
             double cleanUp, double cleanDown, 
             double APOnDirty,
@@ -38,8 +54,9 @@ namespace Phidgets2Prosim
             dcm.pulsateMotor = true;
             dcm.ErrorLog += SendErrorLog;
             dcm.InfoLog += SendInfoLog;
+			dcm.Range = _range;   // ensure the motor starts with the current logical range
 
-            DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);

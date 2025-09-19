@@ -112,15 +112,15 @@ PhidgetsOutputInstances:
     Channel: 3
     ProsimDataRef: I_MIP_PARKING_BRAKE   
     
-CustomTrimWheelInstance:                         # Where do i set up the DC motor channel etc. Also my values are UP=0-0.5 and DOWN=0.5-1.0 
+CustomTrimWheelInstance: 
     Serial: 742347
     HubPort: 5
-    Channel: 0                  # probably dont need
-    DirtyUp: 1
-    DirtyDown: 0.8
-    CleanUp: 0.6
-    CleanDown: 0.6
+    Channel: 5               
+    DirtyUp: .95
+    DirtyDown: 0.05
+    CleanUp: 0.7
+    CleanDown: 0.3
     APOnClean: 0.7
     APOnDirty: 0.5 
-    
+    Range: [0, 1]  
    
