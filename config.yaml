@@ -67,12 +67,12 @@ PhidgetsBLDCMotorInstances:
 
 
 PhidgetsGateInstances:
-  - Serial: 746062
-    HubPort: 2   # This is a BLDC Motor
-    Channel: 2
-    ProsimDataRef: B_SPEED_BRAKE_DEPLOY
-    ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
-    MaxTimeOn: 30000
+  # - Serial: 746062
+  #   HubPort: 2   # This is a BLDC Motor
+  #   Channel: 2
+  #   ProsimDataRef: B_SPEED_BRAKE_DEPLOY
+  #   ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
+  #   MaxTimeOn: 30000
 
   - Serial: 742347
     HubPort: 4
@@ -103,14 +103,14 @@ PhidgetsInputInstances:
     ProsimDataRef: S_MIP_PARKING_BRAKE
     InputValue: 1
     OffInputValue: 0
-    
 
-
+ 
 PhidgetsOutputInstances:
   - Serial: 746062
     HubPort: 4
     Channel: 3
     ProsimDataRef: I_MIP_PARKING_BRAKE   
+   
     
 CustomTrimWheelInstance: 
     Serial: 742347
@@ -124,3 +124,35 @@ CustomTrimWheelInstance:
     APOnDirty: 0.5 
     Range: [0, 1]  
    
+
+CustomParkingBrakeInstance:
+  ToeBrakeThreshold: 1000
+
+  # CAPT pair (left/right)
+  ToeBrakeLeftCaptRef:  "A_FC_TOEBRAKE_LEFT_CAPT"
+  ToeBrakeRightCaptRef: "A_FC_TOEBRAKE_RIGHT_CAPT"
+
+  # FO pair (left/right)
+  ToeBrakeLeftFORef:    "A_FC_TOEBRAKE_LEFT_FO"
+  ToeBrakeRightFORef:   "A_FC_TOEBRAKE_RIGHT_FO"
+
+  # Parking brake switch (0 = off)
+  ParkingBrakeRef: "S_MIP_PARKING_BRAKE"
+
+  # Physical input gate switch (must equal InputValue)
+  InputSerial: 742347
+  InputHubPort: 3
+  InputChannel: 0
+  InputValue: 1
+  OffInputValue: 0
+
+  # Output relay to release the gate
+  OutputSerial: 742347
+  OutputHubPort: 4
+  OutputChannel: 2
+  DelayOn: 100
+  MaxTimeOn: 2000
+
+  # Optional: if you want this relay bound to a real ProSim dataref for visibility/logging
+  # Leave blank or omit to use "custom.parkingbrake.output"
+  OutputProsimDataRef: ""

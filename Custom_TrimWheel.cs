@@ -101,8 +101,13 @@ namespace Phidgets2Prosim
 
         private async void UpdateVelocity()
         {
+		SendInfoLog(
+			$"[TrimWheel] targets (logical): FWD={targetFwdVelocity:F3}, " +
+            $"BWD={targetBwdVelocity:F3}, AP={isAPOn}, Flaps={flaps}, " +
+            $"Range=[{Range[0]:F2},{Range[1]:F2}]" 
+            );
 
-            Debug.WriteLine("UpdateVelocity isApon  " + isAPOn);
+			Debug.WriteLine("UpdateVelocity isApon  " + isAPOn);
             Debug.WriteLine("UpdateVelocity Flasp  " + flaps);
 
 

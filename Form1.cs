@@ -431,7 +431,24 @@ namespace Phidgets2Prosim
                     }
                 }
 
-                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+				// Custom - Parking Brake
+				if (config.CustomParkingBrakeInstance != null)
+				{
+					try
+					{
+						var pb = new Custom_ParkingBrake(config.CustomParkingBrakeInstance, connection);
+						pb.ErrorLog += DisplayErrorLog;
+						pb.InfoLog += DisplayInfoLog;
+					}
+					catch (Exception ex)
+					{
+						DisplayErrorLog("Error loading config line for CustomParkingBrake");
+						DisplayErrorLog(ex.ToString());
+					}
+				}
+
+
+				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
