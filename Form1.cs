@@ -48,8 +48,9 @@ namespace Phidgets2Prosim
         Custom_TrimWheel trimWheel;
         PhidgetsBLDCMotor bldcm_00;
         PhidgetsBLDCMotor bldcm_01;
+		Custom_ParkingBrake customParkingBrake;
 
-        bool simIsPaused = false;
+		bool simIsPaused = false;
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
         private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
@@ -227,7 +228,11 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsOutput[idx] = new PhidgetsOutput(
+							var outRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"   // << special sentinel: means “don’t hook to ProSim, use Variable only”
+	                        : "system.indicators." + instance.ProsimDataRef;
+
+							phidgetsOutput[idx] = new PhidgetsOutput(
                                     instance.Serial, instance.HubPort, instance.Channel,
                                     "system.indicators." + instance.ProsimDataRef, connection, false,
                                     instance.ProsimDataRefOff != null ? "system.indicators." + instance.ProsimDataRefOff : null
@@ -261,7 +266,18 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsOutput[idx].ValueDim = instance.ValueDim;
                             }
-                        }
+							if (instance.Variable != null)
+                            {
+								phidgetsOutput[idx].Variable = instance.Variable;
+							}
+							if (!string.IsNullOrEmpty(instance.Variable))
+							{
+								phidgetsOutput[idx].Variable = instance.Variable;
+								DisplayInfoLog($"[WIRING] Output Hub:{instance.HubPort} Ch:{instance.Channel} Variable='{instance.Variable}'");
+							}
+
+
+						}
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error loading config line");
@@ -394,8 +410,8 @@ namespace Phidgets2Prosim
                     totalOuts += idx;
                 }
 
-                // Custom - Trim wheel
-                if (config.CustomTrimWheelInstance != null)
+				// Custom - Trim wheel
+				if (config.CustomTrimWheelInstance != null)
                 {
                     var instance  = config.CustomTrimWheelInstance;
                     try
@@ -431,7 +447,37 @@ namespace Phidgets2Prosim
                     }
                 }
 
-                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+
+				// Custom - Parking Brake
+				if (config.CustomParkingBrakeInstance != null)
+				{
+					var c = config.CustomParkingBrakeInstance;
+					try
+					{
+						var pb = new Custom_ParkingBrake(
+							connection,
+							switchVariable: c.SwitchVariable,
+							relayVariable: c.RelayVariable,
+							refToeLeft: c.RefToeLeft,
+							refToeRight: c.RefToeRight,
+							refS_MipParkingBrake: c.RefS_MipParkingBrake,
+							toeBrakeThreshold: c.ToeBrakeThreshold
+						);
+
+						pb.ErrorLog += DisplayErrorLog;
+						pb.InfoLog += DisplayInfoLog;
+						DisplayInfoLog("Custom_ParkingBrake loaded (Variable-driven).");
+					}
+					catch (Exception ex)
+					{
+						DisplayErrorLog("Error loading Custom_ParkingBrake");
+						DisplayErrorLog(ex.ToString());
+					}
+				}
+
+
+
+				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
@@ -498,12 +544,17 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsInput[idx] = new PhidgetsInput(
+
+							var refName = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"                                  // skip ProSim write, use Variable only
+	                        : "system.switches." + instance.ProsimDataRef;
+
+							phidgetsInput[idx] = new PhidgetsInput(
                                 instance.Serial,
                                 instance.HubPort,
                                 instance.Channel,
                                 connection,
-                                "system.switches." + instance.ProsimDataRef,
+                                refName,
                                 instance.InputValue,
                                 instance.OffInputValue);
                             phidgetsInput[idx].ErrorLog += DisplayErrorLog;
@@ -516,8 +567,18 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
                             }
+							if (!string.IsNullOrEmpty(instance.Variable))
+							{
+								phidgetsInput[idx].Variable = instance.Variable;
+								DisplayInfoLog($"[WIRING] Input Hub:{instance.HubPort} Ch:{instance.Channel} Variable='{instance.Variable}'");
+							}
 
-                        }
+							if (instance.Variable != null)
+                            {
+								phidgetsInput[idx].Variable = instance.Variable;
+							}
+
+						}
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error reloading config line");

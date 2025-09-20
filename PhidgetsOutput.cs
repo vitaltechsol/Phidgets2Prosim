@@ -1,11 +1,12 @@
 ﻿using Phidget22;
 using ProSimSDK;
-using System.Diagnostics;
 using System;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Runtime.Remoting.Channels;
-using YamlDotNet.Core.Tokens;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using YamlDotNet.Core.Tokens;
 
 namespace Phidgets2Prosim
 {
@@ -23,9 +24,11 @@ namespace Phidgets2Prosim
         public double ValueOn { get; set; } = 1;
         public double ValueOff { get; set; } = 0;
         public double ValueDim { get; set; } = 0.7;
+		public string Variable { get; set; } = null;
+		private IDisposable _variableSubscription;
 
 
-        public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
+		public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
         {
             IsGate = isGate;
             Channel = channel;
@@ -53,7 +56,44 @@ namespace Phidgets2Prosim
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
 
-                if (prosimDataRefOff != null)
+				// >>> ADD: Variable subscription (optional)
+                if (!string.IsNullOrEmpty(Variable))
+				{
+				_variableSubscription = VariableManager.Subscribe(Variable, (name, val) =>
+				{
+				    try
+                    {
+				    bool on = val != 0;
+				        if (Inverse) on = !on;
+							
+				        double duty = on ? ValueOn : ValueOff;
+							
+				        digitalOutput.BeginSetDutyCycle(duty, ar => {
+				    try { digitalOutput.EndSetDutyCycle(ar); } catch { }
+				        }, null);
+							
+				SendInfoLog($"[Var→Output] {name} = {val} => {(on ? "ON" : "OFF")} (Duty={duty})");
+				    }
+				    catch (Exception ex)
+                    {
+
+				    SendErrorLog("Output (Variable) write failed");
+				    SendErrorLog(ex.ToString());
+				    }
+				});
+						
+				// Initialize to current Variable state
+				var init = VariableManager.Get(Variable);
+				bool initOn = init != 0;
+				    if (Inverse) initOn = !initOn;
+				    var initDuty = initOn ? ValueOn : ValueOff;
+				    digitalOutput.DutyCycle = initDuty;
+				 }
+
+
+
+
+				if (prosimDataRefOff != null)
                 {
                     DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);
                     dataRef2.onDataChange += DataRef_onDataChange;
@@ -127,8 +167,19 @@ namespace Phidgets2Prosim
 
         public void Close()
         {
+            try
+            {
+            //digitalOutput.Close();
+            _variableSubscription?.Dispose();
             digitalOutput.Close();
-        }
+            }
+            catch (Exception ex)
+            {
+            SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+            }   
+         }
+         
+			
 
         public async Task Open()
         {

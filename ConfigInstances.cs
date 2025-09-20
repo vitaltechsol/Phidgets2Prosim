@@ -9,7 +9,6 @@ using System.Windows.Forms.VisualStyles;
 namespace Phidgets2Prosim
 {
 
-
     public class Config
     {
         public GeneralConfig GeneralConfig { get; set; }
@@ -23,11 +22,18 @@ namespace Phidgets2Prosim
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
-        public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
+		public List<VariableInst> VariableInstances { get; set; } 
+		public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
+		public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
 
-    }
+	}
 
-    public class PhidgetsOutputInst : PhidgetDevice
+	public class VariableInst
+	{
+		public string Name { get; set; } // e.g., "ParkingBrakeSwitch", "ParkingBrakeRelay"
+	}
+
+	public class PhidgetsOutputInst : PhidgetDevice
     {
         // (Optional) Wait specified amount of milliseconds before turning on 
         public int? DelayOn { get; set; }
@@ -49,7 +55,8 @@ namespace Phidgets2Prosim
         // (Optional) Value when dim (0.7 is 70%), default is 0.7
         public double ValueDim { get; set; } = 0.7;
 
-    }
+		public string Variable { get; set; } = null;
+	}
 
     public class PhidgetsAudioInst : PhidgetsOutputInst
     {
@@ -76,13 +83,15 @@ namespace Phidgets2Prosim
 
         // (Optional)  The desired value to send to prosim when input is off, by default is 0
         public int OffInputValue { get; set; } = 0;
+		public string Variable { get; set; } = null;
 
-        // (Optional) Additional prosim ref to change with same input
-        public string ProsimDataRef2 { get; set; } = null;
+		// (Optional) Additional prosim ref to change with same input
+		public string ProsimDataRef2 { get; set; } = null;
         
         // (Optional) Other additional prosim ref to change with same input
         public string ProsimDataRef3 { get; set; } = null;
-    }
+		
+	}
 
     public class PhidgetsVoltageInputInst : PhidgetDevice
     {
@@ -229,6 +238,15 @@ namespace Phidgets2Prosim
         public int OutputBlinkSlowIntervalMs { get; set; } = 600;
         // Default value used for dim output state when not specified
         public double OutputDefaultDimValue { get; set; } = 0.7;
+		public class VariableInst { public string Name { get; set; } }
+	}
+    public class CustomParkingBrakeInst
+    {
+        public string SwitchVariable { get; set; }
+        public string RelayVariable { get; set; }
+        public string RefToeLeft { get; set; } = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
+        public string RefToeRight { get; set; } = "system.analog.A_CP_TOEBRAKE_RIGHT_CAPT";
+        public string RefS_MipParkingBrake { get; set; } = "system.indicators.S_MIP_PARKING_BRAKE";
+        public int ToeBrakeThreshold { get; set; } = 1000;
     }
-
 }

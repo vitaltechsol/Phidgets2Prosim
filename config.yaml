@@ -103,6 +103,13 @@ PhidgetsInputInstances:
     ProsimDataRef: S_MIP_PARKING_BRAKE
     InputValue: 1
     OffInputValue: 0
+
+  - Serial: 742347
+    HubPort: 3
+    Channel: 0
+    InputValue: 1
+    OffInputValue: 0
+    Variable: "BrakeLatchSwitch"
     
 
 
@@ -110,7 +117,16 @@ PhidgetsOutputInstances:
   - Serial: 746062
     HubPort: 4
     Channel: 3
-    ProsimDataRef: I_MIP_PARKING_BRAKE   
+    ProsimDataRef: I_MIP_PARKING_BRAKE
+    
+  - Serial: 742347
+    HubPort: 4
+    Channel: 2
+    ValueOn: 1
+    ValueOff: 0
+    Variable: "BrakeLatchRelay"
+    DelayOn: 100
+    MaxTimeOn: 2000
     
 CustomTrimWheelInstance: 
     Serial: 742347
@@ -124,3 +140,15 @@ CustomTrimWheelInstance:
     APOnDirty: 0.5 
     Range: [0, 1]  
    
+
+VariableInstances:
+  - Name: BrakeLatchSwitch
+  - Name: BrakeLatchRelay
+  
+CustomParkingBrakeInstance:
+  SwitchVariable: "BrakeLatchSwitch"
+  RelayVariable: "BrakeLatchRelay"
+  RefToeLeft: system.analog.A_FC_TOEBRAKE_LEFT_CAPT
+  RefToeRight: system.analog.A_CP_TOEBRAKE_RIGHT_CAPT
+  RefS_MipParkingBrake: system.switches.S_MIP_PARKING_BRAKE
+  ToeBrakeThreshold: 600
