@@ -3,7 +3,8 @@ GeneralConfig:
   Schema: 1.0    
   ProSimIP: 192.168.1.142
 PhidgetsHubsInstances:
-   - hub5000-1
+   - hub5000-PED-1
+   - hub5000-PED-2
    - hub5000-MIP-1
    - hub5000-MIP-2 
    - hub5000-motors
@@ -787,14 +788,36 @@ PhidgetsOutputInstances:
     HubPort: 5
     Channel: 6
     ProsimDataRef: I_FIRE_CARGO_DISCH
-  - Serial: 618534
-    HubPort: 5
-    Channel: 0
+
+  - Serial: 745566
+    HubPort: 1
+    Channel: 8
     ProsimDataRef: I_ASP_VHF_1_SEND
-  - Serial: 618534
-    HubPort: 5
-    Channel: 1
+  - Serial: 745566
+    HubPort: 1
+    Channel: 9
     ProsimDataRef: I_ASP_VHF_2_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 10
+    ProsimDataRef: I_ASP_HF_1_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 11
+    ProsimDataRef: I_ASP_FLT_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 12
+    ProsimDataRef: I_ASP_SVC_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 13
+    ProsimDataRef: I_ASP_PA_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 14
+    ProsimDataRef: I_ASP_VHF_3_SEND
+
   - Serial: 668659
     HubPort: 3
     Channel: 0
@@ -1795,10 +1818,43 @@ PhidgetsVoltageOutputInstances:
     ProsimDataRef: G_OH_OUTFLOW_VALVE
 
 PhidgetsVoltageInputInstances: 
-  - Serial: 742112
-    HubPort: 5
+  - Serial: 745566
+    HubPort: 2
     Channel: 0
+    ProsimDataRef: A_ASP_VHF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_VHF_1_SEND
+  - Serial: 745566
+    HubPort: 2
+    Channel: 1
+    ProsimDataRef: A_ASP_VHF_2_VOLUME
+    ProsimDataRefOnOff: S_ASP_VHF_2_SEND
+  - Serial: 745566
+    HubPort: 2
+    Channel: 2
     ProsimDataRef: A_ASP2_VHF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP2_VHF_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
+    Channel: 3
+    ProsimDataRef: A_ASP_FLT_VOLUME
+    ProsimDataRefOnOff: S_ASP_FLT_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
+    Channel: 4
+    ProsimDataRef: A_ASP_NAV_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_NAV_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
+    Channel: 5
+    ProsimDataRef: A_ASP_ADF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_ADF_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
+    Channel: 6
+    ProsimDataRef: A_ASP_SPKR_VOLUME
+    ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
+
+
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
@@ -1820,6 +1876,7 @@ PhidgetsBLDCMotorInstances:
     Acceleration: 0.8
 
 CustomTrimWheelInstance:
+    HubPort: 0
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
