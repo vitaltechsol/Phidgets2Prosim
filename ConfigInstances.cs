@@ -23,13 +23,11 @@ namespace Phidgets2Prosim
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
-		public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
-		public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
-	
-		
-	}
+        public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
 
-	public class PhidgetsOutputInst : PhidgetDevice
+    }
+
+    public class PhidgetsOutputInst : PhidgetDevice
     {
         // (Optional) Wait specified amount of milliseconds before turning on 
         public int? DelayOn { get; set; }
@@ -209,42 +207,6 @@ namespace Phidgets2Prosim
 		public List<double> Range { get; set; } = new List<double> { -1, 1 };
 
 	}
-
-	public class CustomParkingBrakeInst : PhidgetDevice
-	{
-		// Threshold for all toe brake checks
-		public double ToeBrakeThreshold { get; set; } = 1000;
-
-		// CAPT pair (left & right)
-		public string ToeBrakeLeftCaptRef { get; set; } = "A_FC_TOEBRAKE_LEFT_CAPT";
-		public string ToeBrakeRightCaptRef { get; set; } = "A_FC_TOEBRAKE_RIGHT_CAPT";
-
-		// FO pair (left & right)
-		public string ToeBrakeLeftFORef { get; set; } = "A_FC_TOEBRAKE_LEFT_FO";
-		public string ToeBrakeRightFORef { get; set; } = "A_FC_TOEBRAKE_RIGHT_FO";
-
-		// Parking brake switch (0 = off)
-		public string ParkingBrakeRef { get; set; } = "S_MIP_PARKING_BRAKE";
-
-		// Physical input
-		public int InputSerial { get; set; }
-		public int InputHubPort { get; set; }
-		public int InputChannel { get; set; }
-		public int InputValue { get; set; } = 1;
-		public int OffInputValue { get; set; } = 0;
-
-		// Output relay
-		public int OutputSerial { get; set; }
-		public int OutputHubPort { get; set; }
-		public int OutputChannel { get; set; }
-		public int DelayOn { get; set; } = 100;
-		public int MaxTimeOn { get; set; } = 2000;
-
-		// Optional: bind output to a real ProSim dataref; otherwise uses a dummy name
-		public string OutputProsimDataRef { get; set; } = null;
-	}
-
-
 
 	public class PhidgetsButtonInst : PhidgetDevice
     {

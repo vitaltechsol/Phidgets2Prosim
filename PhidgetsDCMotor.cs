@@ -32,8 +32,10 @@ namespace Phidgets2Prosim
 		// ---- NEW: Logical input range (e.g., [-1,1] default, or [0,1]) ----
 		private double[] range = new double[] { -1, 1 };
 
-		// Logical input range [min, max]. Defaults to [-1, 1].
-		// Set to [0, 1] to use 0=full back, 0.5=stop, 1=full forward.
+		/// <summary>
+		/// Logical input range [min, max]. Defaults to [-1, 1].
+		/// Set to [0, 1] to use 0=full back, 0.5=stop, 1=full forward.
+		/// </summary>
 		public double[] Range
 		{
 			get => (double[])range.Clone();
@@ -111,8 +113,7 @@ namespace Phidgets2Prosim
 						// Interpret "targetVelFwd" as a logical magnitude in Range, then invert to go forward.
 						double logical = targetVelFwd * -1.0;
 						currentVel = MapToPhysical(logical); // physical [-1,1]
-						SendInfoLog($"[DCMotor] FWD ON: logical={logical:F3} → physical={currentVel:F3}");
-						dcMotor.TargetVelocity = currentVel;
+						StartMotor(currentVel);
 					}
 					else
 					{
@@ -134,8 +135,7 @@ namespace Phidgets2Prosim
 					{
 						double logical = targetVelBwd;     // logical magnitude in Range (backwards)
 						currentVel = MapToPhysical(logical); // physical [-1,1]
-						SendInfoLog($"[DCMotor] BWD ON: logical={logical:F3} → physical={currentVel:F3}");
-						dcMotor.TargetVelocity = currentVel;
+						StartMotor(currentVel);
 					}
 					else
 					{
