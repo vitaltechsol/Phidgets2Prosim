@@ -69,10 +69,10 @@ namespace Phidgets2Prosim
 
         public bool Inverse { get; set; } = false;
 
-        // (Optional) Use a different prosim data ref to turn off 
+        // Use a different prosim data ref to turn off 
         public string ProsimDataRefOff { get; set; } = null;
 
-        // (Optional) Wait specified amount of milliseconds and then turn off 
+        // Wait specified amount of milliseconds and then turn off 
         public int? MaxTimeOn { get; set; } = null;
     }
 
@@ -81,14 +81,14 @@ namespace Phidgets2Prosim
         // The desired value to send to prosim when input is on
         public int InputValue { get; set; }
 
-        // (Optional)  The desired value to send to prosim when input is off, by default is 0
+        // The desired value to send to prosim when input is off, by default is 0
         public int OffInputValue { get; set; } = 0;
 		public string Variable { get; set; } = null;
 
-		// (Optional) Additional prosim ref to change with same input
+		// Additional prosim ref to change with same input
 		public string ProsimDataRef2 { get; set; } = null;
         
-        // (Optional) Other additional prosim ref to change with same input
+        // Other additional prosim ref to change with same input
         public string ProsimDataRef3 { get; set; } = null;
 		
 	}
@@ -246,7 +246,7 @@ namespace Phidgets2Prosim
         public string RelayVariable { get; set; }
         public string RefToeLeft { get; set; } = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
         public string RefToeRight { get; set; } = "system.analog.A_CP_TOEBRAKE_RIGHT_CAPT";
-        public string RefS_MipParkingBrake { get; set; } = "system.indicators.S_MIP_PARKING_BRAKE";
+        public string RefS_MipParkingBrake { get; set; } = "system.switches.S_MIP_PARKING_BRAKE";
         public int ToeBrakeThreshold { get; set; } = 1000;
     }
 }

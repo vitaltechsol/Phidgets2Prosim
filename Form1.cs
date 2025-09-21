@@ -188,10 +188,16 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsGate[idx] = new PhidgetsOutput(instance.Serial, instance.HubPort, instance.Channel,
-                                "system.gates." + instance.ProsimDataRef, connection, true,
-                                instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null); ;
-                            phidgetsGate[idx].ErrorLog += DisplayErrorLog;
+							var outRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"   // sentinel => output will ignore ProSim and use Variable only
+	                        : "system.gates." + instance.ProsimDataRef;
+
+							phidgetsGate[idx] = new PhidgetsOutput(
+	                        instance.Serial, instance.HubPort, instance.Channel,
+	                        outRef, connection, true,
+	                        instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null);
+
+							phidgetsGate[idx].ErrorLog += DisplayErrorLog;
                             phidgetsGate[idx].InfoLog += DisplayInfoLog;
                             if (instance.Inverse == true)
                             {
@@ -233,11 +239,12 @@ namespace Phidgets2Prosim
 	                        : "system.indicators." + instance.ProsimDataRef;
 
 							phidgetsOutput[idx] = new PhidgetsOutput(
-                                    instance.Serial, instance.HubPort, instance.Channel,
-                                    "system.indicators." + instance.ProsimDataRef, connection, false,
-                                    instance.ProsimDataRefOff != null ? "system.indicators." + instance.ProsimDataRefOff : null
-                                );
-                            phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
+	                        instance.Serial, instance.HubPort, instance.Channel,
+	                        outRef, connection, false,
+	                        instance.ProsimDataRefOff != null ? "system.indicators." + instance.ProsimDataRefOff : null
+                            );
+
+							phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsOutput[idx].InfoLog += DisplayInfoLog;
                             phidgetsOutput[idx].BlinkFastIntervalMs = OutputBlinkFastIntervalMs;
                             phidgetsOutput[idx].BlinkSlowIntervalMs = OutputBlinkSlowIntervalMs;
@@ -545,7 +552,7 @@ namespace Phidgets2Prosim
                         try
                         {
 
-							var refName = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
 	                        ? "test"                                  // skip ProSim write, use Variable only
 	                        : "system.switches." + instance.ProsimDataRef;
 
@@ -554,7 +561,7 @@ namespace Phidgets2Prosim
                                 instance.HubPort,
                                 instance.Channel,
                                 connection,
-                                refName,
+                                inRef,
                                 instance.InputValue,
                                 instance.OffInputValue);
                             phidgetsInput[idx].ErrorLog += DisplayErrorLog;
@@ -602,13 +609,16 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
+							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"   // sentinel => PhidgetsInput will skip ProSim write but still mirror Variable
+	                        : "system.switches." + instance.ProsimDataRef;
 
-                            phidgetsMultiInput[idx] = new PhidgetsMultiInput(
+							phidgetsMultiInput[idx] = new PhidgetsMultiInput(
                                 instance.Serial,
                                 instance.HubPort,
                                 instance.Channels.ToArray(),
                                 connection,
-                                "system.switches." + instance.ProsimDataRef,
+                                inRef,
                                 instance.Mappings);
                             phidgetsMultiInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsMultiInput[idx].InfoLog += DisplayInfoLog;
@@ -638,12 +648,17 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsVoltageInput[idx] = new PhidgetsVoltageInput(
+
+							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"   // sentinel => PhidgetsInput will skip ProSim write but still mirror Variable
+	                        : "system.analog" + instance.ProsimDataRef;
+
+							phidgetsVoltageInput[idx] = new PhidgetsVoltageInput(
                                 instance.Serial,
                                 instance.HubPort,
                                 instance.Channel,
                                 connection,
-                                "system.analog." + instance.ProsimDataRef,
+                                inRef,
                                 instance.ProsimDataRefOnOff != "" ? "system.switches." + instance.ProsimDataRefOnOff : "",
                                 instance.InputPoints.ToArray(),
                                 instance.OutputPoints.ToArray(),
@@ -677,11 +692,15 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            PhidgetsButtonList.Add(new PhidgetsButton(
+							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+	                        ? "test"   // sentinel => PhidgetsInput will skip ProSim write but still mirror Variable
+	                        : "system.switches." + instance.ProsimDataRef;
+
+							PhidgetsButtonList.Add(new PhidgetsButton(
                                 idx, 
                                 instance.Name, 
                                 connection, 
-                                "system.switches." + instance.ProsimDataRef, 
+                                inRef + instance.ProsimDataRef, 
                                 instance.InputValue, 
                                 instance.OffInputValue)
                             );

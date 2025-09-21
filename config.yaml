@@ -19,7 +19,7 @@ PhidgetsBLDCMotorInstances:
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.2
 
-    #The following are fine tunning Options they are optional#    
+    #The following are fine-tunning Options they are optional#    
     MaxVelocity: 0.20
     MinVelocity: 0.02
     VelocityBand: 250.0
@@ -44,7 +44,7 @@ PhidgetsBLDCMotorInstances:
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.2
     
-    #The following are fine tunning Options they are optional# 
+    #The following are fine-tunning Options they are optional# 
     MaxVelocity: 0.20
     MinVelocity: 0.02
     VelocityBand: 250.0
@@ -92,9 +92,11 @@ PhidgetsGateInstances:
     HubPort: 4
     Channel: 3
     ProsimDataRef: B_PARKING_BRAKE_RELEASE
-    DelayOn: 100
-    MaxTimeOn: 2000
+    DelayOn: 50
+    MaxTimeOn: 1000
+  
     
+
 
 PhidgetsInputInstances:
   - Serial: 742347
@@ -109,7 +111,7 @@ PhidgetsInputInstances:
     Channel: 0
     InputValue: 1
     OffInputValue: 0
-    Variable: "BrakeLatchSwitch"
+    Variable: BrakeLatchSwitch
     
 
 
@@ -124,9 +126,13 @@ PhidgetsOutputInstances:
     Channel: 2
     ValueOn: 1
     ValueOff: 0
-    Variable: "BrakeLatchRelay"
-    DelayOn: 100
+    Variable: BrakeLatchRelay
+    DelayOn: 50
     MaxTimeOn: 2000
+
+
+
+
     
 CustomTrimWheelInstance: 
     Serial: 742347
@@ -141,14 +147,18 @@ CustomTrimWheelInstance:
     Range: [0, 1]  
    
 
+
+
 VariableInstances:
   - Name: BrakeLatchSwitch
   - Name: BrakeLatchRelay
   
+
+
 CustomParkingBrakeInstance:
-  SwitchVariable: "BrakeLatchSwitch"
-  RelayVariable: "BrakeLatchRelay"
+  SwitchVariable: BrakeLatchSwitch
+  RelayVariable: BrakeLatchRelay
   RefToeLeft: system.analog.A_FC_TOEBRAKE_LEFT_CAPT
-  RefToeRight: system.analog.A_CP_TOEBRAKE_RIGHT_CAPT
+  RefToeRight: system.analog.A_FC_TOEBRAKE_RIGHT_CAPT
   RefS_MipParkingBrake: system.switches.S_MIP_PARKING_BRAKE
   ToeBrakeThreshold: 600

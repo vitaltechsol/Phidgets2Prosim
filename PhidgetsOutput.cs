@@ -24,9 +24,118 @@ namespace Phidgets2Prosim
         public double ValueOn { get; set; } = 1;
         public double ValueOff { get; set; } = 0;
         public double ValueDim { get; set; } = 0.7;
-		public string Variable { get; set; } = null;
-		private IDisposable _variableSubscription;
+		private bool _initFromVarDone = false;
 
+		private string _variable;
+		public string Variable
+		{
+			get => _variable;
+			set
+			{
+				_variable = value;
+				SendInfoLog($"[WIRE:OUTPUT] Variable property set to '{_variable ?? "<null>"}'");
+				EnsureVariableSubscription();   // << subscribe now that we have a name
+			}
+		}
+
+		private void TryInitFromVariable()
+		{
+			if (_initFromVarDone) return;
+
+			try
+			{
+				if (!digitalOutput.IsOpen || !digitalOutput.Attached)  // <-- only act when attached
+				{
+					SendInfoLog("[SUB:OUTPUT] Device not attached yet; will init on attach.");
+					TryInitFromVariable();
+					return;
+				}
+
+				if (string.IsNullOrWhiteSpace(_variable))
+				{
+					SendInfoLog("[SUB:OUTPUT] No variable configured; skipping init.");
+					return;
+				}
+
+				var init = VariableManager.Get(_variable);
+				bool on = init != 0;
+				if (Inverse) on = !on;
+
+				var duty = on ? ValueOn : ValueOff;
+				digitalOutput.DutyCycle = duty;
+
+				SendInfoLog($"[SUB:OUTPUT] Initial state from '{_variable}' = {init} => {(on ? "ON" : "OFF")} (Duty={duty})");
+				_initFromVarDone = true;
+			}
+			catch (Phidget22.PhidgetException ex)
+			{
+				SendErrorLog("Initial duty set skipped (device not ready)");
+				SendErrorLog(ex.ToString());
+				// We'll try again on next attach event
+			}
+			catch (Exception ex)
+			{
+				SendErrorLog("Initial duty init failed");
+				SendErrorLog(ex.ToString());
+			}
+		}
+
+		private void EnsureVariableSubscription()
+		{
+			try
+			{
+				if (string.IsNullOrWhiteSpace(_variable))
+				{
+					SendInfoLog("[SUB:OUTPUT] Variable is null/empty — output will not follow a variable.");
+					return;
+				}
+				if (_variableSubscription != null) return;
+
+				SendInfoLog($"[SUB:OUTPUT] Subscribing to Variable '{_variable}'");
+
+				_variableSubscription = VariableManager.Subscribe(_variable, (name, val) =>
+				{
+					try
+					{
+						bool on = val != 0;
+						if (Inverse) on = !on;
+
+						double duty = on ? ValueOn : ValueOff;
+
+						if (digitalOutput.IsOpen && digitalOutput.Attached)
+						{
+							digitalOutput.BeginSetDutyCycle(duty, ar =>
+							{
+								try { digitalOutput.EndSetDutyCycle(ar); } catch { /* ignore */ }
+							}, null);
+						}
+						else
+						{
+							SendInfoLog("[Var→Output] Skipped write (device not attached yet).");
+						}
+
+						SendInfoLog($"[Var→Output] {name} = {val} => {(on ? "ON" : "OFF")} (Duty={duty})");
+					}
+					catch (Exception ex)
+					{
+						SendErrorLog("Output (Variable) write failed");
+						SendErrorLog(ex.ToString());
+					}
+				});
+
+				// Do not set duty here — let TryInitFromVariable() handle it when attached.
+			}
+			catch (Exception ex)
+			{
+				SendErrorLog("EnsureVariableSubscription failed");
+				SendErrorLog(ex.ToString());
+			}
+		}
+
+
+
+
+		private IDisposable _variableSubscription;
 
 		public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
         {
@@ -56,43 +165,8 @@ namespace Phidgets2Prosim
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;
 
-				// >>> ADD: Variable subscription (optional)
-                if (!string.IsNullOrEmpty(Variable))
-				{
-				_variableSubscription = VariableManager.Subscribe(Variable, (name, val) =>
-				{
-				    try
-                    {
-				    bool on = val != 0;
-				        if (Inverse) on = !on;
-							
-				        double duty = on ? ValueOn : ValueOff;
-							
-				        digitalOutput.BeginSetDutyCycle(duty, ar => {
-				    try { digitalOutput.EndSetDutyCycle(ar); } catch { }
-				        }, null);
-							
-				SendInfoLog($"[Var→Output] {name} = {val} => {(on ? "ON" : "OFF")} (Duty={duty})");
-				    }
-				    catch (Exception ex)
-                    {
 
-				    SendErrorLog("Output (Variable) write failed");
-				    SendErrorLog(ex.ToString());
-				    }
-				});
-						
-				// Initialize to current Variable state
-				var init = VariableManager.Get(Variable);
-				bool initOn = init != 0;
-				    if (Inverse) initOn = !initOn;
-				    var initDuty = initOn ? ValueOn : ValueOff;
-				    digitalOutput.DutyCycle = initDuty;
-				 }
-
-
-
-
+          
 				if (prosimDataRefOff != null)
                 {
                     DataRef dataRef2 = new DataRef(prosimDataRefOff, 100, connection);

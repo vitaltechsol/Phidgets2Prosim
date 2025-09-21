@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics; // ADD
+using System.Diagnostics;
 
 namespace Phidgets2Prosim
 {
