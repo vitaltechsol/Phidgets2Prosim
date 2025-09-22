@@ -15,7 +15,7 @@ namespace Phidgets2Prosim
         public string ProsimDataRef3 { get; set; } = null;
 
         public int OffInputValue { get; set; } = 0;
-		public string Variable { get; set; } = null;
+		public string UserVariable { get; set; } = null;
 
 		public PhidgetsInput(int serial, int hubPort, int channel, ProSimConnect connection, string prosimDataRef, int inputValue = 1, int offInputValue = 0)
         {
@@ -38,11 +38,11 @@ namespace Phidgets2Prosim
 			// If ref is "test" or blank, SKIP ProSim write but still update the Variable (if any)
 			if (string.IsNullOrWhiteSpace(ProsimDataRef) || ProsimDataRef == "test")
 			{
-				if (!string.IsNullOrEmpty(Variable))
+				if (!string.IsNullOrEmpty(UserVariable))
 				{
 					var newVal = e.State ? InputValue : OffInputValue;
-					VariableManager.Set(Variable, newVal);
-					SendInfoLog($"[Input→Var] {Variable} = {newVal}");
+					VariableManager.Set(UserVariable, newVal);
+					SendInfoLog($"[Input→Var] {UserVariable} = {newVal}");
 				}
 				return;
 			}
@@ -53,11 +53,11 @@ namespace Phidgets2Prosim
 				dataRef.value = e.State ? InputValue : OffInputValue;
 
 				// Mirror to Variable too (when configured)
-				if (!string.IsNullOrEmpty(Variable))
+				if (!string.IsNullOrEmpty(UserVariable))
 				{
 					var newVal = e.State ? InputValue : OffInputValue;
-					VariableManager.Set(Variable, newVal);
-					SendInfoLog($"[Input→Var] {Variable} = {newVal}");
+					VariableManager.Set(UserVariable, newVal);
+					SendInfoLog($"[Input→Var] {UserVariable} = {newVal}");
 				}
 			}
 			catch (System.Exception ex)

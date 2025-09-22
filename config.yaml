@@ -111,7 +111,7 @@ PhidgetsInputInstances:
     Channel: 0
     InputValue: 1
     OffInputValue: 0
-    Variable: BrakeLatchSwitch
+    UserVariable: BrakeLatchSwitch
     
 
 
@@ -126,7 +126,7 @@ PhidgetsOutputInstances:
     Channel: 2
     ValueOn: 1
     ValueOff: 0
-    Variable: BrakeLatchRelay
+    UserVariable: BrakeLatchRelay
     DelayOn: 50
     MaxTimeOn: 2000
 
@@ -149,7 +149,7 @@ CustomTrimWheelInstance:
 
 
 
-VariableInstances:
+UserVariableInstances:
   - Name: BrakeLatchSwitch
   - Name: BrakeLatchRelay
   

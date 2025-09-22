@@ -27,7 +27,7 @@ namespace Phidgets2Prosim
 		private bool _initFromVarDone = false;
 
 		private string _variable;
-		public string Variable
+		public string UserVariable
 		{
 			get => _variable;
 			set
@@ -118,7 +118,7 @@ namespace Phidgets2Prosim
 					}
 					catch (Exception ex)
 					{
-						SendErrorLog("Output (Variable) write failed");
+						SendErrorLog("Output (UserVariable) write failed");
 						SendErrorLog(ex.ToString());
 					}
 				});
@@ -243,7 +243,6 @@ namespace Phidgets2Prosim
         {
             try
             {
-            //digitalOutput.Close();
             _variableSubscription?.Dispose();
             digitalOutput.Close();
             }

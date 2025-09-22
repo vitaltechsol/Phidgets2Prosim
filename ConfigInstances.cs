@@ -22,13 +22,13 @@ namespace Phidgets2Prosim
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
-		public List<VariableInst> VariableInstances { get; set; } 
+		public List<UserVariableInst> UserVariableInstances { get; set; } 
 		public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
 		public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
 
 	}
 
-	public class VariableInst
+	public class UserVariableInst
 	{
 		public string Name { get; set; } // e.g., "ParkingBrakeSwitch", "ParkingBrakeRelay"
 	}
@@ -55,7 +55,7 @@ namespace Phidgets2Prosim
         // (Optional) Value when dim (0.7 is 70%), default is 0.7
         public double ValueDim { get; set; } = 0.7;
 
-		public string Variable { get; set; } = null;
+		public string UserVariable { get; set; } = null;
 	}
 
     public class PhidgetsAudioInst : PhidgetsOutputInst
@@ -83,7 +83,7 @@ namespace Phidgets2Prosim
 
         // The desired value to send to prosim when input is off, by default is 0
         public int OffInputValue { get; set; } = 0;
-		public string Variable { get; set; } = null;
+		public string UserVariable { get; set; } = null;
 
 		// Additional prosim ref to change with same input
 		public string ProsimDataRef2 { get; set; } = null;

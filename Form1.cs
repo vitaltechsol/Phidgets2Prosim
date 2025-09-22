@@ -273,14 +273,14 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsOutput[idx].ValueDim = instance.ValueDim;
                             }
-							if (instance.Variable != null)
+							if (instance.UserVariable != null)
                             {
-								phidgetsOutput[idx].Variable = instance.Variable;
+								phidgetsOutput[idx].UserVariable = instance.UserVariable;
 							}
-							if (!string.IsNullOrEmpty(instance.Variable))
+							if (!string.IsNullOrEmpty(instance.UserVariable))
 							{
-								phidgetsOutput[idx].Variable = instance.Variable;
-								DisplayInfoLog($"[WIRING] Output Hub:{instance.HubPort} Ch:{instance.Channel} Variable='{instance.Variable}'");
+								phidgetsOutput[idx].UserVariable = instance.UserVariable;
+								DisplayInfoLog($"[WIRING] Output Hub:{instance.HubPort} Ch:{instance.Channel} UserVariable='{instance.UserVariable}'");
 							}
 
 
@@ -574,15 +574,15 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
                             }
-							if (!string.IsNullOrEmpty(instance.Variable))
+							if (!string.IsNullOrEmpty(instance.UserVariable))
 							{
-								phidgetsInput[idx].Variable = instance.Variable;
-								DisplayInfoLog($"[WIRING] Input Hub:{instance.HubPort} Ch:{instance.Channel} Variable='{instance.Variable}'");
+								phidgetsInput[idx].UserVariable = instance.UserVariable;
+								DisplayInfoLog($"[WIRING] Input Hub:{instance.HubPort} Ch:{instance.Channel} UserVariable='{instance.UserVariable}'");
 							}
 
-							if (instance.Variable != null)
+							if (instance.UserVariable != null)
                             {
-								phidgetsInput[idx].Variable = instance.Variable;
+								phidgetsInput[idx].UserVariable = instance.UserVariable;
 							}
 
 						}
@@ -700,8 +700,9 @@ namespace Phidgets2Prosim
                                 idx, 
                                 instance.Name, 
                                 connection, 
-                                inRef + instance.ProsimDataRef, 
-                                instance.InputValue, 
+                                inRef,
+								//inRef + instance.ProsimDataRef,
+								instance.InputValue, 
                                 instance.OffInputValue)
                             );
                         }
