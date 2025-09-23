@@ -9,17 +9,11 @@ namespace Phidgets2Prosim
 {
 	internal class PhidgetsDCMotor : PhidgetDevice
 	{
-		// ProSim datarefs
 		string prosimDatmRefBwd;
 		string prosimDatmRefFwd;
-
-		// Logical target velocities (expressed in the configured Range space)
-		double targetVelFwd = 1;  // logical "full forward" in your chosen Range
-		double targetVelBwd = 1;  // logical "full backward" in your chosen Range
-
-		// Current PHYSICAL velocity we’re commanding to the Phidgets motor (always in [-1, 1])
+		double targetVelFwd = 1;
+		double targetVelBwd = 1;
 		double currentVel = 0;
-
 		bool isPaused = false;
 		private bool isMotorMoving = false;
 		private System.Timers.Timer pulsateTimer;
@@ -29,32 +23,25 @@ namespace Phidgets2Prosim
 		public int PulsateMotorIntervalPause { get; set; } = 200;
 		private int pulseIntervalPauseReduced = 0;
 
-		// ---- NEW: Logical input range (e.g., [-1,1] default, or [0,1]) ----
 		private double[] range = new double[] { -1, 1 };
 
 		/// <summary>
 		/// Logical input range [min, max]. Defaults to [-1, 1].
-		/// Set to [0, 1] to use 0=full back, 0.5=stop, 1=full forward.
+		/// Example: set to [0, 1] to use 0 = full back, 0.5 = stop, 1 = full forward.
 		/// </summary>
 		public double[] Range
 		{
-			get => (double[])range.Clone();
+			get => range;
 			set
 			{
 				if (value == null || value.Length != 2)
-					throw new ArgumentException("Range must be a double[2], e.g., new[] { -1, 1 } or new[] { 0, 1 }.");
+					throw new ArgumentException("Range must be an array with two elements: [min, max]");
 				if (value[0] == value[1])
 					throw new ArgumentException("Range min and max cannot be the same.");
-
-				// normalize/ensure ascending
-				var a = value[0];
-				var b = value[1];
-				range[0] = Math.Min(a, b);
-				range[1] = Math.Max(a, b);
+				range = value;
 			}
 		}
 
-		// Phidgets DC motor
 		DCMotor dcMotor = new DCMotor();
 
 		public PhidgetsDCMotor(int serial, int hubPort, string prosimDataRefFwd, string prosimDataRefBwd, ProSimConnect connection)
@@ -70,18 +57,16 @@ namespace Phidgets2Prosim
 					dcMotor.HubPort = HubPort;
 					dcMotor.IsRemote = true;
 				}
-
 				dcMotor.Open(5000);
 				dcMotor.DeviceSerialNumber = serial;
 				dcMotor.Acceleration = 100;
 				dcMotor.TargetBrakingStrength = 1;
 
-				// Subscribe to ProSim dataRefs (forward & backward)
-				DataRef dataRefFwd = new DataRef(prosimDataRefFwd, 100, connection);
-				DataRef dataRefBwd = new DataRef(prosimDataRefBwd, 100, connection);
+				DataRef dataRef = new DataRef(prosimDataRefFwd, 100, connection);
+				DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
 
-				dataRefFwd.onDataChange += DataRef_onDataChange;
-				dataRefBwd.onDataChange += DataRef_onDataChange;
+				dataRef.onDataChange += DataRef_onDataChange;
+				dataRef2.onDataChange += DataRef_onDataChange;
 			}
 			catch (Exception ex)
 			{
@@ -97,62 +82,34 @@ namespace Phidgets2Prosim
 				var value = Convert.ToBoolean(dataRef.value);
 				pulseIntervalPauseReduced = PulsateMotorIntervalPause;
 
-				// Precompute logical midpoints for “coast” and neutral based on current Range
-				double rMin = Range[0];
-				double rMax = Range[1];
-				double neutralLogical = (rMin + rMax) / 2.0; // logical center (maps to physical 0)
-				double coastForwardLogical = neutralLogical + (rMax - neutralLogical) / 2.0; // maps ~ +0.5 physical
-				double coastBackwardLogical = neutralLogical - (neutralLogical - rMin) / 2.0; // maps ~ -0.5 physical
-
-				// Forward command
 				if (dataRef.name == prosimDatmRefFwd && !isPaused)
 				{
 					if (value)
 					{
-						// Your original logic used "targetVelFwd * -1" to set direction.
-						// Interpret "targetVelFwd" as a logical magnitude in Range, then invert to go forward.
-						double logical = targetVelFwd * -1.0;
-						currentVel = MapToPhysical(logical); // physical [-1,1]
+						currentVel = MapToPhysical(targetVelFwd * -1);
 						StartMotor(currentVel);
 					}
 					else
 					{
-						// Brief coast, then stop at neutral
-						isMotorMoving = false;
-						StopPulsateIfAny();
-
-						currentVel = MapToPhysical(neutralLogical);
-						dcMotor.TargetVelocity = MapToPhysical(coastForwardLogical);
-						Thread.Sleep(200);
-						dcMotor.TargetVelocity = currentVel;
+						StopMotorTemporary(0.5);
 					}
 				}
 
-				// Backward command
 				if (dataRef.name == prosimDatmRefBwd && !isPaused)
 				{
 					if (value)
 					{
-						double logical = targetVelBwd;     // logical magnitude in Range (backwards)
-						currentVel = MapToPhysical(logical); // physical [-1,1]
+						currentVel = MapToPhysical(targetVelBwd);
 						StartMotor(currentVel);
 					}
 					else
 					{
-						// Brief coast, then stop at neutral
-						isMotorMoving = false;
-						StopPulsateIfAny();
-
-						currentVel = MapToPhysical(neutralLogical);
-						dcMotor.TargetVelocity = MapToPhysical(coastBackwardLogical);
-						Thread.Sleep(200);
-						dcMotor.TargetVelocity = currentVel;
+						StopMotorTemporary(-0.5);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				// Stop motor on error
 				currentVel = 0;
 				dcMotor.TargetVelocity = 0;
 				Debug.WriteLine(ex.ToString());
@@ -160,24 +117,52 @@ namespace Phidgets2Prosim
 			}
 		}
 
-		// ---- Public helpers you already had ----
-		public void changeTargetFwdVelocity(double val) => targetVelFwd = val;   // logical, in Range
-		public void changeTargetBwdVelocity(double val) => targetVelBwd = val;   // logical, in Range
+		private void StartMotor(double velocity)
+		{
+			isMotorMoving = true;
+			dcMotor.TargetVelocity = velocity;
+			if (pulsateMotor && pulsateTimer == null)
+			{
+				pulsateTimer = new System.Timers.Timer();
+				pulsateTimer.Interval = PulsateMotorInterval;
+				pulsateTimer.Elapsed += PulsateMotor;
+				pulsateTimer.Start();
+			}
+		}
+
+		private void StopMotorTemporary(double coastVelocity)
+		{
+			isMotorMoving = false;
+			if (pulsateTimer != null)
+			{
+				pulsateTimer.Stop();
+				pulsateTimer.Dispose();
+				pulsateTimer = null;
+			}
+			currentVel = 0;
+			dcMotor.TargetVelocity = coastVelocity;
+			Thread.Sleep(200);
+			dcMotor.TargetVelocity = currentVel;
+		}
+
+		/// <summary>
+		/// Converts a logical velocity in [Range[0], Range[1]] to physical [-1,1]
+		/// </summary>
+		private double MapToPhysical(double logical)
+		{
+			double rMin = range[0];
+			double rMax = range[1];
+			return -1 + ((logical - rMin) / (rMax - rMin)) * 2;
+		}
+
+		public void changeTargetFwdVelocity(double val) => targetVelFwd = val;
+		public void changeTargetBwdVelocity(double val) => targetVelBwd = val;
 		public void changeTargetVelocity(double val) { targetVelFwd = val; targetVelBwd = val; }
 
 		public void pause(bool isPaused)
 		{
 			this.isPaused = isPaused;
-			if (isPaused)
-			{
-				// physical stop
-				dcMotor.TargetVelocity = 0;
-			}
-			else
-			{
-				// resume to last physical velocity
-				dcMotor.TargetVelocity = currentVel;
-			}
+			dcMotor.TargetVelocity = isPaused ? 0 : currentVel;
 		}
 
 		private async void Open()
@@ -194,51 +179,10 @@ namespace Phidgets2Prosim
 			}
 		}
 
-		// ---- Private utilities ----
-
-		private void StartMotor(double physicalVelocity)
-		{
-			isMotorMoving = true;
-			dcMotor.TargetVelocity = physicalVelocity;
-
-			if (pulsateMotor && pulsateTimer == null)
-			{
-				pulsateTimer = new System.Timers.Timer();
-				pulsateTimer.Interval = PulsateMotorInterval;
-				pulsateTimer.Elapsed += PulsateMotor;
-				pulsateTimer.Start();
-			}
-		}
-
-		private void StopPulsateIfAny()
-		{
-			if (pulsateTimer != null)
-			{
-				pulsateTimer.Stop();
-				pulsateTimer.Dispose();
-				pulsateTimer = null;
-			}
-		}
-
-		/// <summary>
-		/// Map a logical velocity (in [Range[0], Range[1]]) to Phidgets physical [-1, 1].
-		/// </summary>
-		private double MapToPhysical(double logical)
-		{
-			double rMin = range[0], rMax = range[1];
-			double span = rMax - rMin;
-			if (span == 0) return 0;
-			double t = (logical - rMin) / span;   // 0..1
-			double physical = (t * 2.0) - 1.0;    // -1..1
-			if (double.IsNaN(physical) || double.IsInfinity(physical)) return 0;
-			return Math.Max(-1.0, Math.Min(1.0, physical));
-		}
-
 		private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			if (isMotorMoving)
 			{
-				// brief stop, then resume
 				dcMotor.TargetVelocity = 0;
 				await Task.Delay(pulseIntervalPauseReduced);
 				pulseIntervalPauseReduced = Math.Max(0, pulseIntervalPauseReduced - 30);

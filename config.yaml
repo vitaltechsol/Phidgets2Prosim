@@ -137,7 +137,7 @@ PhidgetsOutputInstances:
 CustomTrimWheelInstance: 
     Serial: 742347
     HubPort: 5
-    Channel: 5               
+    Channel: 0               
     DirtyUp: .95
     DirtyDown: 0.05
     CleanUp: 0.7
@@ -158,7 +158,4 @@ UserVariableInstances:
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
-  RefToeLeft: system.analog.A_FC_TOEBRAKE_LEFT_CAPT
-  RefToeRight: system.analog.A_FC_TOEBRAKE_RIGHT_CAPT
-  RefS_MipParkingBrake: system.switches.S_MIP_PARKING_BRAKE
   ToeBrakeThreshold: 600

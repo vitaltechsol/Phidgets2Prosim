@@ -425,7 +425,7 @@ namespace Phidgets2Prosim
                     {
                         trimWheel = new Custom_TrimWheel(
                             instance.Serial, 
-                            instance.Channel, 
+                            instance.HubPort, 
                             connection,
                             instance.DirtyUp,
                             instance.DirtyDown,
@@ -456,7 +456,7 @@ namespace Phidgets2Prosim
 
 
 				// Custom - Parking Brake
-				if (config.CustomParkingBrakeInstance != null)
+				if (config.CustomParkingBrakeInstance != null )
 				{
 					var c = config.CustomParkingBrakeInstance;
 					try
@@ -465,9 +465,6 @@ namespace Phidgets2Prosim
 							connection,
 							switchVariable: c.SwitchVariable,
 							relayVariable: c.RelayVariable,
-							refToeLeft: c.RefToeLeft,
-							refToeRight: c.RefToeRight,
-							refS_MipParkingBrake: c.RefS_MipParkingBrake,
 							toeBrakeThreshold: c.ToeBrakeThreshold
 						);
 
@@ -701,7 +698,6 @@ namespace Phidgets2Prosim
                                 instance.Name, 
                                 connection, 
                                 inRef,
-								//inRef + instance.ProsimDataRef,
 								instance.InputValue, 
                                 instance.OffInputValue)
                             );

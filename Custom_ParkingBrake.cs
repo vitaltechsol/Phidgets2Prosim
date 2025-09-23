@@ -12,9 +12,6 @@ namespace Phidgets2Prosim
 		// Config
 		private readonly string _switchVariable;
 		private readonly string _relayVariable;
-		private readonly string _refToeLeft;
-		private readonly string _refToeRight;
-		private readonly string _refS_MipParkingBrake;
 		private readonly int _toeBrakeThreshold;
 
 		// State caches
@@ -31,27 +28,28 @@ namespace Phidgets2Prosim
 		private DataRef _drToeR;
 		private DataRef _drS;
 
+
+		// Hard-coded ProSim DataRefs (as requested)
+		private const string REF_TOE_LEFT = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
+		private const string REF_TOE_RIGHT = "system.analog.A_FC_TOEBRAKE_RIGHT_CAPT";
+		private const string REF_S_MIP = "system.switches.S_MIP_PARKING_BRAKE";
+
 		public Custom_ParkingBrake(
 			ProSimConnect connection,
 			string switchVariable,
 			string relayVariable,
-			string refToeLeft = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT",
-			string refToeRight = "system.analog.A_CP_TOEBRAKE_RIGHT_CAPT",
-			string refS_MipParkingBrake = "system.switches.S_MIP_PARKING_BRAKE",
 			int toeBrakeThreshold = 1000)
 		{
 			_connection = connection;
 			_switchVariable = switchVariable;
 			_relayVariable = relayVariable;
-			_refToeLeft = refToeLeft;
-			_refToeRight = refToeRight;
-			_refS_MipParkingBrake = refS_MipParkingBrake;
 			_toeBrakeThreshold = toeBrakeThreshold;
 
+
 			// DataRefs
-			_drToeL = new DataRef(_refToeLeft, 50, _connection);
-			_drToeR = new DataRef(_refToeRight, 50, _connection);
-			_drS = new DataRef(_refS_MipParkingBrake, 50, _connection);
+			_drToeL = new DataRef(REF_TOE_LEFT, 50, _connection);
+			_drToeR = new DataRef(REF_TOE_RIGHT, 50, _connection);
+			_drS = new DataRef(REF_S_MIP, 50, _connection);
 
 			_drToeL.onDataChange += d =>
 			{

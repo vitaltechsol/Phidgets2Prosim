@@ -64,16 +64,16 @@ namespace Phidgets2Prosim
 
     public class PhidgetsGateInst : PhidgetDevice
     {
-        // Wait specified amount of milliseconds before turning on
-        public int? DelayOn { get; set; } = null;
+		// (Optional)Wait specified amount of milliseconds before turning on
+		public int? DelayOn { get; set; } = null;
 
         public bool Inverse { get; set; } = false;
 
-        // Use a different prosim data ref to turn off 
-        public string ProsimDataRefOff { get; set; } = null;
+		// (Optional)Use a different prosim data ref to turn off 
+		public string ProsimDataRefOff { get; set; } = null;
 
-        // Wait specified amount of milliseconds and then turn off 
-        public int? MaxTimeOn { get; set; } = null;
+		// (Optional)Wait specified amount of milliseconds and then turn off 
+		public int? MaxTimeOn { get; set; } = null;
     }
 
     public class PhidgetsInputInst : PhidgetDevice
@@ -81,15 +81,15 @@ namespace Phidgets2Prosim
         // The desired value to send to prosim when input is on
         public int InputValue { get; set; }
 
-        // The desired value to send to prosim when input is off, by default is 0
-        public int OffInputValue { get; set; } = 0;
+		// (Optional)The desired value to send to prosim when input is off, by default is 0
+		public int OffInputValue { get; set; } = 0;
 		public string UserVariable { get; set; } = null;
 
-		// Additional prosim ref to change with same input
+		// (Optional)Additional prosim ref to change with same input
 		public string ProsimDataRef2 { get; set; } = null;
-        
-        // Other additional prosim ref to change with same input
-        public string ProsimDataRef3 { get; set; } = null;
+
+		// (Optional)Other additional prosim ref to change with same input
+		public string ProsimDataRef3 { get; set; } = null;
 		
 	}
 
@@ -244,9 +244,6 @@ namespace Phidgets2Prosim
     {
         public string SwitchVariable { get; set; }
         public string RelayVariable { get; set; }
-        public string RefToeLeft { get; set; } = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
-        public string RefToeRight { get; set; } = "system.analog.A_CP_TOEBRAKE_RIGHT_CAPT";
-        public string RefS_MipParkingBrake { get; set; } = "system.switches.S_MIP_PARKING_BRAKE";
         public int ToeBrakeThreshold { get; set; } = 1000;
     }
 }
