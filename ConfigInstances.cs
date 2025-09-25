@@ -212,9 +212,6 @@ namespace Phidgets2Prosim
 
         // Speed when Auto Pilot is on. Dirty config
         public double APOnDirty { get; set; }
-
-		public List<double> Range { get; set; } = new List<double> { -1, 1 };
-
 	}
 
 	public class PhidgetsButtonInst : PhidgetDevice

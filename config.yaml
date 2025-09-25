@@ -134,17 +134,15 @@ PhidgetsOutputInstances:
 
 
     
-CustomTrimWheelInstance: 
-    Serial: 742347
-    HubPort: 5
-    Channel: 0               
-    DirtyUp: .95
-    DirtyDown: 0.05
-    CleanUp: 0.7
-    CleanDown: 0.3
+CustomTrimWheelInstance:
+    HubPort: 4
+    Channel: 2    
+    DirtyUp: 1
+    DirtyDown: 0.8
+    CleanUp: 0.6
+    CleanDown: 0.6
     APOnClean: 0.7
-    APOnDirty: 0.5 
-    Range: [0, 1]  
+    APOnDirty: 0.5
    
 
 
