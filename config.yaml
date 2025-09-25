@@ -158,4 +158,4 @@ UserVariableInstances:
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
-  ToeBrakeThreshold: 600
+  ToeBrakeThreshold: 500
