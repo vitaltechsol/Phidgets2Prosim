@@ -21,7 +21,7 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
    - Edit the `config.yaml` file to match your device configuration.
    - Use `config_sample.yaml` as a reference for more detailed configuration examples.
 
-   You can use any text editor, even notepad but a good free editor is [Sublome Text](https://www.sublimetext.com/)
+   You can use any text editor, even notepad but a good free editor is [Sublime Text](https://www.sublimetext.com/)
 
    Ensure each section follows the YAML format correctly, with proper indentation and spacing. Restart the application after any configuration changes to apply updates.
 
@@ -33,7 +33,7 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
 ## Config.yaml General Structure
 
 This guide covers the essential structure and properties for configuring Phidget devices in `config.yaml`. Adjust values based on your system requirements.
-Currently rhere is no User Interface to add or change the configuration. It all done through this configuration file. You can use any text editor, even notepad but a good free editor is [Sublome Text](https://www.sublimetext.com/)
+Currently rhere is no User Interface to add or change the configuration. It all done through this configuration file. You can use any text editor, even notepad but a good free editor is [Sublime Text](https://www.sublimetext.com/)
 
 The `config.yaml` file consists of several sections:
 
@@ -111,7 +111,15 @@ PhidgetsHubsInstances:
   - hub5000-2
 ```
 
-List each hub device server name. Found in Phidgets control panel. You can change the hub name using the Phidgets hub web interface and use a more descriptive name. Hubs are initialized here but each instace uses the Serial number to talk to the hub. These do not need to be reference again. But they must be initialized.
+List each hub device server name. Found in Phidgets control panel. 
+
+For Ethernet hubs you can change the hub name using the Phidgets hub web interface and use a more descriptive name. 
+For USB cards you can change the name by right-clicking and setting the device label.
+
+Hubs are initialized here but each instace uses the Serial number to talk to the hub. These do not need to be reference again. But they must be initialized.
+
+USB cards that are already registered and used with ProSim cannot be used with this application. They have to be fully dedicated here.
+For Etherner hubs that can used by both this sofware and ProSim at the same time.
 
 ## [Phidgets Inputs](#phidgetsinputinst)
 
