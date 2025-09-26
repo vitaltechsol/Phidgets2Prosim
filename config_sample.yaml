@@ -1855,7 +1855,6 @@ PhidgetsVoltageInputInstances:
     ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
 
 
-
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
     HubPort: 0
@@ -1865,6 +1864,7 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_RIGHT
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.8
+    # MaxVelocity: 0.60
 
   - Serial: 668066
     HubPort: 1
@@ -1874,6 +1874,7 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.8
+   # MaxVelocity: 0.60
 
 CustomTrimWheelInstance:
     HubPort: 0
@@ -1883,6 +1884,7 @@ CustomTrimWheelInstance:
     CleanDown: 0.6
     APOnClean: 0.7
     APOnDirty: 0.5
+    # Range: [0, 1]
 
 PhidgetsButtonInstances:
   - Name: Door Unlock
