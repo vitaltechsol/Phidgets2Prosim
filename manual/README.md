@@ -162,8 +162,12 @@ PhidgetsMultiInputInstances:
 
 **Properties:**
 
-- `Channels`: List of channels grouped together.
-- `Mappings`: Key-value pairs for input combinations.
+- `Channels`: List of channels to be used in the combination lookup table.
+- `Mappings`: Key-value pairs for input combinations. 1 represents On, and 0 is Off. Same position as listed in the Channels array.
+ 
+This instance allows you to send a single switch signal to prosim, based on a combination of multiple phidget inputs. In this example "01" in mappings, means when switch 14 is Off and switch 15 is On P2P it will send option "2" to prosim. When Switch 14 is On and 15 is off "10" it will send option 0 to prosim. When both are off "00" it wil send option 1 to prosim. 
+If you needed both inputs to be on, then you would set "11" and your option number.  
+You can use an many inputs as needed. For example you can use 3 inputs. [14,15,16] and do Mapping combinations like so: "010", "111", "101", "000" etc.
 
 
 ## [Phidgets Outputs](#phidgetsoutputinst)
