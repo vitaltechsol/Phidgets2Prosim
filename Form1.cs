@@ -403,7 +403,6 @@ namespace Phidgets2Prosim
 								options: opts
 							);
 
-
 							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
                         }
@@ -423,40 +422,24 @@ namespace Phidgets2Prosim
                     var instance  = config.CustomTrimWheelInstance;
                     try
                     {
-                        //trimWheel = new Custom_TrimWheel(
-                        //    instance.Serial,
-                        //    instance.HubPort,
-                        //    connection,
-                        //    instance.DirtyUp,
-                        //    instance.DirtyDown,
-                        //    instance.CleanUp,
-                        //    instance.CleanDown,
-                        //    instance.APOnDirty,
-                        //    instance.APOnDirty
-                        //);
+                        trimWheel = new Custom_TrimWheel(
+                            instance.Serial,
+                            instance.HubPort,
+                            connection,
+                            instance.DirtyUp,
+                            instance.DirtyDown,
+                            instance.CleanUp,
+                            instance.CleanDown,
+                            instance.APOnDirty,
+                            instance.APOnDirty
+                        );
 
-                        //trimWheel.ErrorLog += DisplayErrorLog;
-                        //trimWheel.InfoLog += DisplayInfoLog;
-                        var opts = new MotorTuningOptions
-                        {
-                            MaxVelocity = 1,
-                        };
-
-                        var dc = new PhidgetsDCMotor(instance.Serial, 
-                            instance.HubPort, 
-                            "gates.B_TRIM_MOTOR_UP", "gates.B_TRIM_MOTOR_DOWN", connection, opts);
-                        dc.TargetVoltageInputHub = 745566; // VINT hub serial
-                        dc.TargetVoltageInputPort = 2;        // port with the VoltageInput
-                        dc.TargetVoltageInputChannel = 0;     // channel
-                        dc.AttachTargetVoltageInput();
-
-                        // Command an absolute voltage target (0..5 V)
-                        dc.MoveToTarget(3.0);   // move until the in
-
+                        trimWheel.ErrorLog += DisplayErrorLog;
+                        trimWheel.InfoLog += DisplayInfoLog;
                     }
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading config line for Voltage Output");
+                        DisplayErrorLog("Error loading config line for Custome Trim whee");
                         DisplayErrorLog(ex.ToString());
                     }
                 }
@@ -486,9 +469,36 @@ namespace Phidgets2Prosim
 					}
 				}
 
+                // DC Motors
+                try
+                {
+
+                    var opts = new MotorTuningOptions
+                    {
+                        MaxVelocity = 0.5,
+                    };
+
+                    var dc = new PhidgetsDCMotor(618534, 0, "", "", connection, opts);
+                    dc.ErrorLog += DisplayErrorLog;
+                    dc.InfoLog += DisplayInfoLog;
+                    // Pot info:
+                    dc.TargetVoltageInputHub = 745566; // VINT hub serial
+                    dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
+                    dc.TargetVoltageInputChannel = 0;  // channel
+                    dc.AttachTargetVoltageInput();
+
+                    // Command an absolute voltage target (0..5 V)
+                    dc.MoveToTarget(3.0); // move until the in
+                }
+                catch (Exception ex)
+                {
+                    DisplayErrorLog("Error loading Custom_ParkingBrake");
+                    DisplayErrorLog(ex.ToString());
+                }
 
 
-				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+
+                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
