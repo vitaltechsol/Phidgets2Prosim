@@ -423,20 +423,36 @@ namespace Phidgets2Prosim
                     var instance  = config.CustomTrimWheelInstance;
                     try
                     {
-                        trimWheel = new Custom_TrimWheel(
-                            instance.Serial, 
-                            instance.HubPort, 
-                            connection,
-                            instance.DirtyUp,
-                            instance.DirtyDown,
-                            instance.CleanUp,
-                            instance.CleanDown,
-                            instance.APOnDirty,
-                            instance.APOnDirty
-                        );
+                        //trimWheel = new Custom_TrimWheel(
+                        //    instance.Serial,
+                        //    instance.HubPort,
+                        //    connection,
+                        //    instance.DirtyUp,
+                        //    instance.DirtyDown,
+                        //    instance.CleanUp,
+                        //    instance.CleanDown,
+                        //    instance.APOnDirty,
+                        //    instance.APOnDirty
+                        //);
 
-						trimWheel.ErrorLog += DisplayErrorLog;
-                        trimWheel.InfoLog += DisplayInfoLog;
+                        //trimWheel.ErrorLog += DisplayErrorLog;
+                        //trimWheel.InfoLog += DisplayInfoLog;
+                        var opts = new MotorTuningOptions
+                        {
+                            MaxVelocity = 1,
+                        };
+
+                        var dc = new PhidgetsDCMotor(instance.Serial, 
+                            instance.HubPort, 
+                            "gates.B_TRIM_MOTOR_UP", "gates.B_TRIM_MOTOR_DOWN", connection, opts);
+                        dc.TargetVoltageInputHub = 745566; // VINT hub serial
+                        dc.TargetVoltageInputPort = 2;        // port with the VoltageInput
+                        dc.TargetVoltageInputChannel = 0;     // channel
+                        dc.AttachTargetVoltageInput();
+
+                        // Command an absolute voltage target (0..5 V)
+                        dc.MoveToTarget(3.0);   // move until the in
+
                     }
                     catch (Exception ex)
                     {
