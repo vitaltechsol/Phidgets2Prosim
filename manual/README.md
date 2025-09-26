@@ -1,4 +1,4 @@
-﻿# Installation and Configuration Guide for Phidgets2Prosim
+# Installation and Configuration Guide for Phidgets2Prosim
 
 ## Overview
 
@@ -21,7 +21,11 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
    - Edit the `config.yaml` file to match your device configuration.
    - Use `config_sample.yaml` as a reference for more detailed configuration examples.
 
-4. **Run the Software**
+   You can use any text editor, even notepad but a good free editor is [Sublome Text](https://www.sublimetext.com/)
+
+   Ensure each section follows the YAML format correctly, with proper indentation and spacing. Restart the application after any configuration changes to apply updates.
+
+5. **Run the Software**
 
    - Execute `Phidgets2Prosim.exe` to start the application.
 
@@ -29,6 +33,7 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
 ## Config.yaml General Structure
 
 This guide covers the essential structure and properties for configuring Phidget devices in `config.yaml`. Adjust values based on your system requirements.
+Currently rhere is no User Interface to add or change the configuration. It all done through this configuration file. You can use any text editor, even notepad but a good free editor is [Sublome Text](https://www.sublimetext.com/)
 
 The `config.yaml` file consists of several sections:
 
@@ -335,9 +340,6 @@ PhidgetsButtonInstances:
 - `InputValue`: Value when pressed.
 - `OffInputValue`: Value when released.
 
-## [Validation](#validation)
-
-Ensure each section follows the YAML format correctly, with proper indentation and spacing. Restart the application after any configuration changes to apply updates.
 
 ## BLDC PID Tuning Guide
 
@@ -487,5 +489,3 @@ IntegralLimit: 0.15
 PositionFilterAlpha: 0.20
 TickMs: 20
 ```
-
-
