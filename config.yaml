@@ -1,159 +1,20 @@
 ﻿
 GeneralConfig:
   Schema: 1.0    
-  ProSimIP: 192.168.1.10  
-
-
+  ProSimIP: 127.0.0.1
 PhidgetsHubsInstances:
-   - HUB-TQ1    #192.168.1.200   746062
-   - HUB-TQ2    #192.168.1.201   742347
-
-
-PhidgetsBLDCMotorInstances:
-  - Serial: 746062
-    HubPort: 0
-    Reversed: true
-    Offset: 0
-    RefTurnOn: system.gates.B_THROTTLE_SERVO_POWER_LEFT
-    RefCurrentPos: system.analog.A_THROTTLE_LEFT
-    RefTargetPos: system.gauge.G_THROTTLE_LEFT
-    Acceleration: 0.2
-
-    #The following are fine-tunning Options they are optional#    
-    MaxVelocity: 0.20
-    MinVelocity: 0.02
-    VelocityBand: 250.0
-    CurveGamma: 0.55
-    DeadbandEnter: 2.0
-    DeadbandExit: 4.0
-    MaxVelStepPerTick: 0.008
-    Kp: 0.0
-    Ki: 0.0
-    Kd: 0.0
-    IOnBand: 8.0
-    IntegralLimit: 0.3
-    PositionFilterAlpha: 0.30
-    TickMs: 20
-
-  - Serial: 746062
-    HubPort: 1
-    Reversed: true
-    Offset: 0
-    RefTurnOn: system.gates.B_THROTTLE_SERVO_POWER_RIGHT
-    RefCurrentPos: system.analog.A_THROTTLE_RIGHT
-    RefTargetPos: system.gauge.G_THROTTLE_RIGHT
-    Acceleration: 0.2
-    
-    #The following are fine-tunning Options they are optional# 
-    MaxVelocity: 0.20
-    MinVelocity: 0.02
-    VelocityBand: 250.0
-    CurveGamma: 0.55
-    DeadbandEnter: 2.0
-    DeadbandExit: 4.0
-    MaxVelStepPerTick: 0.008
-    Kp: 0.0
-    Ki: 0.0
-    Kd: 0.0
-    IOnBand: 8.0
-    IntegralLimit: 0.3
-    PositionFilterAlpha: 0.30
-    TickMs: 20
-
-
-
-# Need to add the speedbrake BLDC Motor?? how to set Velocity Variable?
-
-
-
-PhidgetsGateInstances:
-  - Serial: 746062
-    HubPort: 2   # This is a BLDC Motor
-    Channel: 2
-    ProsimDataRef: B_SPEED_BRAKE_DEPLOY
-    ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
-    MaxTimeOn: 30000
-
-  - Serial: 742347
-    HubPort: 4
-    Channel: 0
-    ProsimDataRef: B_REVERSER_1_SYNC_LOCK
-    DelayOn: 1500
-    MaxTimeOn: 2000
-
-  - Serial: 742347
-    HubPort: 4
-    Channel: 1
-    ProsimDataRef: B_REVERSER_2_SYNC_LOCK
-    DelayOn: 1500
-    MaxTimeOn: 2000
-
-  - Serial: 742347
-    HubPort: 4
-    Channel: 3
-    ProsimDataRef: B_PARKING_BRAKE_RELEASE
-    DelayOn: 50
-    MaxTimeOn: 1000
-  
-    
-
-
-PhidgetsInputInstances:
-  - Serial: 742347
-    HubPort: 3
-    Channel: 1
-    ProsimDataRef: S_MIP_PARKING_BRAKE
-    InputValue: 1
-    OffInputValue: 0
-
-  - Serial: 742347
-    HubPort: 3
-    Channel: 0
-    InputValue: 1
-    OffInputValue: 0
-    UserVariable: BrakeLatchSwitch
-    
-
+   - hub5000-1
 
 PhidgetsOutputInstances:
-  - Serial: 746062
-    HubPort: 4
-    Channel: 3
-    ProsimDataRef: I_MIP_PARKING_BRAKE
-    
-  - Serial: 742347
-    HubPort: 4
-    Channel: 2
-    ValueOn: 1
-    ValueOff: 0
-    UserVariable: BrakeLatchRelay
-    DelayOn: 50
-    MaxTimeOn: 2000
+  - Serial: 668522
+    HubPort: 1
+    Channel: 9
+    ProsimDataRef: I_MIP_GEAR_NOSE_DOWN
 
-
-
-
-    
-CustomTrimWheelInstance:
-    HubPort: 4
-    Channel: 2    
-    DirtyUp: 1
-    DirtyDown: 0.8
-    CleanUp: 0.6
-    CleanDown: 0.6
-    APOnClean: 0.7
-    APOnDirty: 0.5
-   
-
-
-
-UserVariableInstances:
-  - Name: BrakeLatchSwitch
-  - Name: BrakeLatchRelay
+PhidgetsInputInstances:
+  - Serial: 618534
+    HubPort: 2
+    Channel: 0
+    ProsimDataRef: S_FIRE_FAULT_TEST
+    InputValue: 1
   
-
-
-CustomParkingBrakeInstance:
-  SwitchVariable: BrakeLatchSwitch
-  RelayVariable: BrakeLatchRelay
-  ToeBrakeThreshold: 500
