@@ -639,7 +639,7 @@ namespace Phidgets2Prosim
 
 							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
 	                        ? "test"   // sentinel => PhidgetsInput will skip ProSim write but still mirror Variable
-	                        : "system.analog" + instance.ProsimDataRef;
+	                        : "system.analog." + instance.ProsimDataRef;
 
 							phidgetsVoltageInput[idx] = new PhidgetsVoltageInput(
                                 instance.Serial,
