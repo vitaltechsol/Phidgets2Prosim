@@ -1,4 +1,4 @@
-# Installation and Configuration Guide for Phidgets2Prosim
+﻿# Installation and Configuration Guide for Phidgets2Prosim
 
 ## Overview
 
@@ -222,6 +222,24 @@ PhidgetsBLDCMotorInstances:
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.8
 ```
+In aditon to the above basic parameters, you can use the following PID parameters(optional) to fine tune the motors motion profile, 
+detailed description of these parameters can be found at the end of this document.
+```
+    MaxVelocity: 0.20
+    MinVelocity: 0.02
+    VelocityBand: 250.0
+    CurveGamma: 0.55
+    DeadbandEnter: 2.0
+    DeadbandExit: 4.0
+    MaxVelStepPerTick: 0.008
+    Kp: 0.0
+    Ki: 0.0
+    Kd: 0.0
+    IOnBand: 8.0
+    IntegralLimit: 0.3
+    PositionFilterAlpha: 0.30
+    TickMs: 20
+```
 
 **Properties:**
 
@@ -321,5 +339,153 @@ PhidgetsButtonInstances:
 
 Ensure each section follows the YAML format correctly, with proper indentation and spacing. Restart the application after any configuration changes to apply updates.
 
+## BLDC PID Tuning Guide
+
+Motor tuning parameters (short descriptions)
+
+- `MaxVelocity` (0–1)
+Top speed the controller will command when the position error is large. Higher = faster moves, more risk of overshoot.
+
+- `MinVelocity` (0–1)
+Smallest speed used when close to target (to overcome stiction). Too high causes buzz/dither; too low can stall.
+
+- `VelocityBand` (position units)
+Error size at which the controller reaches MaxVelocity. Smaller band = more aggressive (higher speed for the same error).
+
+- `CurveGamma` (≈0.5–1.5)
+Shapes how speed grows as error increases. Lower = softer near zero (gentler approach), higher = more bite near zero.
+
+- `DeadbandEnter` (position units)
+If |error| falls below this, the loop declares “settled” and stops the motor. Tighten only after you’re stable.
+
+- `DeadbandExit` (position units)
+Must be > DeadbandEnter. If |error| rises above this, motion resumes. The gap provides hysteresis (prevents chatter).
+
+- `MaxVelStepPerTick` (0–1 per tick)
+Software slew-rate limit on velocity commands (extra smoothing on top of hardware acceleration). Lower = smoother.
+
+- `Kp` (proportional gain)
+Adds push proportional to error. Too high → overshoot/oscillation; too low → residual error.
+
+- `Ki` (integral gain)
+Accumulated push to remove steady bias. Use tiny values; enable only after P is stable. Can introduce slow oscillation if too high.
+
+- `Kd` (derivative gain, optional)
+Damps changes by reacting to error rate. Helpful for overshoot; noisy signals limit its usefulness. Keep very small.
+
+- `IOnBand` (position units, optional)
+Only allow the integrator to act when |error| is above this band. Prevents integral “pumping” at the setpoint.
+
+- `IntegralLimit` (0–1)
+Anti-windup clamp for the integral term. Smaller = safer; loosen only if you need more integral authority.
+
+- `PositionFilterAlpha` (0–1)
+EMA smoothing of measured position:
+filtered = alpha*new + (1-alpha)*prev.
+Higher alpha = less smoothing (more responsive, more noise). Lower alpha = more smoothing (more lag, less noise).
+
+- `TickMs` (ms)
+Control loop period. Lower value (faster loop) = quicker response but can require smaller MaxVelStepPerTick.
+
+- `Acceleration` (0-1 hardware)
+Device-level ramp on velocity changes. Acts like built-in slew. Combine with MaxVelStepPerTick for very smooth motion.
+
+- `TargetBrakingStrength` (0–1, hardware)
+How aggressively the device resists motion when stopping. Higher = snappier stop; too high can induce jerk.
+
+#######################################
+A simple, repeatable tuning workflow
+#######################################
+
+Goal: first make it stable and smooth, then accurate, then fast.
+
+0) Establish a smooth baseline
+
+Set: Kp = 0, Ki = 0, Kd = 0 (no PID yet).
+
+Use conservative values:
+MaxVelocity 0.20, MinVelocity 0.02–0.03,
+VelocityBand 200–300, CurveGamma 0.55–0.65,
+DeadbandEnter 3, DeadbandExit 6,
+MaxVelStepPerTick 0.004–0.008,
+PositionFilterAlpha 0.18–0.30,
+TickMs 20, Acceleration 0.3–1.0.
+
+Verify: long and short moves are smooth, no hunting at rest. If there’s dither, lower MinVelocity, increase DeadbandEnter/Exit, or lower CurveGamma.
+
+1) Improve accuracy (P then tiny I)
+
+Add small P: start Kp = 0.0003.
+If still short of target, try 0.0004. If it overshoots, back down.
+
+Add tiny I only if a small steady error remains: start Ki = 0.00008–0.00012.
+Set IntegralLimit = 0.12–0.18.
+If supported, set IOnBand ≈ a bit wider than DeadbandExit (e.g., 8–12) so I only works when you’re meaningfully away from target.
+
+2) Trim the stop window
+
+Once stable and accurate, narrow DeadbandEnter (e.g., from 3 → 2.5 → 2.0). Keep DeadbandExit larger (e.g., 6) to preserve hysteresis.
+
+3) Make it feel more responsive (optional)
+
+Reduce VelocityBand slightly (e.g., 250 → 200) and/or raise CurveGamma a touch (0.60 → 0.65) for more authority near zero.
+
+If motion gets edgy, undo one change or lower MaxVelStepPerTick.
+
+4) Use D only if needed (optional)
+
+If you still see overshoot with clean signals, try very small Kd (e.g., 0.001–0.002). If noise causes twitching, remove Kd and rely on slew + Acceleration.
+
+Quick “if/then” cheat sheet
+
+Wiggle near setpoint → lower MinVelocity; widen DeadbandEnter/Exit; reduce Ki; lower CurveGamma; increase PositionFilterAlpha; reduce MaxVelStepPerTick; lower Acceleration.
+
+Stops short → raise Kp a bit; slightly reduce VelocityBand; add tiny Ki with small IntegralLimit.
+
+Overshoot on long moves → lower Kp; lower IntegralLimit or Ki; increase MaxVelStepPerTick smoothing (or raise hardware Acceleration slightly); optionally add tiny Kd.
+
+Feels sluggish → increase MaxVelocity; reduce VelocityBand; raise CurveGamma slightly; reduce filtering (PositionFilterAlpha up a bit).
+
+Buzzing/stiction → raise MinVelocity slightly; ensure hardware Acceleration isn’t too low; keep MaxVelStepPerTick reasonable (not too tiny).
+
+########################################
+Typical starting presets (copy/paste)
+########################################
+
+Smooth & safe (good first try)
+```
+MaxVelocity: 0.20
+MinVelocity: 0.02
+VelocityBand: 250
+CurveGamma: 0.60
+DeadbandEnter: 3.0
+DeadbandExit: 6.0
+MaxVelStepPerTick: 0.005
+Kp: 0.0003
+Ki: 0.00010
+Kd: 0.0
+IOnBand: 10.0
+IntegralLimit: 0.15
+PositionFilterAlpha: 0.22
+TickMs: 20
+```
+
+Faster but still civil
+```
+MaxVelocity: 0.30
+MinVelocity: 0.022
+VelocityBand: 200
+CurveGamma: 0.65
+DeadbandEnter: 2.5
+DeadbandExit: 6.0
+MaxVelStepPerTick: 0.006
+Kp: 0.00035
+Ki: 0.00010
+Kd: 0.0 (add 0.001 only if needed)
+IOnBand: 10–12
+IntegralLimit: 0.15
+PositionFilterAlpha: 0.20
+TickMs: 20
+```
 
 

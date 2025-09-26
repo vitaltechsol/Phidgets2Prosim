@@ -20,14 +20,15 @@ namespace Phidgets2Prosim
         double cleanDown;
         double APOnDirty;
         double APOnClean;
-        double targetFwdVelocity;
+		double targetFwdVelocity;
         double targetBwdVelocity;
         double prevTrim = 0;
 
         bool isAPOn = false;
         double flaps = 0;
 
-        public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
+		
+		public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
             double dirtyUp, double dirtyDown, 
             double cleanUp, double cleanDown, 
             double APOnDirty,
@@ -38,7 +39,7 @@ namespace Phidgets2Prosim
             dcm.ErrorLog += SendErrorLog;
             dcm.InfoLog += SendInfoLog;
 
-            DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
