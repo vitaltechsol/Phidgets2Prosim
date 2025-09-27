@@ -487,8 +487,14 @@ namespace Phidgets2Prosim
                     dc.TargetVoltageInputChannel = 0;  // channel
                     dc.AttachTargetVoltageInput();
 
-                    // Command an absolute voltage target (0..5 V)
-                    dc.MoveToTarget(2.5); // move until the in
+                    /////////////////////////////
+                    // Read from the prosim gauge
+                    //////////////////////////////
+                    // Prosim gauge reference map
+                    dc.TargetPosMap = new double[] { 0, 5, 10, 20 }; 
+                    // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+                    dc.TargetPosScaleMap = new double[] { 1.0, 2.2, 3.5, 4 }; 
+                    dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
                 }
                 catch (Exception ex)
                 {

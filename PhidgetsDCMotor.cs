@@ -19,8 +19,26 @@ namespace Phidgets2Prosim
         bool isPaused = false;
         private bool isMotorMoving = false;
         private System.Timers.Timer pulsateTimer;
+        private string _refTargetPos = "";
 
-        public string RefTargetPos { get; set; }
+
+        // (Optional) Move motor to target position based on a prosim gauge reference
+        public string RefTargetPos
+        {
+            get => _refTargetPos;
+            set
+            {
+                _refTargetPos = value;
+                UseRefTarget(value); 
+            }
+        }
+
+        // (Optional, Required with RefTargetPos) Gauge reference range
+        public double[] TargetPosMap { get; set; } = new double[] { 0, 255 };
+
+        // (Optional, Required with RefTargetPos) Scale motor target position based on analog input range
+        public double[] TargetPosScaleMap { get; set; } = new double[] { 0, 5 };
+
         public bool pulsateMotor { get; set; } = false;
         public int PulsateMotorInterval { get; set; } = 550;
         public int PulsateMotorIntervalPause { get; set; } = 200;
@@ -196,13 +214,12 @@ namespace Phidgets2Prosim
             {
                 var value = Convert.ToDouble(dataRef.value);
 
-                Debug.WriteLine(dataRef.name);
-                Debug.WriteLine(value);
+                Debug.WriteLine($"Target ref name:{dataRef.name} - Moving to: {dataRef.value} ");
 
                 await OnTargetMoving (
-                    movingTo: 125.0,
-                    targetMap: new double[] { 0, 250 },
-                    scaleMap: new double[] { 2, 4 }
+                    movingTo: value,
+                    targetMap: TargetPosMap,
+                    scaleMap: TargetPosScaleMap
                 );
 
             }
@@ -217,6 +234,14 @@ namespace Phidgets2Prosim
 
         }
 
+        private void UseRefTarget(string refTargetName)
+        {
+            if (refTargetName != "")
+            {
+                DataRef dataRef = new DataRef(refTargetName, 100, Connection);
+                dataRef.onDataChange += DataRef_onTargetChange;
+            }
+        }
         public void pause(bool isPaused)
         {
             this.isPaused = isPaused;
