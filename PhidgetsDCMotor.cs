@@ -214,7 +214,7 @@ namespace Phidgets2Prosim
                 SendErrorLog(ex.ToString());
             }
         }
-
+/*
         /// Map a logical velocity in [Range[0], Range[1]] to physical [-1, 1].
         private double MapToPhysical(double logical)
         {
@@ -224,7 +224,7 @@ namespace Phidgets2Prosim
             if (double.IsNaN(physical) || double.IsInfinity(physical)) return 0;
             return Math.Max(-1, Math.Min(1, physical));  // clamp
         }
-
+*/
         private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (isMotorMoving)
