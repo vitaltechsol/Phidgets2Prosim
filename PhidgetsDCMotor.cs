@@ -20,6 +20,7 @@ namespace Phidgets2Prosim
         private bool isMotorMoving = false;
         private System.Timers.Timer pulsateTimer;
 
+        public string RefTargetPos { get; set; }
         public bool pulsateMotor { get; set; } = false;
         public int PulsateMotorInterval { get; set; } = 550;
         public int PulsateMotorIntervalPause { get; set; } = 200;
@@ -186,6 +187,34 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
             }
+
+        }
+
+        private async void DataRef_onTargetChange(DataRef dataRef)
+        {
+            try
+            {
+                var value = Convert.ToDouble(dataRef.value);
+
+                Debug.WriteLine(dataRef.name);
+                Debug.WriteLine(value);
+
+                await OnTargetMoving (
+                    movingTo: 125.0,
+                    targetMap: new double[] { 0, 250 },
+                    scaleMap: new double[] { 2, 4 }
+                );
+
+            }
+            catch (Exception ex)
+            {
+                // Stop motor
+                currentVel = 0;
+                // dcMotor.TargetVelocity = 0;
+                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine("value " + dataRef.value);
+            }
+
         }
 
         public void pause(bool isPaused)
@@ -240,6 +269,7 @@ namespace Phidgets2Prosim
         protected override void ApplyVelocity(double velocity)
         {
             // Called by MotorBase’s shared loops (voltage chase).
+            // If using a range that is not -1 to 1, map it. here
             dcMotor.TargetVelocity = velocity;
         }
     }
