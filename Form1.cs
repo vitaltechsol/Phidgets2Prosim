@@ -475,24 +475,24 @@ namespace Phidgets2Prosim
 
                     var opts = new MotorTuningOptions
                     {
-                        MaxVelocity = 0.5,
+                        MaxVelocity = 0.8,
                     };
 
-                    var dc = new PhidgetsDCMotor(618534, 0, "", "", connection, opts);
+                    var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
                     dc.ErrorLog += DisplayErrorLog;
                     dc.InfoLog += DisplayInfoLog;
                     // Pot info:
-                    dc.TargetVoltageInputHub = 745566; // VINT hub serial
+                    dc.TargetVoltageInputHub = 742347; // VINT hub serial
                     dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
                     dc.TargetVoltageInputChannel = 0;  // channel
                     dc.AttachTargetVoltageInput();
 
                     // Command an absolute voltage target (0..5 V)
-                    dc.MoveToTarget(3.0); // move until the in
+                    dc.MoveToTarget(2.5); // move until the in
                 }
                 catch (Exception ex)
                 {
-                    DisplayErrorLog("Error loading Custom_ParkingBrake");
+                    DisplayErrorLog("Error loading DC Motor Test");
                     DisplayErrorLog(ex.ToString());
                 }
 

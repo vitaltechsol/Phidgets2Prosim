@@ -136,6 +136,7 @@ namespace Phidgets2Prosim
             _vin?.Close();
             _vin = new VoltageInput
             {
+                IsHubPortDevice = true,
                 DeviceSerialNumber = TargetVoltageInputHub,
                 HubPort = TargetVoltageInputPort,
                 Channel = TargetVoltageInputChannel,
