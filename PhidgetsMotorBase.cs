@@ -33,6 +33,7 @@ namespace Phidgets2Prosim
         protected double DeadbandExit = 0.02;       // re-activate threshold
         protected double MaxVelStepPerTick = 0.01;   // slew-per-tick
         protected double Kp = 0.0, Ki = 0.0, Kd = 0.0;
+        protected double IOnBand = 1;
         protected double IntegralLimit = 0.25;
         protected double PositionFilterAlpha = 0.25; // 0..1 (more = heavier weighting of newest sample)
         protected int TickMs = 20;
@@ -61,7 +62,8 @@ namespace Phidgets2Prosim
             if (options.Kp.HasValue) Kp = options.Kp.Value;
             if (options.Ki.HasValue) Ki = options.Ki.Value;
             if (options.Kd.HasValue) Kd = options.Kd.Value;
-            if (options.IntegralLimit.HasValue) IntegralLimit = options.IntegralLimit.Value;
+			if (options.IOnBand.HasValue) IOnBand = options.IOnBand.Value;
+			if (options.IntegralLimit.HasValue) IntegralLimit = options.IntegralLimit.Value;
             if (options.PositionFilterAlpha.HasValue) PositionFilterAlpha = options.PositionFilterAlpha.Value;
             if (options.TickMs.HasValue) TickMs = options.TickMs.Value;
         }
@@ -99,9 +101,10 @@ namespace Phidgets2Prosim
             {
                 double p = Kp * error;
 
-                // integrate near target to avoid windup
-                if (Math.Abs(error) <= (VelocityBand * 0.5))
-                {
+				// integrate near target to avoid windup
+				//if (Math.Abs(error) <= (VelocityBand * 0.5))
+				if (Math.Abs(error) <= IOnBand)
+				{
                     _integral += Ki * error * dt;
                     _integral = Clamp(_integral, -IntegralLimit, +IntegralLimit);
                 }
@@ -197,7 +200,8 @@ namespace Phidgets2Prosim
         public double? Kp { get; set; }                     // proportional gain
         public double? Ki { get; set; }                     // integral gain
         public double? Kd { get; set; }                     // derivative gain
-        public double? IntegralLimit { get; set; }          // anti-windup clamp (velocity units)
+        public double? IOnBand { get; set; }                // Integrates when Error < this to prevent wind-up
+        public double? IntegralLimit { get;  set; }          // anti-windup clamp (velocity units)
         public double? PositionFilterAlpha { get; set; }    // low-pass on feedback (0..1)
         public int? TickMs { get; set; }                    // control loop period (ms)
     }

@@ -385,6 +385,7 @@ namespace Phidgets2Prosim
 								Kp = instance.Kp,
 								Ki = instance.Ki,
 								Kd = instance.Kd,
+                                IOnBand = instance.IOnBand,
 								IntegralLimit = instance.IntegralLimit,
 								PositionFilterAlpha = instance.PositionFilterAlpha,
 								TickMs = instance.TickMs
@@ -439,27 +440,28 @@ namespace Phidgets2Prosim
                     }
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading config line for Custome Trim whee");
+                        DisplayErrorLog("Error loading config line for Custom Trim Wheel");
                         DisplayErrorLog(ex.ToString());
                     }
                 }
 
 
 				// Custom - Parking Brake
-				if (config.CustomParkingBrakeInstance != null )
+				if (config.CustomParkingBrakeInstance != null)
 				{
 					var c = config.CustomParkingBrakeInstance;
 					try
 					{
-						var pb = new Custom_ParkingBrake(
+						// keep the instance alive on the Form1 field
+						customParkingBrake = new Custom_ParkingBrake(
 							connection,
 							switchVariable: c.SwitchVariable,
 							relayVariable: c.RelayVariable,
 							toeBrakeThreshold: c.ToeBrakeThreshold
 						);
 
-						pb.ErrorLog += DisplayErrorLog;
-						pb.InfoLog += DisplayInfoLog;
+						customParkingBrake.ErrorLog += DisplayErrorLog;
+						customParkingBrake.InfoLog += DisplayInfoLog;
 						DisplayInfoLog("Custom_ParkingBrake loaded (Variable-driven).");
 					}
 					catch (Exception ex)
@@ -468,33 +470,53 @@ namespace Phidgets2Prosim
 						DisplayErrorLog(ex.ToString());
 					}
 				}
-
-                // DC Motors
-                try
+                else
                 {
+					DisplayInfoLog("[PB] config.CustomParkingBrakeInstance is NULL (no PB module created).");
+				}
 
-                    var opts = new MotorTuningOptions
+
+                    // DC Motors
+                    try
                     {
-                        MaxVelocity = 0.8,
-                    };
 
-                    var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
-                    dc.ErrorLog += DisplayErrorLog;
-                    dc.InfoLog += DisplayInfoLog;
-                    // Pot info:
-                    dc.TargetVoltageInputHub = 742347; // VINT hub serial
-                    dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
-                    dc.TargetVoltageInputChannel = 0;  // channel
-                    dc.AttachTargetVoltageInput();
+                        var opts = new MotorTuningOptions
+                        {
+                            MaxVelocity = 0.7,
+                            MinVelocity = 0.15,
+                            VelocityBand = 0.90,
+                            CurveGamma = 1.10,
+                            DeadbandEnter = 0.014,
+                            DeadbandExit = 0.028,
+                            MaxVelStepPerTick = 0.0100,
+                            Kp = 0.0006,
+                            Ki = 0.00002,
+                            Kd = 0.12,
+                            //IOnBand = 1.0,
+                            IntegralLimit = 0.04,
+                            PositionFilterAlpha = 0.86,
+                            TickMs = 15,
+                            //Acceleration = 2,
 
-                    // Command an absolute voltage target (0..5 V)
-                    dc.MoveToTarget(2.5); // move until the in
-                }
-                catch (Exception ex)
-                {
-                    DisplayErrorLog("Error loading DC Motor Test");
-                    DisplayErrorLog(ex.ToString());
-                }
+                        };
+
+                        var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
+                        dc.ErrorLog += DisplayErrorLog;
+                        dc.InfoLog += DisplayInfoLog;
+                        // Pot info:
+                        dc.TargetVoltageInputHub = 742347; // VINT hub serial
+                        dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
+                        dc.TargetVoltageInputChannel = 0;  // channel
+                        dc.AttachTargetVoltageInput();
+
+                        // Command an absolute voltage target (0..5 V)
+                        dc.MoveToTarget(3.0); // move until the in
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayErrorLog("Error loading DC Motor Test");
+                        DisplayErrorLog(ex.ToString());
+                    }
 
 
 
@@ -1031,7 +1053,15 @@ namespace Phidgets2Prosim
 
         private void Form1_Closed(object sender, EventArgs e)
         {
-            Debug.WriteLine("closed");
+			if (customParkingBrake != null)
+			{
+				customParkingBrake.InfoLog -= DisplayInfoLog;
+				customParkingBrake.ErrorLog -= DisplayErrorLog;
+				customParkingBrake.Close();
+				customParkingBrake = null;
+			}
+
+			Debug.WriteLine("closed");
         }
 
         private void btnLogOk_Click(object sender, EventArgs e)

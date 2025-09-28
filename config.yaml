@@ -139,7 +139,7 @@ UserVariableInstances:
   - Name: BrakeLatchRelay
   
 
-
+   
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
