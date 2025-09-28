@@ -8,239 +8,295 @@ using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsDCMotor : MotorBase
-    {
-        // ===== Your existing fields/APIs preserved =====
-        string prosimDatmRefBwd;
-        string prosimDatmRefFwd;
-        double targetVelFwd = 1;
-        double targetVelBwd = 1;
-        double currentVel = 0;
-        bool isPaused = false;
-        private bool isMotorMoving = false;
-        private System.Timers.Timer pulsateTimer;
+	internal class PhidgetsDCMotor : MotorBase
+	{
+		// ===== Your existing fields/APIs preserved =====
+		string prosimDatmRefBwd;
+		string prosimDatmRefFwd;
+		double targetVelFwd = 1;
+		double targetVelBwd = 1;
+		double currentVel = 0;
+		bool isPaused = false;
+		private bool isMotorMoving = false;
+		private System.Timers.Timer pulsateTimer;
+		private string _refTargetPos = "";
 
-        public bool pulsateMotor { get; set; } = false;
-        public int PulsateMotorInterval { get; set; } = 550;
-        public int PulsateMotorIntervalPause { get; set; } = 200;
-        private int pulseIntervalPauseReduced = 0;
 
-        private double[] range = new double[] { -1, 1 };
-        public double[] Range
-        {
-            get => range;
-            set
-            {
-                if (value == null || value.Length != 2)
-                    throw new ArgumentException("Range must be a double[2], e.g., new[] { -1, 1 } or new[] { 0, 1 }.");
-                if (value[0] == value[1])
-                    throw new ArgumentException("Range min and max cannot be the same.");
-                double a = value[0], b = value[1];
-                range = a <= b ? new double[] { a, b } : new double[] { b, a };
-            }
-        }
+		// (Optional) Move motor to target position based on a prosim gauge reference
+		public string RefTargetPos
+		{
+			get => _refTargetPos;
+			set
+			{
+				_refTargetPos = value;
+				UseRefTarget(value);
+			}
+		}
 
-        public void changeTargetFwdVelocity(double val) => targetVelFwd = val;
-        public void changeTargetBwdVelocity(double val) => targetVelBwd = val;
-        public void changeTargetVelocity(double val) { targetVelFwd = val; targetVelBwd = val; }
+		// (Optional, Required with RefTargetPos) Gauge reference range
+		public double[] TargetPosMap { get; set; } = new double[] { 0, 255 };
 
-        private readonly DCMotor dcMotor = new DCMotor();
+		// (Optional, Required with RefTargetPos) Scale motor target position based on analog input range
+		public double[] TargetPosScaleMap { get; set; } = new double[] { 0, 5 };
 
-        public PhidgetsDCMotor(
-            int serial,
-            int hubPort,
-            string prosimDataRefFwd,
-            string prosimDataRefBwd,
-            ProSimConnect connection,
-            MotorTuningOptions options = null
-        ) : base(options)
-        {
-            try
-            {
-                HubPort = hubPort;
-                this.prosimDatmRefBwd = prosimDataRefBwd;
-                this.prosimDatmRefFwd = prosimDataRefFwd;
+		public bool pulsateMotor { get; set; } = false;
+		public int PulsateMotorInterval { get; set; } = 550;
+		public int PulsateMotorIntervalPause { get; set; } = 200;
+		private int pulseIntervalPauseReduced = 0;
 
-                if (HubPort >= 0)
-                {
-                    dcMotor.HubPort = HubPort;
-                    dcMotor.IsRemote = true;
-                }
-                dcMotor.Open(5000);
-                dcMotor.DeviceSerialNumber = serial;
-                dcMotor.Acceleration = 100;
-                dcMotor.TargetBrakingStrength = 1;
+		private double[] range = new double[] { -1, 1 };
+		public double[] Range
+		{
+			get => range;
+			set
+			{
+				if (value == null || value.Length != 2)
+					throw new ArgumentException("Range must be a double[2], e.g., new[] { -1, 1 } or new[] { 0, 1 }.");
+				if (value[0] == value[1])
+					throw new ArgumentException("Range min and max cannot be the same.");
+				double a = value[0], b = value[1];
+				range = a <= b ? new double[] { a, b } : new double[] { b, a };
+			}
+		}
 
-                // ProSim bindings (kept)
-                if (prosimDataRefFwd != "")
-                {
-                    DataRef dataRef = new DataRef(prosimDataRefFwd, 100, connection);
-                    dataRef.onDataChange += DataRef_onDataChange;
-                }
-                if (prosimDataRefBwd != "")
-                {
-                    DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
-                    dataRef2.onDataChange += DataRef_onDataChange;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("prosimDatmRefCW " + prosimDataRefFwd);
-            }
-        }
+		public void changeTargetFwdVelocity(double val) => targetVelFwd = val;
+		public void changeTargetBwdVelocity(double val) => targetVelBwd = val;
+		public void changeTargetVelocity(double val) { targetVelFwd = val; targetVelBwd = val; }
 
-        // === Voltage-chase command (unchanged public API; now uses base helpers) ===
-        public async Task MoveToTarget(double voltage)
-        {
-            if (_vin == null) throw new InvalidOperationException("VoltageInput not attached.");
-            await RunVoltageChaseLoop(voltage);
-        }
+		private readonly DCMotor dcMotor = new DCMotor();
 
-        private async void DataRef_onDataChange(DataRef dataRef)
-        {
-            Debug.WriteLine("trim name " + dataRef.name);
-            try
-            {
-                var value = Convert.ToBoolean(dataRef.value);
+		public PhidgetsDCMotor(
+			int serial,
+			int hubPort,
+			string prosimDataRefFwd,
+			string prosimDataRefBwd,
+			ProSimConnect connection,
+			MotorTuningOptions options = null
+		) : base(options)
+		{
+			try
+			{
+				HubPort = hubPort;
+				Connection = connection;
+				this.prosimDatmRefBwd = prosimDataRefBwd;
+				this.prosimDatmRefFwd = prosimDataRefFwd;
 
-                Debug.WriteLine(dataRef.name);
-                Debug.WriteLine(value);
+				if (HubPort >= 0)
+				{
+					dcMotor.HubPort = HubPort;
+					dcMotor.IsRemote = true;
+				}
+				dcMotor.Open(5000);
+				dcMotor.DeviceSerialNumber = serial;
+				dcMotor.Acceleration = 100;
+				dcMotor.TargetBrakingStrength = 1;
 
-                pulseIntervalPauseReduced = PulsateMotorIntervalPause;
+				// ProSim bindings (kept)
+				if (prosimDataRefFwd != "")
+				{
+					DataRef dataRef = new DataRef(prosimDataRefFwd, 100, connection);
+					dataRef.onDataChange += DataRef_onDataChange;
+				}
+				if (prosimDataRefBwd != "")
+				{
+					DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
+					dataRef2.onDataChange += DataRef_onDataChange;
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.ToString());
+				Debug.WriteLine("prosimDatmRefCW " + prosimDataRefFwd);
+			}
+		}
 
-                if (dataRef.name == prosimDatmRefFwd && !isPaused)
-                {
-                    if (value == true)
-                    {
-                        currentVel = targetVelFwd * -1;
+		// === Voltage-chase command (unchanged public API; now uses base helpers) ===
+		public async Task MoveToTarget(double voltage)
+		{
+			if (_vin == null) throw new InvalidOperationException("VoltageInput not attached.");
+			await RunVoltageChaseLoop(voltage);
+		}
 
-                        isMotorMoving = true;
-                        dcMotor.TargetVelocity = currentVel;
-                        if (pulsateMotor)
-                        {
-                            if (pulsateTimer == null)
-                            {
-                                pulsateTimer = new System.Timers.Timer();
-                                pulsateTimer.Interval = PulsateMotorInterval;
-                                pulsateTimer.Elapsed += PulsateMotor;
-                                pulsateTimer.Start();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isMotorMoving = false;
-                        if (pulsateTimer != null)
-                        {
-                            pulsateTimer.Stop();
-                            pulsateTimer.Dispose();
-                            pulsateTimer = null;
-                        }
-                        currentVel = 0;
-                        dcMotor.TargetVelocity = 0.5;
-                        Thread.Sleep(200);
-                        dcMotor.TargetVelocity = currentVel;
-                    }
-                }
+		private async void DataRef_onDataChange(DataRef dataRef)
+		{
+			Debug.WriteLine("trim name " + dataRef.name);
+			try
+			{
+				var value = Convert.ToBoolean(dataRef.value);
 
-                if (dataRef.name == prosimDatmRefBwd && !isPaused)
-                {
-                    if (value == true)
-                    {
-                        currentVel = targetVelBwd;
-                        isMotorMoving = true;
-                        dcMotor.TargetVelocity = currentVel;
-                        if (pulsateMotor)
-                        {
-                            if (pulsateTimer == null)
-                            {
-                                pulsateTimer = new System.Timers.Timer();
-                                pulsateTimer.Interval = PulsateMotorInterval;
-                                pulsateTimer.Elapsed += PulsateMotor;
-                                pulsateTimer.Start();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isMotorMoving = false;
-                        if (pulsateTimer != null)
-                        {
-                            pulsateTimer.Stop();
-                            pulsateTimer.Dispose();
-                            pulsateTimer = null;
-                        }
-                        currentVel = 0;
-                        dcMotor.TargetVelocity = -0.5;
-                        Thread.Sleep(200);
-                        dcMotor.TargetVelocity = currentVel;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Stop motor
-                currentVel = 0;
-                // dcMotor.TargetVelocity = 0;
-                Debug.WriteLine(ex.ToString());
-                Debug.WriteLine("value " + dataRef.value);
-            }
-        }
+				Debug.WriteLine(dataRef.name);
+				Debug.WriteLine(value);
 
-        public void pause(bool isPaused)
-        {
-            this.isPaused = isPaused;
-            if (isPaused == true)
-            {
-                dcMotor.TargetVelocity = 0;
-            }
-            else
-            {
-                dcMotor.TargetVelocity = currentVel;
-            }
-        }
+				pulseIntervalPauseReduced = PulsateMotorIntervalPause;
 
-        private async void Open()
-        {
-            try
-            {
-                await Task.Run(() => dcMotor.Open(500));
-                SendErrorLog("DC Motor Connected " + HubPort + "ch" + Channel);
-            }
-            catch (Exception ex)
-            {
-                SendErrorLog("Open failed for DC Motor " + HubPort);
-                SendErrorLog(ex.ToString());
-            }
-        }
-/*
-        /// Map a logical velocity in [Range[0], Range[1]] to physical [-1, 1].
-        private double MapToPhysical(double logical)
-        {
-            double rMin = range[0], rMax = range[1];
-            double t = (logical - rMin) / (rMax - rMin); // 0..1
-            double physical = -1 + (t * 2);              // -1..1
-            if (double.IsNaN(physical) || double.IsInfinity(physical)) return 0;
-            return Math.Max(-1, Math.Min(1, physical));  // clamp
-        }
-*/
-        private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            if (isMotorMoving)
-            {
-                dcMotor.TargetVelocity = 0;
-                await Task.Delay(pulseIntervalPauseReduced);
-                pulseIntervalPauseReduced -= 30;
-                if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0; }
-                dcMotor.TargetVelocity = currentVel;
-            }
-        }
+				if (dataRef.name == prosimDatmRefFwd && !isPaused)
+				{
+					if (value == true)
+					{
+						currentVel = targetVelFwd * -1;
 
-        protected override void ApplyVelocity(double velocity)
-        {
-            // Called by MotorBase’s shared loops (voltage chase).
-            dcMotor.TargetVelocity = velocity;
-        }
-    }
+						isMotorMoving = true;
+						dcMotor.TargetVelocity = currentVel;
+						if (pulsateMotor)
+						{
+							if (pulsateTimer == null)
+							{
+								pulsateTimer = new System.Timers.Timer();
+								pulsateTimer.Interval = PulsateMotorInterval;
+								pulsateTimer.Elapsed += PulsateMotor;
+								pulsateTimer.Start();
+							}
+						}
+					}
+					else
+					{
+						isMotorMoving = false;
+						if (pulsateTimer != null)
+						{
+							pulsateTimer.Stop();
+							pulsateTimer.Dispose();
+							pulsateTimer = null;
+						}
+						currentVel = 0;
+						dcMotor.TargetVelocity = 0.5;
+						Thread.Sleep(200);
+						dcMotor.TargetVelocity = currentVel;
+					}
+				}
+
+				if (dataRef.name == prosimDatmRefBwd && !isPaused)
+				{
+					if (value == true)
+					{
+						currentVel = targetVelBwd;
+						isMotorMoving = true;
+						dcMotor.TargetVelocity = currentVel;
+						if (pulsateMotor)
+						{
+							if (pulsateTimer == null)
+							{
+								pulsateTimer = new System.Timers.Timer();
+								pulsateTimer.Interval = PulsateMotorInterval;
+								pulsateTimer.Elapsed += PulsateMotor;
+								pulsateTimer.Start();
+							}
+						}
+					}
+					else
+					{
+						isMotorMoving = false;
+						if (pulsateTimer != null)
+						{
+							pulsateTimer.Stop();
+							pulsateTimer.Dispose();
+							pulsateTimer = null;
+						}
+						currentVel = 0;
+						dcMotor.TargetVelocity = -0.5;
+						Thread.Sleep(200);
+						dcMotor.TargetVelocity = currentVel;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// Stop motor
+				currentVel = 0;
+				// dcMotor.TargetVelocity = 0;
+				Debug.WriteLine(ex.ToString());
+				Debug.WriteLine("value " + dataRef.value);
+			}
+
+		}
+
+		private async void DataRef_onTargetChange(DataRef dataRef)
+		{
+			try
+			{
+				var value = Convert.ToDouble(dataRef.value);
+
+				Debug.WriteLine($"Target ref name:{dataRef.name} - Moving to: {dataRef.value} ");
+
+				await OnTargetMoving(
+					movingTo: value,
+					targetMap: TargetPosMap,
+					scaleMap: TargetPosScaleMap
+				);
+
+			}
+			catch (Exception ex)
+			{
+				// Stop motor
+				currentVel = 0;
+				// dcMotor.TargetVelocity = 0;
+				Debug.WriteLine(ex.ToString());
+				Debug.WriteLine("value " + dataRef.value);
+			}
+
+		}
+
+		private void UseRefTarget(string refTargetName)
+		{
+			if (refTargetName != "")
+			{
+				DataRef dataRef = new DataRef(refTargetName, 100, Connection);
+				dataRef.onDataChange += DataRef_onTargetChange;
+			}
+		}
+		public void pause(bool isPaused)
+		{
+			this.isPaused = isPaused;
+			if (isPaused == true)
+			{
+				dcMotor.TargetVelocity = 0;
+			}
+			else
+			{
+				dcMotor.TargetVelocity = currentVel;
+			}
+		}
+
+		private async void Open()
+		{
+			try
+			{
+				await Task.Run(() => dcMotor.Open(500));
+				SendErrorLog("DC Motor Connected " + HubPort + "ch" + Channel);
+			}
+			catch (Exception ex)
+			{
+				SendErrorLog("Open failed for DC Motor " + HubPort);
+				SendErrorLog(ex.ToString());
+			}
+		}
+		/*
+				/// Map a logical velocity in [Range[0], Range[1]] to physical [-1, 1].
+				private double MapToPhysical(double logical)
+				{
+					double rMin = range[0], rMax = range[1];
+					double t = (logical - rMin) / (rMax - rMin); // 0..1
+					double physical = -1 + (t * 2);              // -1..1
+					if (double.IsNaN(physical) || double.IsInfinity(physical)) return 0;
+					return Math.Max(-1, Math.Min(1, physical));  // clamp
+				}
+		*/
+		private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if (isMotorMoving)
+			{
+				dcMotor.TargetVelocity = 0;
+				await Task.Delay(pulseIntervalPauseReduced);
+				pulseIntervalPauseReduced -= 30;
+				if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0; }
+				dcMotor.TargetVelocity = currentVel;
+			}
+		}
+
+		protected override void ApplyVelocity(double velocity)
+		{
+			// Called by MotorBase’s shared loops (voltage chase).
+			// If using a range that is not -1 to 1, map it. here
+			dcMotor.TargetVelocity = velocity;
+		}
+	}
 }

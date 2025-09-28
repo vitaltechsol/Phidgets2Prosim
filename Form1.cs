@@ -455,7 +455,7 @@ namespace Phidgets2Prosim
 						// keep the instance alive on the Form1 field
 						customParkingBrake = new Custom_ParkingBrake(
 							connection,
-							switchVariable: c.SwitchVariable,
+							switchVariable: c.SwitchVariable, 
 							relayVariable: c.RelayVariable,
 							toeBrakeThreshold: c.ToeBrakeThreshold
 						);
@@ -510,11 +510,21 @@ namespace Phidgets2Prosim
                         dc.AttachTargetVoltageInput();
 
                         // Command an absolute voltage target (0..5 V)
-                        dc.MoveToTarget(3.0); // move until the in
-                    }
+                        //dc.MoveToTarget(3.0); // move until the in    //hard coded value used for testing
+
+					//// Read from the prosim gauge ////
+				
+					// Prosim gauge reference map
+					dc.TargetPosMap = new double[] { 0, 5, 10, 15, 17 };
+					// Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+					dc.TargetPosScaleMap = new double[] { 1.20, 2.15, 2.85, 3.55, 3.8 };
+					dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+
+
+				}
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading DC Motor Test");
+                        DisplayErrorLog("Error loading DC Motor");
                         DisplayErrorLog(ex.ToString());
                     }
 

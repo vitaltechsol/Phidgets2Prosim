@@ -182,6 +182,62 @@ namespace Phidgets2Prosim
                 await Task.Delay(TickMs);
             }
         }
+
+
+		/// <summary>
+		/// Map a "movingTo" value through a piecewise-linear mapping defined by targetMap -> scaleMap,
+		/// then chase the resulting value as a voltage using RunVoltageChaseLoop().
+		///
+		/// Example:
+		///   movingTo = 125.0
+		///   targetMap = [0, 250]
+		///   scaleMap  = [2, 4]
+		///   -> movingTo is 50% of the targetMap span, so voltage = 3.0
+		///
+		/// Supports multiple segments, e.g. targetMap=[0,100,400], scaleMap=[0,1,3].
+		/// Values outside the domain are clamped to the nearest endpoint.
+		/// </summary>
+		public Task OnTargetMoving(double movingTo, double[] targetMap, double[] scaleMap)
+		{
+			if (targetMap == null || scaleMap == null)
+				throw new ArgumentNullException("targetMap/scaleMap cannot be null.");
+			if (targetMap.Length != scaleMap.Length)
+				throw new ArgumentException("targetMap and scaleMap must have the same length.");
+			if (targetMap.Length < 2)
+				throw new ArgumentException("targetMap/scaleMap must contain at least two points.");
+
+			// Find segment containing movingTo; assume targetMap is non-decreasing.
+			int n = targetMap.Length;
+
+			// Clamp outside domain
+			if (movingTo <= targetMap[0])
+				return RunVoltageChaseLoop(scaleMap[0]);
+			if (movingTo >= targetMap[n - 1])
+				return RunVoltageChaseLoop(scaleMap[n - 1]);
+
+			// Find i such that targetMap[i] <= movingTo <= targetMap[i+1]
+			int i = 0;
+			for (; i < n - 1; i++)
+			{
+				double a = targetMap[i];
+				double b = targetMap[i + 1];
+				if (a <= movingTo && movingTo <= b)
+					break;
+			}
+
+			// Linear interpolate within segment i..i+1
+			double x0 = targetMap[i], x1 = targetMap[i + 1];
+			double y0 = scaleMap[i], y1 = scaleMap[i + 1];
+
+			// Protect against degenerate segment
+			if (Math.Abs(x1 - x0) < 1e-12)
+				return RunVoltageChaseLoop(y0);
+
+			double t = (movingTo - x0) / (x1 - x0);        // 0..1
+			double y = y0 + t * (y1 - y0);                 // mapped value
+
+			return RunVoltageChaseLoop(y);
+		}
     }
 
     /// <summary>
