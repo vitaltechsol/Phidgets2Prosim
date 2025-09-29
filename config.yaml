@@ -86,10 +86,12 @@ PhidgetsDCMotorInstances:
     TargetVoltageInputName: TrimPot
 
 
-PhidgetsVoltageOutputInstances:
+PhidgetsVoltageInputInstances:
   - Serial: 742347
     HubPort: 2
     Channel: 0
+    IsHubPort: true
+    IsRemote: true
     DataInterval: 50
     InputPoints:  [1.20,  0.2,  0.8,  0.0,  3.8]
     OutputPoints: [0, 5, 10, 15, 17]

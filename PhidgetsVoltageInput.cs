@@ -53,7 +53,8 @@ namespace Phidgets2Prosim
 		public event Action<double> ValueChanged;               //#######
 		public double CurrentValue => _currentValue;            //#######
 		public string Name { get; private set; }                //#######
-
+        public bool IsHubPort { get; set; } = false;            //#######
+		public bool IsRemote { get; set; } = false;            //#######
 		public void ApplyName(string name) => Name = name;      //#######
 
 		public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
