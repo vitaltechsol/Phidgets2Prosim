@@ -68,8 +68,37 @@ namespace Phidgets2Prosim
             if (options.TickMs.HasValue) TickMs = options.TickMs.Value;
         }
 
-        // ---- Sensor helpers
-        protected double LowPass(double prevFiltered, double sample)
+		private IScalarSource _ExternalTarget;                  //#######
+
+		public void UseExternalTarget(IScalarSource source)
+		{
+			if (_ExternalTarget != null)
+				_ExternalTarget.ValueChanged -= OnExternalTargetChanged;
+
+			_ExternalTarget = source;
+
+			if (_ExternalTarget != null)
+			{
+				_ExternalTarget.ValueChanged += OnExternalTargetChanged;
+
+				// Seed values
+				var v = _ExternalTarget.CurrentValue;
+				_feedbackVoltage = v;
+				if (_filteredVoltage == 0.0) _filteredVoltage = v;
+			}
+		}
+
+		private void OnExternalTargetChanged(double v)
+		{
+			_feedbackVoltage = v;
+			if (_filteredVoltage == 0.0) _filteredVoltage = v;
+		}                                                       //######
+        // You may keep your existing AttachTargetVoltageInput() during transition;
+		// once everything binds via UseExternalTarget(), you can remove it.
+
+
+		// ---- Sensor helpers
+		protected double LowPass(double prevFiltered, double sample)
         {
             return PositionFilterAlpha * sample + (1.0 - PositionFilterAlpha) * prevFiltered;
         }
@@ -133,7 +162,7 @@ namespace Phidgets2Prosim
             return current + step;
         }
 
-        // ---- VoltageInput wiring (used by DC)
+        // ---- VoltageInput wiring (used by DC)            //Need to remove once wiring done ####
         public void AttachTargetVoltageInput()
         {
             _vin?.Close();

@@ -61,10 +61,45 @@ PhidgetsBLDCMotorInstances:
     TickMs: 20
 
 
+######################################################
 
-# Need to add the speedbrake BLDC Motor?? how to set Velocity Variable?
+PhidgetsDCMotorInstances:
+  - Serial: 746062
+    HubPort: 3
+    Channel: 0
+    Reversed: false
+    Offset: 0
+    MaxVelocity: 0.70
+    MinVelocity: 0.15
+    VelocityBand: 0.90
+    CurveGamma: 1.10
+    DeadbandEnter: 0.014
+    DeadbandExit: 0.028
+    MaxVelStepPerTick: 0.0100
+    Kp: 0.0006
+    Ki: 0.00002
+    Kd: 0.12
+    IOnBand: 1.0
+    IntegralLimit: 0.04
+    PositionFilterAlpha: 0.86
+    TickMs: 15
+    TargetVoltageInputName: TrimPot
 
 
+PhidgetsVoltageOutputInstances:
+  - Serial: 742347
+    HubPort: 2
+    Channel: 0
+    DataInterval: 50
+    InputPoints:  [1.20,  0.2,  0.8,  0.0,  3.8]
+    OutputPoints: [0, 5, 10, 15, 17]
+    InterpolationMode: Linear
+    CurvePower: 2.0
+    MinChangeTriggerValue: 0.002
+    Name: TrimPot
+
+
+######################################################
 
 PhidgetsGateInstances:
   - Serial: 746062
@@ -95,6 +130,8 @@ PhidgetsGateInstances:
     DelayOn: 50
     MaxTimeOn: 1000
   
+
+
     
 
 

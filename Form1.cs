@@ -42,8 +42,9 @@ namespace Phidgets2Prosim
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
 
+		private readonly Dictionary<string, IScalarSource> ScalarInputsByName = new();
 
-        PhidgetsOutput digitalOutput_3_8;
+		PhidgetsOutput digitalOutput_3_8;
 
         Custom_TrimWheel trimWheel;
         PhidgetsBLDCMotor bldcm_00;
@@ -60,6 +61,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
         private BindingList<PhidgetsBLDCMotorInst> phidgetsBLDCMotorInstances;
+
 
 
         public Form1()
@@ -476,61 +478,131 @@ namespace Phidgets2Prosim
 				}
 
 
-                    // DC Motors
-                    try
-                    {
+				/*                   // DC Motors
+								   try
+								   {
 
-                        var opts = new MotorTuningOptions
-                        {
-                            MaxVelocity = 0.7,
-                            MinVelocity = 0.15,
-                            VelocityBand = 0.90,
-                            CurveGamma = 1.10,
-                            DeadbandEnter = 0.014,
-                            DeadbandExit = 0.028,
-                            MaxVelStepPerTick = 0.0100,
-                            Kp = 0.0006,
-                            Ki = 0.00002,
-                            Kd = 0.12,
-                            //IOnBand = 1.0,
-                            IntegralLimit = 0.04,
-                            PositionFilterAlpha = 0.86,
-                            TickMs = 15,
-                            //Acceleration = 2,
+									   var opts = new MotorTuningOptions
+									   {
+										   MaxVelocity = 0.7,
+										   MinVelocity = 0.15,
+										   VelocityBand = 0.90,
+										   CurveGamma = 1.10,
+										   DeadbandEnter = 0.014,
+										   DeadbandExit = 0.028,
+										   MaxVelStepPerTick = 0.0100,
+										   Kp = 0.0006,
+										   Ki = 0.00002,
+										   Kd = 0.12,
+										   //IOnBand = 1.0,
+										   IntegralLimit = 0.04,
+										   PositionFilterAlpha = 0.86,
+										   TickMs = 15,
+										   //Acceleration = 2,
 
-                        };
+									   };
 
-                        var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
-                        dc.ErrorLog += DisplayErrorLog;
-                        dc.InfoLog += DisplayInfoLog;
-                        // Pot info:
-                        dc.TargetVoltageInputHub = 742347; // VINT hub serial
-                        dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
-                        dc.TargetVoltageInputChannel = 0;  // channel
-                        dc.AttachTargetVoltageInput();
+									   var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
+									   dc.ErrorLog += DisplayErrorLog;
+									   dc.InfoLog += DisplayInfoLog;
+									   // Pot info:
+									   dc.TargetVoltageInputHub = 742347; // VINT hub serial
+									   dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
+									   dc.TargetVoltageInputChannel = 0;  // channel
+									   dc.AttachTargetVoltageInput();
 
-                        // Command an absolute voltage target (0..5 V)
-                        //dc.MoveToTarget(3.0); // move until the in    //hard coded value used for testing
+									   // Command an absolute voltage target (0..5 V)
+									   //dc.MoveToTarget(3.0); // move until the in    //hard coded value used for testing
 
-					//// Read from the prosim gauge ////
-				
-					// Prosim gauge reference map
-					dc.TargetPosMap = new double[] { 0, 5, 10, 15, 17 };
-					// Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
-					dc.TargetPosScaleMap = new double[] { 1.20, 2.15, 2.85, 3.55, 3.8 };
-					dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+								   //// Read from the prosim gauge ////
 
-
-				}
-                    catch (Exception ex)
-                    {
-                        DisplayErrorLog("Error loading DC Motor");
-                        DisplayErrorLog(ex.ToString());
-                    }
+								   // Prosim gauge reference map
+								   dc.TargetPosMap = new double[] { 0, 5, 10, 15, 17 };
+								   // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+								   dc.TargetPosScaleMap = new double[] { 1.20, 2.15, 2.85, 3.55, 3.8 };
+								   dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
 
 
+							   }
+								   catch (Exception ex)
+								   {
+									   DisplayErrorLog("Error loading DC Motor");
+									   DisplayErrorLog(ex.ToString());
+								   }
+			   */
 
-                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+				// DC Motors
+				if (config.PhidgetsDCMotorInstances != null)
+				{
+					var idx = 0;
+					foreach (var instance in config.PhidgetsDCMotorInstances)
+					{
+						try
+						{
+							var opts = new MotorTuningOptions
+							{
+								MaxVelocity = instance.MaxVelocity,
+								MinVelocity = instance.MinVelocity,
+								VelocityBand = instance.VelocityBand,
+								CurveGamma = instance.CurveGamma,
+								DeadbandEnter = instance.DeadbandEnter,
+								DeadbandExit = instance.DeadbandExit,
+								MaxVelStepPerTick = instance.MaxVelStepPerTick,
+								Kp = instance.Kp,
+								Ki = instance.Ki,
+								Kd = instance.Kd,
+								IOnBand = instance.IOnBand,
+								IntegralLimit = instance.IntegralLimit,
+								PositionFilterAlpha = instance.PositionFilterAlpha,
+								TickMs = instance.TickMs
+							};
+
+							phidgetsDCMotors[idx] = new PhidgetsDCMotor(
+								deviceSerialNumber: instance.Serial,
+								hubPort: instance.HubPort,
+								connection: connection,
+								reversed: instance.Reversed,
+								offset: instance.Offset,
+								refTurnOn: instance.RefTurnOn,
+								refCurrentPos: instance.RefCurrentPos,
+								refTargetPos: instance.RefTargetPos,
+								acceleration: instance.Acceleration,
+								options: opts
+							);
+
+							phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
+							phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
+
+							// --- NEW: bind calibrated target from Voltage Inputs by Name ---
+							if (!string.IsNullOrWhiteSpace(instance.TargetVoltageInputName))
+							{
+								if (ScalarInputsByName.TryGetValue(instance.TargetVoltageInputName, out var src))
+								{
+									phidgetsDCMotors[idx].UseExternalTarget(src);
+									DisplayInfoLog($"[DC:{idx}] Bound TargetVoltageInputName='{instance.TargetVoltageInputName}'.");
+								}
+								else
+								{
+									DisplayErrorLog($"[DC:{idx}] TargetVoltageInputName '{instance.TargetVoltageInputName}' not found.");
+								}
+							}
+
+							// --- Optional: per-motor gauge mapping (falls back to whatever your class defaults are) ---
+							if (instance.TargetPosMap != null && instance.TargetPosMap.Length > 0)
+								phidgetsDCMotors[idx].TargetPosMap = instance.TargetPosMap;
+
+							if (instance.TargetPosScaleMap != null && instance.TargetPosScaleMap.Length > 0)
+								phidgetsDCMotors[idx].TargetPosScaleMap = instance.TargetPosScaleMap;
+						}
+						catch (Exception ex)
+						{
+							DisplayErrorLog("Error loading config line for DC Motor");
+							DisplayErrorLog(ex.ToString());
+						}
+
+
+
+				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
@@ -686,9 +758,12 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsVoltageInputInstances != null)
                 {
                     DisplayInfoLog("Loading Voltage Inputs ... ");
-                    PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
+                    PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null 
+                    ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
+
                     dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
                     dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+
                     var idx = 0;
                     foreach (var instance in config.PhidgetsVoltageInputInstances)
                     {
@@ -712,10 +787,20 @@ namespace Phidgets2Prosim
                                 instance.CurvePower,
                                 instance.DataInterval,
                                 instance.MinChangeTriggerValue);
+
                             phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsVoltageInput[idx].InfoLog += DisplayInfoLog;
 
-                        }
+
+							// >>> NEW CODE: register this input in the dictionary by Name
+							if (!string.IsNullOrWhiteSpace(instance.Name))
+							{
+								phidgetsVoltageInput[idx].ApplyName(instance.Name);
+								ScalarInputsByName[instance.Name] = phidgetsVoltageInput[idx];
+								DisplayInfoLog($"[VIN:{idx}] Registered input '{instance.Name}' for motor binding.");
+							}
+
+						}
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error loading config line for Voltage Inputs");
