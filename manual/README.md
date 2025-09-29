@@ -14,6 +14,7 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
 2. **Install the Software**
 
    - Unzip the downloaded file to a desired location.
+   - If you are using multiple PCs, it is recommended to install this software on a secondary PC. USB cards must be connected to the same seconday PC and not the main ProSim PC.
 
 3. **Configure the Software**
 
