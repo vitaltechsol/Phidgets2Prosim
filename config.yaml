@@ -93,7 +93,7 @@ PhidgetsVoltageInputInstances:
     IsHubPort: true
     IsRemote: true
     DataInterval: 50
-    InputPoints:  [1.20,  0.2,  0.8,  0.0,  3.8]
+    InputPoints:  [1.20, 2.15, 2.85, 3.55, 3.80]
     OutputPoints: [0, 5, 10, 15, 17]
     InterpolationMode: Linear
     CurvePower: 2.0

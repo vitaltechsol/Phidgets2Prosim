@@ -53,7 +53,7 @@ namespace Phidgets2Prosim
 		public event Action<double> ValueChanged;               //#######
 		public double CurrentValue => _currentValue;            //#######
 		public string Name { get; private set; }                //#######
-        public bool IsHubPort { get; set; } = false;            //#######
+        public bool IsHubPortDevice { get; set; } = false;      //#######
 		public bool IsRemote { get; set; } = false;            //#######
 		public void ApplyName(string name) => Name = name;      //#######
 
@@ -65,7 +65,9 @@ namespace Phidgets2Prosim
             InterpolationMode interpolationMode = InterpolationMode.Spline,
             double curvePower = 2.0,
             int dataInterval = 50,
-            double minChangeDetection = 0.002
+            double minChangeDetection = 0.002,
+            bool isHubPortDevice = false,
+            bool isRemote = false
            )
         {
             ProsimDataRef = prosimDataRef;
@@ -80,6 +82,9 @@ namespace Phidgets2Prosim
             CurvePower = curvePower;
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
+			IsHubPortDevice = isHubPortDevice;
+            IsRemote = isRemote;         
+
 
             if (InterpolationMode == InterpolationMode.Spline)
             {
@@ -138,14 +143,6 @@ namespace Phidgets2Prosim
                 }
             }
         }
-
-
-		// Call this AFTER you compute the mapped value from InputPoints/OutputPoints       #######
-		private void OnMappedValue(double mappedValue)
-		{
-			_currentValue = mappedValue;
-			ValueChanged?.Invoke(mappedValue);
-		}
 
 
 		// Turn switch on off after voltage changes have stopped

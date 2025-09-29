@@ -66,11 +66,17 @@ namespace Phidgets2Prosim
 		private readonly DCMotor dcMotor = new DCMotor();
 
 		public PhidgetsDCMotor(
-			int serial,
+			int deviceSerialNumber,
 			int hubPort,
 			string prosimDataRefFwd,
 			string prosimDataRefBwd,
 			ProSimConnect connection,
+			double acceleration,
+			bool reversed,
+			int offset,
+			string refTurnOn,
+			string refCurrentPos,
+			string refTargetPos,
 			MotorTuningOptions options = null
 		) : base(options)
 		{
@@ -87,8 +93,8 @@ namespace Phidgets2Prosim
 					dcMotor.IsRemote = true;
 				}
 				dcMotor.Open(5000);
-				dcMotor.DeviceSerialNumber = serial;
-				dcMotor.Acceleration = 100;
+				dcMotor.DeviceSerialNumber = deviceSerialNumber;
+				dcMotor.Acceleration = acceleration;
 				dcMotor.TargetBrakingStrength = 1;
 
 				// ProSim bindings (kept)

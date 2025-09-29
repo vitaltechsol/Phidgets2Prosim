@@ -162,7 +162,7 @@ namespace Phidgets2Prosim
             return current + step;
         }
 
-        // ---- VoltageInput wiring (used by DC)            //Need to remove once wiring done ####
+ /*       // ---- VoltageInput wiring (used by DC)  
         public void AttachTargetVoltageInput()
         {
             _vin?.Close();
@@ -181,7 +181,7 @@ namespace Phidgets2Prosim
                 if (_filteredVoltage == 0.0) _filteredVoltage = _feedbackVoltage;
             };
         }
-
+*/
         /// <summary>Subclass must send the velocity to the actual Phidgets motor.</summary>
         protected abstract void ApplyVelocity(double velocity);
 

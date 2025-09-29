@@ -20,7 +20,8 @@ namespace Phidgets2Prosim
         public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
         public List<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
-        public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
+		public List<PhidgetsDCMotorInst> PhidgetsDCMotorInstances { get; set; }
+		public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
 		public List<UserVariableInst> UserVariableInstances { get; set; } 
 		public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
@@ -104,6 +105,8 @@ namespace Phidgets2Prosim
         public int DataInterval { get; set; } = 50;
         public double CurvePower { get; set; } = 2.0;
 		public string Name { get; set; }        // << NEW (link key)
+        public bool IsHubPortDevice { get; set; } = false;
+        public bool IsRemote { get; set; } = true;
 
 	}
 
@@ -184,6 +187,10 @@ namespace Phidgets2Prosim
 
 	public class PhidgetsDCMotorInst : PhidgetDevice    //#######################################################
 	{
+		public string prosimDatmRefBwd { get; set; }
+
+		public string prosimDatmRefFwd { get; set; }
+
 		// Add or remove offset if trying to match other motors
 		public int Offset { get; set; }
 
