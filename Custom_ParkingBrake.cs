@@ -1,7 +1,5 @@
 ﻿using ProSimSDK;
 using System;
-using System.Timers;
-using System.Diagnostics;
 
 namespace Phidgets2Prosim
 {
@@ -9,30 +7,36 @@ namespace Phidgets2Prosim
 	{
 		private readonly ProSimConnect _connection;
 
+		// Hard-coded ProSim DataRefs
+		private const string REF_TOE_LEFT = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
+		private const string REF_TOE_RIGHT = "system.analog.A_FC_TOEBRAKE_RIGHT_CAPT";
+		private const string REF_S_MIP = "system.switches.S_MIP_PARKING_BRAKE";
+
 		// Config
 		private readonly string _switchVariable;
 		private readonly string _relayVariable;
 		private readonly int _toeBrakeThreshold;
 
-		// State caches
+		// Live state
 		private volatile int _toeLeft;
 		private volatile int _toeRight;
 		private volatile int _sMip;
 
-		// Subscriptions / helpers
-		private IDisposable _switchSubscription;
-		private Timer _diagTimer;
+		// Last values (to suppress duplicates)
+		private int _lastToeLeft = int.MinValue;
+		private int _lastToeRight = int.MinValue;
+		private int _lastSw = int.MinValue;
+		private int _lastSMip = int.MinValue;
+		private int _lastRelay = int.MinValue;
+		private bool? _lastDecision = null;
 
-		// Keep DataRef instances to avoid GC
+		private const int ToeLogDelta = 25;
+
 		private DataRef _drToeL;
 		private DataRef _drToeR;
 		private DataRef _drS;
 
-
-		// Hard-coded ProSim DataRefs (as requested)
-		private const string REF_TOE_LEFT = "system.analog.A_FC_TOEBRAKE_LEFT_CAPT";
-		private const string REF_TOE_RIGHT = "system.analog.A_FC_TOEBRAKE_RIGHT_CAPT";
-		private const string REF_S_MIP = "system.switches.S_MIP_PARKING_BRAKE";
+		private IDisposable _switchSubscription;
 
 		public Custom_ParkingBrake(
 			ProSimConnect connection,
@@ -45,61 +49,64 @@ namespace Phidgets2Prosim
 			_relayVariable = relayVariable;
 			_toeBrakeThreshold = toeBrakeThreshold;
 
-
-			// DataRefs
+			// ProSim DataRefs (50 ms)
 			_drToeL = new DataRef(REF_TOE_LEFT, 50, _connection);
 			_drToeR = new DataRef(REF_TOE_RIGHT, 50, _connection);
 			_drS = new DataRef(REF_S_MIP, 50, _connection);
 
 			_drToeL.onDataChange += d =>
 			{
-				int prev = _toeLeft;
-				_toeLeft = SafeInt(d.value);
-				LogInfo($"ToeL {prev} -> {_toeLeft}");
-				Evaluate();
+				var newVal = SafeInt(d.value);
+				if (Math.Abs(newVal - _toeLeft) >= ToeLogDelta)
+				{
+					_toeLeft = newVal;
+					Evaluate();
+					SendSnapshotIfChanged();
+				}
 			};
 
 			_drToeR.onDataChange += d =>
 			{
-				int prev = _toeRight;
-				_toeRight = SafeInt(d.value);
-				LogInfo($"ToeR {prev} -> {_toeRight}");
-				Evaluate();
+				var newVal = SafeInt(d.value);
+				if (Math.Abs(newVal - _toeRight) >= ToeLogDelta)
+				{
+					_toeRight = newVal;
+					Evaluate();
+					SendSnapshotIfChanged();
+				}
 			};
 
 			_drS.onDataChange += d =>
 			{
-				int prev = _sMip;
-				_sMip = SafeInt(d.value);
-				LogInfo($"S_MIP {prev} -> {_sMip}");
-				Evaluate();
+				var newVal = SafeInt(d.value);
+				if (newVal != _sMip)
+				{
+					_sMip = newVal;
+					Evaluate();
+					SendSnapshotIfChanged();
+				}
 			};
 
-			// Switch variable subscription
-			_switchSubscription = VariableManager.Subscribe(_switchVariable, (name, val) =>
+			// Switch variable
+			_switchSubscription = VariableManager.Subscribe(_switchVariable, (_, val) =>
 			{
-				LogInfo($"SwitchVar {name} = {val}");
-				Evaluate();
+				if (_lastSw != val)
+				{
+					_lastSw = val;
+					Evaluate();
+					SendSnapshotIfChanged();
+				}
 			});
 
-			// Diagnostics timer (300 ms)
-			_diagTimer = new Timer(300);
-			_diagTimer.AutoReset = true;
-			_diagTimer.Elapsed += (_, __) =>
-			{
-				int sw = VariableManager.Get(_switchVariable);
-				int rv = VariableManager.Get(_relayVariable);
-				LogInfo($"MON L={_toeLeft} R={_toeRight} Sw={sw} S_MIP={_sMip} RelayVar={rv} Th={_toeBrakeThreshold}");
-			};
-			_diagTimer.Start();
+			SendInfoLog("[PB] Custom_ParkingBrake initialized (change-only logging).");
 
-			LogInfo("Custom_ParkingBrake initialized (Variable-driven; diagnostics ON).");
 			Evaluate();
+			SendSnapshotIfChanged(force: true); // show initial snapshot
 		}
 
-		private static int SafeInt(object v)
+		public void Close()
 		{
-			try { return Convert.ToInt32(v); } catch { return 0; }
+			try { _switchSubscription?.Dispose(); } catch { }
 		}
 
 		private void Evaluate()
@@ -113,26 +120,58 @@ namespace Phidgets2Prosim
 
 			bool cond = cToeL && cToeR && cSw && cMip;
 
+			// Detect relay change around the Set
+			int relayBefore = VariableManager.Get(_relayVariable);
 			VariableManager.Set(_relayVariable, cond ? 1 : 0);
+			int relayAfter = VariableManager.Get(_relayVariable);
 
-			LogInfo(
-				$"DECISION: L({_toeLeft}{(cToeL ? ">" : "<=")}{_toeBrakeThreshold}) & " +
-				$"R({_toeRight}{(cToeR ? ">" : "<=")}{_toeBrakeThreshold}) & " +
-				$"Sw({sw}) & S_MIP({_sMip}) => {(cond ? "ON" : "OFF")}"
-			);
+			if (_lastDecision == null || _lastDecision.Value != cond)
+			{
+				_lastDecision = cond;
+				SendInfoLog(
+					$@"[PB] DECISION: L({_toeLeft}{(cToeL ? ">" : "<=")}{_toeBrakeThreshold}) & " +
+					$@"R({_toeRight}{(cToeR ? ">" : "<=")}{_toeBrakeThreshold}) & " +
+					$@"Sw({sw}) & S_MIP({_sMip}) => {(cond ? "ON" : "OFF")}"
+				);
+			}
+
+			// If relay flipped, print a MON now (change-only filter inside will still apply)
+			if (relayAfter != relayBefore)
+				SendSnapshotIfChanged();
 		}
 
-		public void Close()
+
+		private void SendSnapshotIfChanged(bool force = false)
 		{
-			try { if (_diagTimer != null) { _diagTimer.Stop(); _diagTimer.Dispose(); } } catch { }
-			try { _switchSubscription?.Dispose(); } catch { }
+			int sw = VariableManager.Get(_switchVariable);
+			int rv = VariableManager.Get(_relayVariable);
+
+			bool changed =
+				force ||
+				_toeLeft != _lastToeLeft ||
+				_toeRight != _lastToeRight ||
+				sw != _lastSw ||
+				_sMip != _lastSMip ||
+				rv != _lastRelay;
+
+			if (!changed) return;
+
+			var line = $"[PB] MON L={_toeLeft} R={_toeRight} Sw={sw} S_MIP={_sMip} RelayVar={rv} Th={_toeBrakeThreshold}";
+			SendInfoLog(line);                         // goes to your UI (if wired)
+			System.Diagnostics.Debug.WriteLine(line);  // always appears in VS Output
+
+			_lastToeLeft = _toeLeft;
+			_lastToeRight = _toeRight;
+			_lastSw = sw;
+			_lastSMip = _sMip;
+			_lastRelay = rv;
 		}
 
-		// Unified logging helper: goes to your app log (SendInfoLog) and VS Output
-		private void LogInfo(string message)
+
+		private static int SafeInt(object v)
 		{
-			SendInfoLog("[PB] " + message);
-			Debug.WriteLine("[PB] " + message);
+			try { return Convert.ToInt32(v); } catch { return 0; }
 		}
 	}
 }
+

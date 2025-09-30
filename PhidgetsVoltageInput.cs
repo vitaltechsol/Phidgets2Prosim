@@ -26,7 +26,15 @@ namespace Phidgets2Prosim
         Spline
     }
 
-    internal class PhidgetsVoltageInput : PhidgetDevice
+	// Calibrated scalar stream (e.g., result of InputPoints -> OutputPoints mapping)
+	public interface IScalarSource
+	{
+		event Action<double> ValueChanged;   // emits mapped/calibrated value (double)
+		double CurrentValue { get; }
+		string Name { get; }
+	}
+
+	internal class PhidgetsVoltageInput : PhidgetDevice, IScalarSource
     {
         private VoltageRatioInput voltageInput = new VoltageRatioInput();
         public string ProsimDataRefOnOff { get; set; } = "";
@@ -41,7 +49,15 @@ namespace Phidgets2Prosim
         private object debounceLock = new object();
         private int? pendingStateChange = null;
 
-        public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
+		private double _currentValue;                           //#######
+		public event Action<double> ValueChanged;               //#######
+		public double CurrentValue => _currentValue;            //#######
+		public string Name { get; private set; }                //#######
+        public bool IsHubPortDevice { get; set; } = false;      //#######
+		public bool IsRemote { get; set; } = false;            //#######
+		public void ApplyName(string name) => Name = name;      //#######
+
+		public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
             string prosimDataRef,
             string prosimDataRefOnOff,
             double[] inputPoints,
@@ -49,7 +65,9 @@ namespace Phidgets2Prosim
             InterpolationMode interpolationMode = InterpolationMode.Spline,
             double curvePower = 2.0,
             int dataInterval = 50,
-            double minChangeDetection = 0.002
+            double minChangeDetection = 0.002,
+            bool isHubPortDevice = false,
+            bool isRemote = false
            )
         {
             ProsimDataRef = prosimDataRef;
@@ -64,6 +82,9 @@ namespace Phidgets2Prosim
             CurvePower = curvePower;
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
+			IsHubPortDevice = isHubPortDevice;
+            IsRemote = isRemote;         
+
 
             if (InterpolationMode == InterpolationMode.Spline)
             {
@@ -86,7 +107,16 @@ namespace Phidgets2Prosim
             };
         }
 
-        private void StateChange(object sender, Phidget22.Events.VoltageRatioInputVoltageRatioChangeEventArgs e)
+
+		// Call this AFTER you compute the mapped value from InputPoints/OutputPoints       #######
+		private void OnMappedValue(double mappedValue)
+		{
+			_currentValue = mappedValue;
+			ValueChanged?.Invoke(mappedValue);
+		}
+
+
+		private void StateChange(object sender, Phidget22.Events.VoltageRatioInputVoltageRatioChangeEventArgs e)
         {
             double value = e.VoltageRatio;
             double interpolated = Interpolate(value);
@@ -114,8 +144,9 @@ namespace Phidgets2Prosim
             }
         }
 
-        // Turn switch on off after voltage changes have stopped
-        private void debouncedSwitch(int state)
+
+		// Turn switch on off after voltage changes have stopped
+		private void debouncedSwitch(int state)
         {
             DataRef dataRef = new DataRef(ProsimDataRefOnOff, 200, Connection, true);
             try
@@ -130,7 +161,8 @@ namespace Phidgets2Prosim
             }
         }
 
-        private double Interpolate(double x)
+
+		private double Interpolate(double x)
         {
             switch (InterpolationMode)
             {
@@ -262,8 +294,9 @@ namespace Phidgets2Prosim
                     {
                         voltageInput.HubPort = HubPort;
                         voltageInput.IsRemote = true;
-                        voltageInput.IsHubPortDevice = Channel == -1;
-                    }
+                        //voltageInput.IsHubPortDevice = Channel == -1;
+						voltageInput.IsHubPortDevice = true;
+					}
 
                     voltageInput.Channel = Channel;
                     voltageInput.VoltageRatioChange += StateChange;
