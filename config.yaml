@@ -69,6 +69,7 @@ PhidgetsDCMotorInstances:
     Channel: 0
     Reversed: false
     Offset: 0
+    Acceleration: 1.0
     MaxVelocity: 0.70
     MinVelocity: 0.15
     VelocityBand: 0.90
@@ -90,7 +91,7 @@ PhidgetsVoltageInputInstances:
   - Serial: 742347
     HubPort: 2
     Channel: 0
-    IsHubPort: true
+    IsHubPortDevice: true
     IsRemote: true
     DataInterval: 50
     InputPoints:  [1.20, 2.15, 2.85, 3.55, 3.80]

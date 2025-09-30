@@ -71,14 +71,14 @@ namespace Phidgets2Prosim
 			string prosimDataRefFwd,
 			string prosimDataRefBwd,
 			ProSimConnect connection,
-			double acceleration,
-			bool reversed,
-			int offset,
-			string refTurnOn,
-			string refCurrentPos,
-			string refTargetPos,
-			MotorTuningOptions options = null
-		) : base(options)
+			double acceleration = 0.1,
+			bool reversed = false,
+			int offset = 0,
+			string refTurnOn = "",
+			string refCurrentPos = "",
+			string refTargetPos = "",
+			MotorTuningOptions options = null)
+			: base(options)
 		{
 			try
 			{

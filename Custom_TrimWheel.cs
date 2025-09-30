@@ -45,6 +45,8 @@ namespace Phidgets2Prosim
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
             dataRefTrim.onDataChange += DataRef_trim_onDataChange;
 
+            
+
             this.dirtyUp = dirtyUp;
             this.dirtyDown = dirtyDown;
             this.cleanUp = cleanUp;

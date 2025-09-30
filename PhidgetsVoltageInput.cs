@@ -294,8 +294,9 @@ namespace Phidgets2Prosim
                     {
                         voltageInput.HubPort = HubPort;
                         voltageInput.IsRemote = true;
-                        voltageInput.IsHubPortDevice = Channel == -1;
-                    }
+                        //voltageInput.IsHubPortDevice = Channel == -1;
+						voltageInput.IsHubPortDevice = true;
+					}
 
                     voltageInput.Channel = Channel;
                     voltageInput.VoltageRatioChange += StateChange;

@@ -43,7 +43,8 @@ namespace Phidgets2Prosim
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
 
-		private readonly Dictionary<string, IScalarSource> ScalarInputsByName = new();
+		private readonly Dictionary<string, IScalarSource> ScalarInputsByName =
+	    new Dictionary<string, IScalarSource>();
 
 		PhidgetsOutput digitalOutput_3_8;
 
@@ -98,7 +99,7 @@ namespace Phidgets2Prosim
         void connection_onConnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(LoadConfigIns));
+            //Invoke(new MethodInvoker(LoadConfigIns));
         }
 
         private async Task LoadConfigOuts()
@@ -561,7 +562,7 @@ namespace Phidgets2Prosim
                             phidgetsDCMotors[idx] = new PhidgetsDCMotor(
 								deviceSerialNumber: instance.Serial,
                                 hubPort: instance.HubPort,
-                                connection: instance.Connection,
+                                connection: connection,
                                 reversed: instance.Reversed,
                                 offset: instance.Offset,
                                 refTurnOn: instance.RefTurnOn,
@@ -583,7 +584,22 @@ namespace Phidgets2Prosim
                                 if (ScalarInputsByName.TryGetValue(instance.TargetVoltageInputName, out var src))
                                 {
                                     phidgetsDCMotors[idx].UseExternalTarget(src);
-                                    DisplayInfoLog($"[DC:{idx}] Bound TargetVoltageInputName='{instance.TargetVoltageInputName}'.");
+
+									if (src is PhidgetsVoltageInput vin)
+									{
+										// motor.TargetPosMap expects double[]; convert OutputPoints (int[]) => double[]
+										phidgetsDCMotors[idx].TargetPosMap = vin.OutputPoints?
+											.Select(p => (double)p).ToArray() ?? new double[] { 0, 255 };
+
+										// motor.TargetPosScaleMap is double[]; use InputPoints directly
+										phidgetsDCMotors[idx].TargetPosScaleMap = vin.InputPoints ?? new double[] { 0.0, 1.0 };
+
+										DisplayInfoLog($"[DC:{idx}] Applied maps from VIN '{instance.TargetVoltageInputName}' " +
+													   $"(TargetPosMap={phidgetsDCMotors[idx].TargetPosMap.Length}, " +
+													   $"TargetPosScaleMap={phidgetsDCMotors[idx].TargetPosScaleMap.Length}).");
+									}
+
+                                    //DisplayInfoLog($"[DC:{idx}] Bound TargetVoltageInputName='{instance.TargetVoltageInputName}'.");
                                 }
                                 else
                                 {
@@ -591,12 +607,13 @@ namespace Phidgets2Prosim
                                 }
                             }
 
-                            // --- Optional: per-motor gauge mapping (falls back to whatever your class defaults are) ---
+              /*              // --- Optional: per-motor gauge mapping (falls back to whatever your class defaults are) ---
                             if (instance.TargetPosMap != null && instance.TargetPosMap.Length > 0)
                                 phidgetsDCMotors[idx].TargetPosMap = instance.TargetPosMap;
 
                             if (instance.TargetPosScaleMap != null && instance.TargetPosScaleMap.Length > 0)
                                 phidgetsDCMotors[idx].TargetPosScaleMap = instance.TargetPosScaleMap;
+              */
                         }
                         catch (Exception ex)
                         {
@@ -630,7 +647,7 @@ namespace Phidgets2Prosim
 
         }
 
-        private async void LoadConfigIns()
+        private async Task LoadConfigIns()
         {
             DisplayInfoLog("Loading Inputs configs ... ");
 
@@ -1145,11 +1162,20 @@ namespace Phidgets2Prosim
         private void Form1_Shown(object sender, EventArgs e)
         {
 
-           //  LoadConfigOuts();
-           this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
+			//  LoadConfigOuts();
+			//this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
+			this.BeginInvoke(new Action(async () =>
+			{
+				// 1) Load inputs first (populates ScalarInputsByName)
+				await LoadConfigIns();
 
-            // Register Prosim to receive connect and disconnect events
-            connection.onConnect += connection_onConnect;
+				// 2) Then load outputs (including DC motors that bind to those inputs)
+				await LoadConfigOuts();
+			}));
+
+
+			// Register Prosim to receive connect and disconnect events
+			connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;
 
             DataRef dataRef = new DataRef("simulator.pause", 100, connection);
