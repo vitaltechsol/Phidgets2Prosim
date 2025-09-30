@@ -92,7 +92,7 @@ namespace Phidgets2Prosim
         void connection_onDisconnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(UnloadConfigIns));
+            //Invoke(new MethodInvoker(UnloadConfigIns));
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
