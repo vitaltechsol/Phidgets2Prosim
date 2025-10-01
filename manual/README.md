@@ -28,7 +28,10 @@ This manual provides detailed instructions for installing Phidgets2Prosim and up
 
 5. **Run the Software**
 
+   - Make sure ProSim is running.
+   - Make sure Phidgets Control Panel inputs are all closed or quit Phidgets Control Panel (It can stop the channels from being used if open).
    - Execute `Phidgets2Prosim.exe` to start the application.
+   - To make changes, quit the application, edit the Config.yaml file and re-start the application
 
 
 ## Config.yaml General Structure
@@ -163,13 +166,61 @@ PhidgetsMultiInputInstances:
 
 **Properties:**
 
-- `Channels`: List of channels to be used in the combination lookup table.
-- `Mappings`: Key-value pairs for input combinations. 1 represents On, and 0 is Off. Same position as listed in the Channels array.
+- `Channels`: The input channels to be combined.  Example: `[14, 15]` means Phidgets inputs 14 and 15 will be read together as a group.
+- `Mappings`:  A table that links each input combination to a ProSim value.  
+  - Keys are strings made of `1` (On) and `0` (Off).  
+  - The order of digits **matches the order of `Channels`**.  
+  - Values are the numbers ProSim expects for that control.
  
-This instance allows you to send a single switch signal to prosim, based on a combination of multiple phidget inputs. In this example "01" in mappings, means when switch 14 is Off and switch 15 is On P2P it will send option "2" to prosim. When Switch 14 is On and 15 is off "10" it will send option 0 to prosim. When both are off "00" it wil send option 1 to prosim. 
-If you needed both inputs to be on, then you would set "11" and your option number.  
-You can use an many inputs as needed. For example you can use 3 inputs. [14,15,16] and do Mapping combinations like so: "010", "111", "101", "000" etc.
+This instance allows you to send a single switch signal to prosim, based on a combination of multiple phidget inputs.
 
+---
+
+## How Mappings Work
+
+- `"01": 2` → Channel 14 = **Off**, Channel 15 = **On** → ProSim value sent **2**  
+- `"10": 0` → Channel 14 = **On**, Channel 15 = **Off** → ProSim value sent **0**  
+- `"00": 1` → Channel 14 = **Off**, Channel 15 = **Off** → ProSim value sent **1**  
+
+If you want to send a value when **both are On**, add `"11": <value>`.
+
+---
+
+## Finding What Each Value Means
+
+Check the **ProSim DataRefs Spreadsheet list**.
+
+For example, for `system.switches.S_OH_APU: (APU switch [0:Off, 1:On, 2:Start])`:
+- `2` = Start
+- `0` = Off
+- `1` = On
+
+
+So if ProSim receives `2`, the APU switch moves to **Start**.
+
+---
+
+## Using More Inputs
+
+You can use as many inputs as you want. For example:
+
+```yaml
+Channels: [14, 15, 16]
+Mappings:
+  "010": 1
+  "000": 0
+  "111": 2
+  "101": 3
+```
+
+Here, `"010"` means:  
+- Channel 14 = Off  
+- Channel 15 = On  
+- Channel 16 = Off
+
+ProSim receives **1**. The order is not relevant, the value sent is what matters.
+
+---
 
 ## [Phidgets Outputs](#phidgetsoutputinst)
 
