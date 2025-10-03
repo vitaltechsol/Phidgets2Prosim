@@ -33,7 +33,7 @@ namespace Phidgets2Prosim
 		public int Offset { get; set; } = 0;
 
 		///Maximum allowed motor velocity (0..1). Used when the error is large
-		public double MaxVelocity { get; set; } = 0.20;
+		public double MaxVelocity { get; set; } = 0.70;
 
 		///Minimum velocity to overcome static friction when error is small
 		public double MinVelocity { get; set; } = 0.03;
