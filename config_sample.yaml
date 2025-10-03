@@ -979,21 +979,23 @@ PhidgetsGateInstances:
   - Serial: 618534
     HubPort: 3
     Channel: 0
+    Inverse: true
     ProsimDataRef: B_STANDBY_POWER
   - Serial: 618534
     HubPort: 3
     Channel: 3
+    Inverse: true
     ProsimDataRef: B_AC_POWER
   - Serial: 668522
     HubPort: 1
     Channel: 2
-    ProsimDataRef: B_AC_POWER
     Inverse: true
+    ProsimDataRef: B_AC_POWER
   - Serial: 668522
     HubPort: 1
     Channel: 15
-    ProsimDataRef: B_DC_POWER
     Inverse: true   
+    ProsimDataRef: B_DC_POWER
   - Serial: 741087
     HubPort: 0
     Channel: 15
@@ -1555,6 +1557,42 @@ PhidgetsInputInstances:
     ProsimDataRef: S_OH_YAW_DAMPER
     InputValue: 0
     OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 8
+    ProsimDataRef: S_ASP_VHF_1_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 9
+    ProsimDataRef: S_ASP_VHF_2_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 10
+    ProsimDataRef: S_ASP_HF_1_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 11
+    ProsimDataRef: S_ASP_FLT_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 12
+    ProsimDataRef: S_ASP_PA_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 13
+    ProsimDataRef: S_ASP_SVC_SEND
+    InputValue: 0
+    OffInputValue: 1
 
 PhidgetsMultiInputInstances:
   - Serial: 668015
@@ -1822,12 +1860,12 @@ PhidgetsVoltageInputInstances:
     HubPort: 2
     Channel: 0
     ProsimDataRef: A_ASP_VHF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_1_SEND
+    ProsimDataRefOnOff: S_ASP_VHF_1_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 1
     ProsimDataRef: A_ASP_VHF_2_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_2_SEND
+    ProsimDataRefOnOff: S_ASP_VHF_2_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 2
@@ -1874,9 +1912,10 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.8
-   # MaxVelocity: 0.60
+    # MaxVelocity: 0.60
 
 CustomTrimWheelInstance:
+    Serial: 618534
     HubPort: 0
     DirtyUp: 1
     DirtyDown: 0.8
@@ -1884,7 +1923,6 @@ CustomTrimWheelInstance:
     CleanDown: 0.6
     APOnClean: 0.7
     APOnDirty: 0.5
-    # Range: [0, 1]
 
 PhidgetsButtonInstances:
   - Name: Door Unlock
