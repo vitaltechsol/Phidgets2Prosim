@@ -23,9 +23,9 @@ namespace Phidgets2Prosim
         protected VoltageInput _vin;
         protected double _feedbackVoltage = 0.0;
         protected double _filteredVoltage = 0.0;
-
-        // ===== Tuning (defaults match your prior working values; override via options) =====
-        protected double MaxVelocity = 0.25;
+		
+		// ===== Tuning (defaults match your prior working values; override via options) =====
+		protected double MaxVelocity = 0.25;
         protected double MinVelocity = 0.035;
         protected double VelocityBand = 0.50;        // "full-speed" band (units = feedback units)
         protected double CurveGamma = 0.65;          // error shaping
@@ -44,7 +44,33 @@ namespace Phidgets2Prosim
         protected double _lastError = 0.0;
         protected bool _isSettled = true;
 
-        protected MotorBase(MotorTuningOptions options = null)
+
+		private IDisposable _feedbackVarSub;
+
+		public void UseTargetVariable(string variableName)
+		{
+			// Unsubscribe any prior subscription
+			_feedbackVarSub?.Dispose();
+			_feedbackVarSub = null;
+
+			if (string.IsNullOrWhiteSpace(variableName))
+				return;
+
+			// Seed with current value (int) if any
+			int initial = VariableManager.Get(variableName);
+			_feedbackVoltage = initial;
+			if (_filteredVoltage == 0.0) _filteredVoltage = _feedbackVoltage;
+
+			// Subscribe for live updates
+			_feedbackVarSub = VariableManager.Subscribe(variableName, (name, value) =>
+			{
+				_feedbackVoltage = value; // value is int (e.g., 0..255) to match your VIN OutputPoints units
+				if (_filteredVoltage == 0.0) _filteredVoltage = _feedbackVoltage;
+			});
+		}
+
+
+		protected MotorBase(MotorTuningOptions options = null)
         {
             ApplyTuning(options);
         }
@@ -68,7 +94,7 @@ namespace Phidgets2Prosim
             if (options.TickMs.HasValue) TickMs = options.TickMs.Value;
         }
 
-		private IScalarSource _ExternalTarget;                  //#######
+/*		private IScalarSource _ExternalTarget;                  //#######
 
 		public void UseExternalTarget(IScalarSource source)
 		{
@@ -87,7 +113,7 @@ namespace Phidgets2Prosim
 				if (_filteredVoltage == 0.0) _filteredVoltage = v;
 			}
 		}
-
+*/
 		private void OnExternalTargetChanged(double v)
 		{
 			_feedbackVoltage = v;

@@ -43,8 +43,8 @@ namespace Phidgets2Prosim
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
 
-		private readonly Dictionary<string, IScalarSource> ScalarInputsByName =
-	    new Dictionary<string, IScalarSource>();
+		//private readonly Dictionary<string, IScalarSource> ScalarInputsByName =
+	    //new Dictionary<string, IScalarSource>();
 
 		PhidgetsOutput digitalOutput_3_8;
 
@@ -578,44 +578,74 @@ namespace Phidgets2Prosim
                             phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
 
-                            // --- NEW: bind calibrated target from Voltage Inputs by Name ---
-                            if (!string.IsNullOrWhiteSpace(instance.TargetVoltageInputName))
-                            {
-                                if (ScalarInputsByName.TryGetValue(instance.TargetVoltageInputName, out var src))
-                                {
-                                    phidgetsDCMotors[idx].UseExternalTarget(src);
 
-									if (src is PhidgetsVoltageInput vin)
-									{
-										// motor.TargetPosMap expects double[]; convert OutputPoints (int[]) => double[]
-										phidgetsDCMotors[idx].TargetPosMap = vin.OutputPoints?
-											.Select(p => (double)p).ToArray() ?? new double[] { 0, 255 };
+							// 1) Bind motor feedback to the variable published by its VIN
+							if (!string.IsNullOrWhiteSpace(instance.UserVariable))
+							{
+								phidgetsDCMotors[idx].UseTargetVariable(instance.UserVariable);
+								DisplayInfoLog($"[DC:{idx}] Using feedback variable '{instance.UserVariable}'.");
+							}
 
-										// motor.TargetPosScaleMap is double[]; use InputPoints directly
-										phidgetsDCMotors[idx].TargetPosScaleMap = vin.InputPoints ?? new double[] { 0.0, 1.0 };
+							// 2) Copy calibration maps from the matching VoltageInputInst
+							var vinInst = config.PhidgetsVoltageInputInstances?
+								.FirstOrDefault(v => string.Equals(v.UserVariable, instance.UserVariable, StringComparison.OrdinalIgnoreCase));
 
-										DisplayInfoLog($"[DC:{idx}] Applied maps from VIN '{instance.TargetVoltageInputName}' " +
-													   $"(TargetPosMap={phidgetsDCMotors[idx].TargetPosMap.Length}, " +
-													   $"TargetPosScaleMap={phidgetsDCMotors[idx].TargetPosScaleMap.Length}).");
-									}
+							if (vinInst != null)
+							{
+								// TargetPosMap  = VIN.OutputPoints (int[] -> double[])
+								phidgetsDCMotors[idx].TargetPosMap = vinInst.OutputPoints?.Select(p => (double)p).ToArray();
 
-                                    //DisplayInfoLog($"[DC:{idx}] Bound TargetVoltageInputName='{instance.TargetVoltageInputName}'.");
-                                }
-                                else
-                                {
-                                    DisplayErrorLog($"[DC:{idx}] TargetVoltageInputName '{instance.TargetVoltageInputName}' not found.");
-                                }
-                            }
+								// TargetPosScaleMap = VIN.InputPoints (double[])
+								phidgetsDCMotors[idx].TargetPosScaleMap = vinInst.InputPoints?.ToArray();
 
-              /*              // --- Optional: per-motor gauge mapping (falls back to whatever your class defaults are) ---
-                            if (instance.TargetPosMap != null && instance.TargetPosMap.Length > 0)
-                                phidgetsDCMotors[idx].TargetPosMap = instance.TargetPosMap;
+								DisplayInfoLog($"[DC:{idx}] Applied maps from VIN '{instance.UserVariable}' (TargetPosMap={phidgetsDCMotors[idx].TargetPosMap?.Length ?? 0}, TargetPosScaleMap={phidgetsDCMotors[idx].TargetPosScaleMap?.Length ?? 0}).");
+							}
+							else
+							{
+								DisplayErrorLog($"[DC:{idx}] No VIN found with UserVariable='{instance.UserVariable}'; motor will use its defaults.");
+							}
 
-                            if (instance.TargetPosScaleMap != null && instance.TargetPosScaleMap.Length > 0)
-                                phidgetsDCMotors[idx].TargetPosScaleMap = instance.TargetPosScaleMap;
-              */
-                        }
-                        catch (Exception ex)
+
+
+
+							/*                         // --- NEW: bind calibrated target from Voltage Inputs by Name ---
+													 if (!string.IsNullOrWhiteSpace(instance.TargetVoltageInputName))
+													 {
+														 if (ScalarInputsByName.TryGetValue(instance.TargetVoltageInputName, out var src))
+														 {
+															 phidgetsDCMotors[idx].UseExternalTarget(src);
+
+															 if (src is PhidgetsVoltageInput vin)
+															 {
+																 // motor.TargetPosMap expects double[]; convert OutputPoints (int[]) => double[]
+																 phidgetsDCMotors[idx].TargetPosMap = vin.OutputPoints?
+																	 .Select(p => (double)p).ToArray() ?? new double[] { 0, 255 };
+
+																 // motor.TargetPosScaleMap is double[]; use InputPoints directly
+																 phidgetsDCMotors[idx].TargetPosScaleMap = vin.InputPoints ?? new double[] { 0.0, 1.0 };
+
+																 DisplayInfoLog($"[DC:{idx}] Applied maps from VIN '{instance.TargetVoltageInputName}' " +
+																				$"(TargetPosMap={phidgetsDCMotors[idx].TargetPosMap.Length}, " +
+																				$"TargetPosScaleMap={phidgetsDCMotors[idx].TargetPosScaleMap.Length}).");
+															 }
+
+															 //DisplayInfoLog($"[DC:{idx}] Bound TargetVoltageInputName='{instance.TargetVoltageInputName}'.");
+														 }
+														 else
+														 {
+															 DisplayErrorLog($"[DC:{idx}] TargetVoltageInputName '{instance.TargetVoltageInputName}' not found.");
+														 }
+													 }
+							*/
+							/*              // --- Optional: per-motor gauge mapping (falls back to whatever your class defaults are) ---
+										  if (instance.TargetPosMap != null && instance.TargetPosMap.Length > 0)
+											  phidgetsDCMotors[idx].TargetPosMap = instance.TargetPosMap;
+
+										  if (instance.TargetPosScaleMap != null && instance.TargetPosScaleMap.Length > 0)
+											  phidgetsDCMotors[idx].TargetPosScaleMap = instance.TargetPosScaleMap;
+							*/
+						}
+						catch (Exception ex)
                         {
                             DisplayErrorLog("Error loading config line for DC Motor");
                             DisplayErrorLog(ex.ToString());
@@ -815,17 +845,10 @@ namespace Phidgets2Prosim
                                 instance.MinChangeTriggerValue,
                                 instance.IsHubPortDevice);
 
-                            phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
+							phidgetsVoltageInput[idx].UserVariable = instance.UserVariable;
+							phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsVoltageInput[idx].InfoLog += DisplayInfoLog;
 
-
-							// >>> NEW CODE: register this input in the dictionary by Name
-							if (!string.IsNullOrWhiteSpace(instance.Name))
-							{
-								phidgetsVoltageInput[idx].ApplyName(instance.Name);
-								ScalarInputsByName[instance.Name] = phidgetsVoltageInput[idx];
-								DisplayInfoLog($"[VIN:{idx}] Registered input '{instance.Name}' for motor binding.");
-							}
 
 						}
                         catch (Exception ex)
@@ -1162,18 +1185,13 @@ namespace Phidgets2Prosim
         private void Form1_Shown(object sender, EventArgs e)
         {
 
-			//  LoadConfigOuts();
-			//this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
+			//  LoadConfigOuts(); 
 			this.BeginInvoke(new Action(async () =>
-			{
-				// 1) Load inputs first (populates ScalarInputsByName)
-				await LoadConfigIns();
-
-				// 2) Then load outputs (including DC motors that bind to those inputs)
-				await LoadConfigOuts();
+            {
+				await LoadConfigIns();   // VINs created here & user variables begin flowing
+				await LoadConfigOuts();  // Motors bind to those variables
 			}));
-
-
+			
 			// Register Prosim to receive connect and disconnect events
 			connection.onConnect += connection_onConnect;
             connection.onDisconnect += connection_onDisconnect;

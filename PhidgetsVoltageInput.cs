@@ -26,15 +26,7 @@ namespace Phidgets2Prosim
         Spline
     }
 
-	// Calibrated scalar stream (e.g., result of InputPoints -> OutputPoints mapping)
-	public interface IScalarSource
-	{
-		event Action<double> ValueChanged;   // emits mapped/calibrated value (double)
-		double CurrentValue { get; }
-		string Name { get; }
-	}
-
-	internal class PhidgetsVoltageInput : PhidgetDevice, IScalarSource
+	internal class PhidgetsVoltageInput : PhidgetDevice
     {
         private VoltageRatioInput voltageInput = new VoltageRatioInput();
         public string ProsimDataRefOnOff { get; set; } = "";
@@ -48,14 +40,15 @@ namespace Phidgets2Prosim
         private System.Timers.Timer debounceTimer;
         private object debounceLock = new object();
         private int? pendingStateChange = null;
-
-		private double _currentValue;                           //#######
+        private double _currentValue;                           //#######
 		public event Action<double> ValueChanged;               //#######
 		public double CurrentValue => _currentValue;            //#######
-		public string Name { get; private set; }                //#######
+		//public string Name { get; private set; }                //#######
         public bool IsHubPortDevice { get; set; } = false;      //#######
 		public bool IsRemote { get; set; } = false;            //#######
-		public void ApplyName(string name) => Name = name;      //#######
+		//public void ApplyName(string name) => Name = name;      //#######
+		public string UserVariable { get; set; } = null;
+
 
 		public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
             string prosimDataRef,
@@ -127,7 +120,12 @@ namespace Phidgets2Prosim
             { 
                 SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
                 dataRef.value = valueScaled;
-            }
+
+				if (!string.IsNullOrWhiteSpace(UserVariable))
+				{
+					VariableManager.Set(UserVariable, valueScaled);
+				}
+			}
             catch (Exception ex)
             {
                 SendInfoLog($"Error: Voltage Input  [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");

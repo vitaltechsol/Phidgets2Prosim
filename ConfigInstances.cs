@@ -99,14 +99,14 @@ namespace Phidgets2Prosim
         public string ProsimDataRefOnOff { get; set; } = "";
         public List<double> InputPoints { get; set; } = new List<double> { 0.0, 1.0 };
         public List<int> OutputPoints { get; set; } = new List<int> { 0, 255 };
-
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
         public double MinChangeTriggerValue { get; set; } = 0.002;
         public int DataInterval { get; set; } = 50;
         public double CurvePower { get; set; } = 2.0;
-		public string Name { get; set; }        // << NEW (link key)
+		//public string Name { get; set; }        // << NEW (link key)
         public bool IsHubPortDevice { get; set; } = false;
         public bool IsRemote { get; set; } = true;
+		public string UserVariable { get; set; } = null;
 
 	}
 
@@ -251,9 +251,10 @@ namespace Phidgets2Prosim
 
 		//Interval (in milliseconds) for the control loop tick. Lower = faster updates
 		public int? TickMs { get; set; }
+		public string UserVariable { get; set; } = null;
 
 		// link to PhidgetsVoltageInputInst.Name
-		public string TargetVoltageInputName { get; set; }
+		//public string TargetVoltageInputName { get; set; }
 	}
 
 

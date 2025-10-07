@@ -47,7 +47,7 @@ namespace Phidgets2Prosim
 				if (!digitalOutput.IsOpen || !digitalOutput.Attached)  // <-- only act when attached
 				{
 					SendInfoLog("[SUB:OUTPUT] Device not attached yet; will init on attach.");
-					TryInitFromVariable();
+					//TryInitFromVariable();
 					return;
 				}
 

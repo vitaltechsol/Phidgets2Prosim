@@ -84,7 +84,7 @@ PhidgetsDCMotorInstances:
     IntegralLimit: 0.04
     PositionFilterAlpha: 0.86
     TickMs: 15
-    TargetVoltageInputName: TrimPot
+    UserVariable: TrimIndFeedback
 
 
 PhidgetsVoltageInputInstances:
@@ -99,18 +99,12 @@ PhidgetsVoltageInputInstances:
     InterpolationMode: Linear
     CurvePower: 2.0
     MinChangeTriggerValue: 0.002
-    Name: TrimPot
+    UserVariable: TrimIndFeedback
 
 
 ######################################################
 
 PhidgetsGateInstances:
-  - Serial: 746062
-    HubPort: 2   # This is a BLDC Motor
-    Channel: 2
-    ProsimDataRef: B_SPEED_BRAKE_DEPLOY
-    ProsimDataRefOff: B_SPEED_BRAKE_RESTOW
-    MaxTimeOn: 30000
 
   - Serial: 742347
     HubPort: 4
@@ -177,6 +171,7 @@ PhidgetsOutputInstances:
 UserVariableInstances:
   - Name: BrakeLatchSwitch
   - Name: BrakeLatchRelay
+  - Name: TrimIndFeedback
   
 
    
