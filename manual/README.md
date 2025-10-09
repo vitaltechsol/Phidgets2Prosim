@@ -54,8 +54,8 @@ The `config.yaml` file consists of several sections:
 - [Installation Guide](#installation-guide)
 - [General Configuration](#general-configuration)
 - [Hub Instances](#hub-instances)
-- [Phidgets Inputs](#phidgetsinputinst)
-- [Phidgets Multi-Inputs](#phidgetsmultiinputinst)
+- [Phidgets Inputs](#phidgets-inputinst)
+- [Phidgets Multi-Inputs](#phidget-smultiinputinst)
 - [Phidgets Output](#phidgetsoutputinst)
 - [Phidgets Gates](#phidgetsgateinst)
 - [Phidgets Audio Gates](#phidgetsaudioinst)
@@ -125,7 +125,7 @@ Hubs are initialized here but each instace uses the Serial number to talk to the
 USB cards that are already registered and used with ProSim cannot be used with this application. They have to be fully dedicated here.
 For Etherner hubs that can used by both this sofware and ProSim at the same time.
 
-## [Phidgets Inputs](#phidgetsinputinst)
+## [Phidgets Inputs](#phidgets-inputinst)
 
 ```yaml
 PhidgetsInputInstances:
@@ -150,7 +150,7 @@ PhidgetsInputInstances:
 - `OffInputValue`: Value sent when input is inactive.
 - `ProsimDataRef2/3`: Additional optional data references that will turn on of off with the input.
 
-## [Phidgets Multi-Inputs](#phidgetsMultiinputinst)
+## [Phidgets Multi-Inputs](#phidget-smultiinputinst)
 
 ```yaml
 PhidgetsMultiInputInstances:
