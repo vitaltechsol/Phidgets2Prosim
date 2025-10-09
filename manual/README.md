@@ -333,7 +333,7 @@ PhidgetsVoltageOutputInstances:
 **Properties:**
 
 - `ScaleFactor`: Scales ProSim value output to the analogue voltage output. For example if the Phidgets voltage output is 0v to 5v but the Prosim Output is 0 to 10, then ScaleFactor would be 2 since we have to divide the Prosim Value by 2 to match the correct range. 
-- `Offset`: Addiotional Offset applied to the output. For example the gauge full range is 1v to 5v then Offset 1 will add one extra volt to the calculated value (after Scale Factor is applied).
+- `Offset`: Addiotional Offset applied to the output. For example the gauge full range is 1v to 5v then Offset 1 will add one extra volt to the calculated value (after Scale Factor is applied). If you are using a -10v to 10v Phidgets analog output, then a -10 offset will set the calcualated range to start at -10v.
 
 ## [Phidgets Voltage Input](#phidgetsvoltageinputinst)
 
