@@ -403,7 +403,6 @@ namespace Phidgets2Prosim
 								options: opts
 							);
 
-
 							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
                         }
@@ -424,8 +423,8 @@ namespace Phidgets2Prosim
                     try
                     {
                         trimWheel = new Custom_TrimWheel(
-                            instance.Serial, 
-                            instance.HubPort, 
+                            instance.Serial,
+                            instance.HubPort,
                             connection,
                             instance.DirtyUp,
                             instance.DirtyDown,
@@ -435,12 +434,12 @@ namespace Phidgets2Prosim
                             instance.APOnDirty
                         );
 
-						trimWheel.ErrorLog += DisplayErrorLog;
+                        trimWheel.ErrorLog += DisplayErrorLog;
                         trimWheel.InfoLog += DisplayInfoLog;
                     }
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading config line for Voltage Output");
+                        DisplayErrorLog("Error loading config line for Custome Trim whee");
                         DisplayErrorLog(ex.ToString());
                     }
                 }
@@ -470,9 +469,42 @@ namespace Phidgets2Prosim
 					}
 				}
 
+                // DC Motors
+                try
+                {
+
+                    var opts = new MotorTuningOptions
+                    {
+                        MaxVelocity = 0.8,
+                    };
+
+                    var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
+                    dc.ErrorLog += DisplayErrorLog;
+                    dc.InfoLog += DisplayInfoLog;
+                    // Pot info:
+                    dc.TargetVoltageInputHub = 742347; // VINT hub serial
+                    dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
+                    dc.TargetVoltageInputChannel = 0;  // channel
+                    dc.AttachTargetVoltageInput();
+
+                    /////////////////////////////
+                    // Read from the prosim gauge
+                    //////////////////////////////
+                    // Prosim gauge reference map
+                    dc.TargetPosMap = new double[] { 0, 5, 10, 20 }; 
+                    // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+                    dc.TargetPosScaleMap = new double[] { 1.0, 2.2, 3.5, 4 }; 
+                    dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+                }
+                catch (Exception ex)
+                {
+                    DisplayErrorLog("Error loading DC Motor Test");
+                    DisplayErrorLog(ex.ToString());
+                }
 
 
-				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+
+                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;

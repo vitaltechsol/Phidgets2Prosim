@@ -1917,6 +1917,7 @@ PhidgetsBLDCMotorInstances:
 CustomTrimWheelInstance:
     Serial: 618534
     HubPort: 0
+    Channel: 0
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
