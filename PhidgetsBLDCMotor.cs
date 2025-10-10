@@ -3,7 +3,6 @@ using ProSimSDK;
 using System;
 using System.Diagnostics;
 using System.Timers;
-using static Phidgets2Prosim.ControlMath;
 
 namespace Phidgets2Prosim
 {

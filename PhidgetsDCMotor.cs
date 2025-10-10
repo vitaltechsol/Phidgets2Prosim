@@ -77,6 +77,7 @@ namespace Phidgets2Prosim
             try
             {
                 HubPort = hubPort;
+                Connection = connection;
                 this.prosimDatmRefBwd = prosimDataRefBwd;
                 this.prosimDatmRefFwd = prosimDataRefFwd;
 
@@ -89,7 +90,7 @@ namespace Phidgets2Prosim
                 dcMotor.DeviceSerialNumber = serial;
                 dcMotor.Acceleration = 100;
                 dcMotor.TargetBrakingStrength = 1;
-
+                dcMotor.CurrentLimit = 4;
                 // ProSim bindings (kept)
                 if (prosimDataRefFwd != "")
                 {
@@ -107,13 +108,6 @@ namespace Phidgets2Prosim
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("prosimDatmRefCW " + prosimDataRefFwd);
             }
-        }
-
-        // === Voltage-chase command (unchanged public API; now uses base helpers) ===
-        public async Task MoveToTarget(double voltage)
-        {
-            if (_vin == null) throw new InvalidOperationException("VoltageInput not attached.");
-            await RunVoltageChaseLoop(voltage);
         }
 
         private async void DataRef_onDataChange(DataRef dataRef)
@@ -255,7 +249,7 @@ namespace Phidgets2Prosim
             }
         }
 
-        private async void Open()
+        public async void Open()
         {
             try
             {
@@ -295,7 +289,27 @@ namespace Phidgets2Prosim
         {
             // Called by MotorBase’s shared loops (voltage chase).
             // If using a range that is not -1 to 1, map it. here
-            dcMotor.TargetVelocity = velocity;
+
+            // Ensure device is open and ready
+            if (!dcMotor.Attached) return;
+
+            // If you're using braking, release it when commanding motion
+            if (Math.Abs(velocity) > 0.001)
+                dcMotor.BrakingEnabled = false;      // unbrake while moving
+            else
+                dcMotor.BrakingEnabled = true;      // optional: hold when stopped
+
+            // Make sure current limit is enough to move
+            dcMotor.CurrentLimit = Math.Max(dcMotor.CurrentLimit, 4.0); // try 2–4A depending on your motor
+
+            // Finally, drive it
+            dcMotor.TargetVelocity = velocity * 2;
+
+            // Debug: verify what we really sent
+            Debug.WriteLine($"[ApplyVelocity] sent {velocity:F3}, CurrentLimit={dcMotor.CurrentLimit}, Braking={dcMotor.BrakingStrength}");
+
+
+          //  dcMotor.TargetVelocity = velocity;
         }
     }
 }

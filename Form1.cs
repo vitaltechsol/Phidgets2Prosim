@@ -475,25 +475,42 @@ namespace Phidgets2Prosim
 
                     var opts = new MotorTuningOptions
                     {
-                        MaxVelocity = 0.8,
+                        MaxVelocity = 0.70,
+                        MinVelocity = 0.15,
+                        VelocityBand = 0.90,
+                        CurveGamma = 1.10,
+                        DeadbandEnter = 0.014,
+                        DeadbandExit = 0.028,
+                        MaxVelStepPerTick = 0.0100,
+                        Kp = 0.0006,
+                        Ki = 0.00002,
+                        Kd = 0.12,
+                        IOnBand = 1.0,
+                        IntegralLimit = 0.04,
+                        PositionFilterAlpha = 0.86,
+                        TickMs = 15,
                     };
 
-                    var dc = new PhidgetsDCMotor(746062, 3, "", "", connection, opts); //Motor HUB and channel
+                    var dc = new PhidgetsDCMotor(668066, 2, "", "", connection, opts); //Motor HUB and channel
                     dc.ErrorLog += DisplayErrorLog;
                     dc.InfoLog += DisplayInfoLog;
                     // Pot info:
-                    dc.TargetVoltageInputHub = 742347; // VINT hub serial
-                    dc.TargetVoltageInputPort = 2;     // port with the VoltageInput
+                    dc.TargetVoltageInputHub = 668066; // VINT hub serial
+                    dc.TargetVoltageInputPort = 3;     // port with the VoltageInput
                     dc.TargetVoltageInputChannel = 0;  // channel
                     dc.AttachTargetVoltageInput();
-
+                    ;
                     /////////////////////////////
                     // Read from the prosim gauge
                     //////////////////////////////
                     // Prosim gauge reference map
-                    dc.TargetPosMap = new double[] { 0, 5, 10, 20 }; 
+                   
+                    dc.TargetPosMap = new double[] { 0, 5, 10, 17 }; 
                     // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
-                    dc.TargetPosScaleMap = new double[] { 1.0, 2.2, 3.5, 4 }; 
+                   // dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
+                    dc.TargetPosScaleMap = new double[] { 0.2, 0.4, 0.6, 0.8 };
+
+                  
                     dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
                 }
                 catch (Exception ex)

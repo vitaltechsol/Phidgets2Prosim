@@ -34,7 +34,8 @@ namespace Phidgets2Prosim
         public int[] OutputPoints { get; set; }
         public int DataInterval { get; set; }
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
-        public double CurvePower { get; set; } = 2.0;public double MinChangeTriggerValue { get; set; }
+        public double CurvePower { get; set; } = 2.0;
+        public double MinChangeTriggerValue { get; set; }
         private double[] splineA, splineB, splineC, splineD;
         private bool splineInitialized = false;
         private System.Timers.Timer debounceTimer;
