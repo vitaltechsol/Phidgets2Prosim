@@ -475,20 +475,44 @@ namespace Phidgets2Prosim
 
                     var opts = new MotorTuningOptions
                     {
-                        MaxVelocity = 0.70,
-                        MinVelocity = 0.15,
-                        VelocityBand = 0.90,
+                        //MaxVelocity = 0.90,
+                        //MinVelocity = 0.15,
+                        //VelocityBand = 0.90,
                         CurveGamma = 1.10,
                         DeadbandEnter = 0.014,
                         DeadbandExit = 0.028,
                         MaxVelStepPerTick = 0.0100,
-                        Kp = 0.0006,
-                        Ki = 0.00002,
-                        Kd = 0.12,
+                        Kp = 0,
+                        Ki = 0,
+                        Kd = 0,
                         IOnBand = 1.0,
                         IntegralLimit = 0.04,
                         PositionFilterAlpha = 0.86,
-                        TickMs = 15,
+                        //TickMs = 15,
+
+                        // Core shape
+                        MaxVelocity = 1,      // was 0.70
+                        MinVelocity = 0.4,      // was 0.15  (raise if stiction)
+                        VelocityBand = 0.78,     // was 0.90  (hit max sooner)
+                        //CurveGamma = 0.75,       // was 1.10  (more aggressive near small errors)
+
+                        //// Hysteresis
+                        //DeadbandEnter = 0.008,   // was 0.014
+                        //DeadbandExit = 0.016,   // was 0.028
+
+                        //// Command dynamics
+                        //MaxVelStepPerTick = 0.035, // was 0.010 (faster ramp)
+
+                        //// PID (light touch)
+                        //Kp = 0.0018,             // was 0.0006
+                        //Ki = 0.00002,            // keep tiny
+                        //Kd = 0.02,               // was 0.12 (too damping); try 0 first if needed
+                        //IOnBand = 1.0,
+                        //IntegralLimit = 0.08,    // was 0.04 (allow a little more I near target)
+
+                        //// Filtering & tick
+                        //PositionFilterAlpha = 0.70, // was 0.86 (less lag)
+                        //TickMs = 15
                     };
 
                     var dc = new PhidgetsDCMotor(668066, 2, "", "", connection, opts); //Motor HUB and channel
@@ -508,7 +532,7 @@ namespace Phidgets2Prosim
                     dc.TargetPosMap = new double[] { 0, 5, 10, 17 }; 
                     // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
                    // dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
-                    dc.TargetPosScaleMap = new double[] { 0.2, 0.4, 0.6, 0.8 };
+                    dc.TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
 
                   
                     dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes

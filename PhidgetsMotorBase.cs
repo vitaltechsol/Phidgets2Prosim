@@ -6,9 +6,17 @@ using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
+    /// <summary>
+    /// MotorBase: soft-retargeting control loop for Phidgets DC/BLDC.
+    /// - One long-lived loop tracks a mutable requested setpoint (no cancel on each retarget).
+    /// - Hysteresis, non-linear error→velocity, optional PID, slew limiting.
+    /// - Input-activity awareness prevents premature settling & braking while the reference is moving.
+    /// - All logs are timestamped.
+    /// Subclasses implement ApplyVelocity() to talk to hardware (and may manage braking).
+    /// </summary>
     internal abstract class MotorBase : PhidgetDevice
     {
-        // ===== Feedback (VoltageRatio 0..1 in your current code) =====
+        // ===== Optional VoltageRatioInput feedback (0..1 domain) =====
         public int TargetVoltageInputHub { get; set; } = -1;
         public int TargetVoltageInputPort { get; set; } = -1;
         public int TargetVoltageInputChannel { get; set; } = 0;
@@ -17,22 +25,22 @@ namespace Phidgets2Prosim
         protected double _feedbackVoltage = 0.0;
         protected double _filteredVoltage = 0.0;
 
-        // ===== Tuning =====
+        // ===== Tuning (defaults; override via MotorTuningOptions / MotorTuningOptionsEx) =====
         protected double MaxVelocity = 0.55;
         protected double MinVelocity = 0.085;
-        protected double VelocityBand = 0.50;
-        protected double CurveGamma = 0.65;
-        protected double DeadbandEnter = 0.01;
-        protected double DeadbandExit = 0.02;
-        protected double MaxVelStepPerTick = 0.01;      // slew on velocity command
+        protected double VelocityBand = 0.50;        // feedback units where MaxVelocity is reached
+        protected double CurveGamma = 0.65;          // non-linear shaping exponent
+        protected double DeadbandEnter = 0.01;       // settle threshold
+        protected double DeadbandExit = 0.02;        // wake-up threshold
+        protected double MaxVelStepPerTick = 0.01;   // velocity slew per tick
         protected double Kp = 0.0, Ki = 0.0, Kd = 0.0;
         protected double IOnBand = 1.0;
         protected double IntegralLimit = 0.25;
-        protected double PositionFilterAlpha = 0.25;
+        protected double PositionFilterAlpha = 0.25; // 0..1 (higher = more weight on newest sample)
         protected int TickMs = 20;
 
-        // NEW: setpoint slew so targetV evolves smoothly when the request changes
-        protected double SetpointSlewPerTick = 0.02;     // in *feedback units* per tick (0..1 domain for VoltageRatio)
+        // === Setpoint behavior (0..1 domain for VoltageRatio) ===
+        protected double SetpointSlewPerTick = 0.02; // change in target per tick
         protected double TargetEpsilon = 1e-6;
 
         // ===== Control state =====
@@ -42,20 +50,27 @@ namespace Phidgets2Prosim
         protected bool _isSettled = true;
 
         // ===== Loop lifetime =====
-        private CancellationTokenSource _cts;            // used only for real stop/shutdown
+        private CancellationTokenSource _cts;
         private Task _currentLoop;
         private volatile bool _loopRunning = false;
-
-        // ===== Retargeting (no cancel): latest requested setpoint =====
-        private double _requestedTarget = double.NaN;
-
         private readonly object _startLock = new object();
 
-        // (kept for compatibility if you’re passing tuning in)
+        // ===== Retargeting (no cancel); thread-safe with Volatile =====
+        private double _requestedTarget = double.NaN; // 0..1 desired feedback target
+        private DateTime _lastReqUtc = DateTime.MinValue;
+
+        // Activity windows
+        private static readonly TimeSpan InputActiveWindow = TimeSpan.FromMilliseconds(600);   // keep awake/brake-off while ref is changing
+        private static readonly TimeSpan IdleStopWindow = TimeSpan.FromMilliseconds(1500);  // stop loop only after quiet period
+
         protected MotorBase(MotorTuningOptions options = null)
         {
             ApplyTuning(options);
         }
+
+        // ===== Timestamped logging helpers =====
+        protected static string TS() => DateTime.UtcNow.ToString("HH:mm:ss.fff");
+        protected static void Log(string msg) => Debug.WriteLine($"[{TS()}] {msg}");
 
         protected void ApplyTuning(MotorTuningOptions options)
         {
@@ -75,7 +90,6 @@ namespace Phidgets2Prosim
             if (options.PositionFilterAlpha.HasValue) PositionFilterAlpha = options.PositionFilterAlpha.Value;
             if (options.TickMs.HasValue) TickMs = options.TickMs.Value;
 
-            // Optional: let tuning also set setpoint slew
             if (options is MotorTuningOptionsEx ex)
             {
                 if (ex.SetpointSlewPerTick.HasValue) SetpointSlewPerTick = ex.SetpointSlewPerTick.Value;
@@ -83,28 +97,38 @@ namespace Phidgets2Prosim
             }
         }
 
-        // ---- Sensor hookup
+        // ===== Sensor hookup =====
         public async void AttachTargetVoltageInput()
         {
-            _vin?.Close();
-            _vin.HubPort = TargetVoltageInputPort;
-            _vin.IsRemote = true;
-            _vin.IsHubPortDevice = TargetVoltageInputChannel == -1;
-            _vin.DeviceSerialNumber = TargetVoltageInputHub;
-            _vin.Channel = TargetVoltageInputChannel;
+            try
+            {
+                _vin?.Close();
+            }
+            catch { /* ignore */ }
+
+            _vin = new VoltageRatioInput
+            {
+                HubPort = TargetVoltageInputPort,
+                IsRemote = true,
+                IsHubPortDevice = TargetVoltageInputChannel == -1,
+                DeviceSerialNumber = TargetVoltageInputHub,
+                Channel = TargetVoltageInputChannel
+            };
+
             _vin.VoltageRatioChange += (s, e) =>
             {
                 _feedbackVoltage = e.VoltageRatio;
                 if (_filteredVoltage == 0.0) _filteredVoltage = _feedbackVoltage;
+                //Log($"[Vin] voltage ratio {_feedbackVoltage:F4}");
             };
 
             await Task.Run(() => _vin.Open(5000));
-            Debug.WriteLine("AttachTargetVoltageInput");
+            Log("AttachTargetVoltageInput: opened");
             _vin.VoltageRatioChangeTrigger = 0.02;
             _vin.DataInterval = 50;
         }
 
-        // ---- Helpers
+        // ===== Core helpers =====
         protected double LowPass(double prevFiltered, double sample)
             => PositionFilterAlpha * sample + (1.0 - PositionFilterAlpha) * prevFiltered;
 
@@ -124,10 +148,12 @@ namespace Phidgets2Prosim
         {
             if (_isSettled) return 0.0;
 
+            // Non-linear mapping with min bias for stiction
             double norm = Math.Min(1.0, Math.Abs(error) / Math.Max(1e-6, VelocityBand));
             double shaped = Math.Pow(norm, CurveGamma);
             double vel = Math.Sign(error) * (MinVelocity + (MaxVelocity - MinVelocity) * shaped);
 
+            // Optional PID
             if (Kp != 0.0 || Ki != 0.0 || Kd != 0.0)
             {
                 double p = Kp * error;
@@ -165,10 +191,14 @@ namespace Phidgets2Prosim
         protected static double Clamp(double v, double lo, double hi)
             => v < lo ? lo : (v > hi ? hi : v);
 
-        // === ABSTRACT: subclasses actually send to hardware ===
+        // ===== ABSTRACT: implement in subclass to drive hardware =====
+        /// <summary>
+        /// Send velocity to the device. If you manage braking, consider leaving brake OFF while input is active
+        /// (i.e., (UtcNow - _lastReqUtc) &lt; InputActiveWindow) even when velocity == 0, so motion starts instantly.
+        /// </summary>
         protected abstract void ApplyVelocity(double velocity);
 
-        // === PUBLIC: retarget without cancelling the loop ===
+        // ===== Public API: soft retarget (NO cancel) =====
         public Task OnTargetMoving(double movingTo, double[] targetMap, double[] scaleMap)
         {
             if (targetMap == null || scaleMap == null)
@@ -176,9 +206,13 @@ namespace Phidgets2Prosim
             if (targetMap.Length != scaleMap.Length || targetMap.Length < 2)
                 throw new ArgumentException("targetMap/scaleMap must be same length >= 2.");
 
-            double mapped = MapOnce(movingTo, targetMap, scaleMap);  // ratio setpoint (0..1 for VoltageRatio)
-            //_requestedTarget = Clamp(mapped, 0.0, 1.0);
-            Volatile.Write(ref _requestedTarget, Clamp(mapped, 0.0, 1.0));
+            double mapped = MapOnce(movingTo, targetMap, scaleMap);  // 0..1 ratio
+            mapped = Clamp(mapped, 0.0, 1.0);
+
+            // Log mapping
+            // (MapOnce already logs segment details.)
+            Volatile.Write(ref _requestedTarget, mapped);
+            _lastReqUtc = DateTime.UtcNow;
 
             // Start loop lazily if not running
             if (!_loopRunning)
@@ -195,21 +229,38 @@ namespace Phidgets2Prosim
                 }
             }
 
-            // No await here: we want motor to respond while updates keep coming
             return Task.CompletedTask;
+        }
+
+        public async Task StopChaseAsync()
+        {
+            if (_cts == null) return;
+            try
+            {
+                _cts.Cancel();
+                if (_currentLoop != null) await _currentLoop.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                _cts.Dispose();
+                _cts = null;
+                _currentLoop = null;
+            }
         }
 
         private static double MapOnce(double movingTo, double[] targetMap, double[] scaleMap)
         {
             int n = targetMap.Length;
+
             if (movingTo <= targetMap[0])
             {
-                Debug.WriteLine($"OnTargetMoving({movingTo}) -> below [{targetMap[0]}] -> voltage {scaleMap[0]:F3}");
+                Log($"OnTargetMoving({movingTo}) -> below [{targetMap[0]}] -> voltage {scaleMap[0]:F3}");
                 return scaleMap[0];
             }
             if (movingTo >= targetMap[n - 1])
             {
-                Debug.WriteLine($"OnTargetMoving({movingTo}) -> above [{targetMap[n - 1]}] -> voltage {scaleMap[n - 1]:F3}");
+                Log($"OnTargetMoving({movingTo}) -> above [{targetMap[n - 1]}] -> voltage {scaleMap[n - 1]:F3}");
                 return scaleMap[n - 1];
             }
 
@@ -222,27 +273,32 @@ namespace Phidgets2Prosim
             double x0 = targetMap[i], x1 = targetMap[i + 1];
             double y0 = scaleMap[i], y1 = scaleMap[i + 1];
 
-            if (Math.Abs(x1 - x0) < 1e-12) return y0;
+            if (Math.Abs(x1 - x0) < 1e-12)
+            {
+                Log($"OnTargetMoving({movingTo}) -> degenerate seg [{x0},{x1}] -> voltage {y0:F3}");
+                return y0;
+            }
 
-            double t = (movingTo - x0) / (x1 - x0);
+            double t = (movingTo - x0) / (x1 - x0); // 0..1
             double y = y0 + t * (y1 - y0);
-            Debug.WriteLine($"OnTargetMoving({movingTo}) -> segment {i} [{x0},{x1}] -> {t:F2} -> voltage {y:F3}");
+            Log($"OnTargetMoving({movingTo}) -> segment {i} [{x0},{x1}] -> {t:F2} -> voltage {y:F3}");
             return y;
         }
 
         /// <summary>
-        /// Single, long-lived loop. It tracks a mutable `_requestedTarget` and slews a local
-        /// `tgt` toward it. No cancellations on retarget; cancellation only on shutdown.
+        /// One long-lived loop that tracks a mutable requested target.
+        /// Avoids settling/braking while input is active; stops only after the input is idle.
+        /// All logs are timestamped.
         /// </summary>
         private async Task RunVoltageChaseLoop(CancellationToken ct)
         {
             _loopRunning = true;
             var loopId = Guid.NewGuid().ToString("N").Substring(0, 6);
 
-            // Initialize chase target from the current request (or current feedback if NaN)
-            double tgt = !double.IsNaN(_requestedTarget) ? _requestedTarget : _filteredVoltage;
-
-            Debug.WriteLine($"[loop {loopId}] start tgt={tgt:F6}");
+            // Initial chase target
+            double initReq = Volatile.Read(ref _requestedTarget);
+            double tgt = !double.IsNaN(initReq) ? initReq : _filteredVoltage;
+            Log($"[loop {loopId}] start tgt={tgt:F6}");
 
             _isSettled = false;
             _velCmd = 0;
@@ -253,17 +309,14 @@ namespace Phidgets2Prosim
                 {
                     if (ct.IsCancellationRequested)
                     {
-                        Debug.WriteLine($"[loop {loopId}] cancelled");
+                        Log($"[loop {loopId}] cancelled");
                         ApplyVelocity(0.0);
                         break;
                     }
 
-                    // Slew the chase target toward the latest requested target
-                    //   double req = Volatile.Read(ref _requestedTarget);
-
-                    double req = !double.IsNaN(Volatile.Read(ref _requestedTarget))
-                          ? Volatile.Read(ref _requestedTarget)
-                          : tgt;
+                    // Slew chase target toward the latest request
+                    double latest = Volatile.Read(ref _requestedTarget);
+                    double req = !double.IsNaN(latest) ? latest : tgt;
 
                     if (Math.Abs(req - tgt) > TargetEpsilon)
                     {
@@ -272,33 +325,43 @@ namespace Phidgets2Prosim
                         tgt += step;
                     }
 
+                    // Determine whether upstream input is "active"
+                    bool inputActive = (DateTime.UtcNow - _lastReqUtc) < InputActiveWindow;
+
                     // Feedback & control
                     _filteredVoltage = LowPass(_filteredVoltage, _feedbackVoltage);
                     double err = tgt - _filteredVoltage;
+
+                    // Hysteresis with input-awareness
                     UpdateHysteresis(Math.Abs(err));
+                    if (inputActive) _isSettled = false; // keep awake while target is moving
 
                     double dt = TickMs / 1000.0;
                     double desired = VelocityFromError(err, dt);
                     _velCmd = SlewTowards(_velCmd, desired);
 
-                    // Stiction kick (optional)
+                    // Stiction kick: ensure we don't send sub-MinVelocity while we're trying to move
                     if (!_isSettled && Math.Abs(_velCmd) < MinVelocity && Math.Abs(err) > DeadbandEnter)
                     {
                         _velCmd = Math.Sign(desired == 0 ? err : desired) * MinVelocity;
                     }
 
-                    Debug.WriteLine($"[loop {loopId}] req {req:F6} | tgt {tgt:F6} | fb {_filteredVoltage:F6} | " +
-                                    $"err {err:F3} desired {desired:F3} cmd {_velCmd:F3} settled {_isSettled}");
+                    Log($"[loop {loopId}] req {req:F6} | tgt {tgt:F6} | fb {_filteredVoltage:F6} | " +
+                        $"err {err:F3} desired {desired:F3} cmd {_velCmd:F3} settled {_isSettled} active {inputActive}");
 
                     ApplyVelocity(_velCmd);
 
-                    // Stop if truly settled and no retarget pending
-                    if (_isSettled &&
+                    // Only stop after idle + actually settled
+                    bool recentlyIdle = (DateTime.UtcNow - _lastReqUtc) >= IdleStopWindow;
+                    double latestAgain = Volatile.Read(ref _requestedTarget);
+
+                    if (recentlyIdle &&
+                        _isSettled &&
                         Math.Abs(_velCmd) < MinVelocity * 0.5 &&
-                        (double.IsNaN(_requestedTarget) || Math.Abs(_requestedTarget - tgt) <= TargetEpsilon))
+                        (double.IsNaN(latestAgain) || Math.Abs(latestAgain - tgt) <= TargetEpsilon))
                     {
                         ApplyVelocity(0.0);
-                        Debug.WriteLine($"[loop {loopId}] stop");
+                        Log($"[loop {loopId}] stop");
                         break;
                     }
 
@@ -312,6 +375,9 @@ namespace Phidgets2Prosim
         }
     }
 
+    /// <summary>
+    /// Tuning knobs for the controller.
+    /// </summary>
     public class MotorTuningOptions
     {
         public double? MaxVelocity { get; set; }
@@ -330,10 +396,12 @@ namespace Phidgets2Prosim
         public int? TickMs { get; set; }
     }
 
-    // Optional extension to tune setpoint behavior
+    /// <summary>
+    /// Optional extras for setpoint behavior.
+    /// </summary>
     public class MotorTuningOptionsEx : MotorTuningOptions
     {
-        public double? SetpointSlewPerTick { get; set; }   // 0..1 domain per tick
-        public double? TargetEpsilon { get; set; }         // small epsilon to consider setpoint equal
+        public double? SetpointSlewPerTick { get; set; }   // 0..1 per TickMs
+        public double? TargetEpsilon { get; set; }         // equality threshold for setpoint
     }
 }

@@ -88,7 +88,7 @@ namespace Phidgets2Prosim
                 }
                 dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = serial;
-                dcMotor.Acceleration = 100;
+                dcMotor.Acceleration = 20;
                 dcMotor.TargetBrakingStrength = 1;
                 dcMotor.CurrentLimit = 4;
                 // ProSim bindings (kept)
@@ -287,29 +287,16 @@ namespace Phidgets2Prosim
 
         protected override void ApplyVelocity(double velocity)
         {
-            // Called by MotorBase’s shared loops (voltage chase).
-            // If using a range that is not -1 to 1, map it. here
 
-            // Ensure device is open and ready
             if (!dcMotor.Attached) return;
 
-            // If you're using braking, release it when commanding motion
-            if (Math.Abs(velocity) > 0.001)
-                dcMotor.BrakingEnabled = false;      // unbrake while moving
-            else
-                dcMotor.BrakingEnabled = true;      // optional: hold when stopped
+            dcMotor.TargetVelocity = velocity;
 
-            // Make sure current limit is enough to move
-            dcMotor.CurrentLimit = Math.Max(dcMotor.CurrentLimit, 4.0); // try 2–4A depending on your motor
+            Debug.WriteLine($"[{TS()}] [ApplyVelocity] sent {velocity:F3}, CurrentLimit={dcMotor.CurrentLimit}, Braking={dcMotor.BrakingStrength}");
 
-            // Finally, drive it
-            dcMotor.TargetVelocity = velocity * 2;
-
-            // Debug: verify what we really sent
-            Debug.WriteLine($"[ApplyVelocity] sent {velocity:F3}, CurrentLimit={dcMotor.CurrentLimit}, Braking={dcMotor.BrakingStrength}");
-
-
-          //  dcMotor.TargetVelocity = velocity;
         }
+
+        protected static string TS() => DateTime.UtcNow.ToString("HH:mm:ss.fff");
+
     }
 }
