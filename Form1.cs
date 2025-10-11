@@ -475,8 +475,6 @@ namespace Phidgets2Prosim
 					}
 				}
 
-                // DC Motors
-
 
                 // DC Motors
                 if (config.PhidgetsDCMotorInstances != null)
@@ -505,14 +503,26 @@ namespace Phidgets2Prosim
                             };
 
                             phidgetsDCMotors[idx] = new PhidgetsDCMotor(
-                                serial: instance.Serial,
-                                hubPort: instance.HubPort,
-                                connection: connection,
-                                prosimDataRefFwd: instance.prosimDatmRefFwd,
-                                prosimDataRefBwd: instance.prosimDatmRefBwd,
-                                acceleration: instance.Acceleration,
-                                options: opts
-                            );
+                                instance.Serial, 
+                                instance.HubPort, 
+                                connection, 
+                                instance.prosimDataRefFwd,
+                                instance.prosimDataRefBwd, 
+                                20, 
+                              opts); 
+
+                            phidgetsDCMotors[idx].TargetVoltageInputHub = 668066; // VINT hub serial
+                            phidgetsDCMotors[idx].TargetVoltageInputPort = 3;     // port with the VoltageInput
+                            phidgetsDCMotors[idx].TargetVoltageInputChannel = 0;  // channel
+                            phidgetsDCMotors[idx].AttachTargetVoltageInput();
+                            /////////////////////////////
+                            // Read from the prosim gauge
+                            //////////////////////////////
+                            phidgetsDCMotors[idx].TargetPosMap = new double[] { 0, 5, 10, 17 };
+                            // Based on voltage ratio <---
+                            phidgetsDCMotors[idx].TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
+                            phidgetsDCMotors[idx].RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+
 
                             phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
@@ -524,73 +534,76 @@ namespace Phidgets2Prosim
                         }
                     }
 
-                    // var opts = new MotorTuningOptions
-                    // {
-                    //     //MaxVelocity = 0.90,
-                    //     //MinVelocity = 0.15,
-                    //     //VelocityBand = 0.90,
-                    //     CurveGamma = 1.10,
-                    //     DeadbandEnter = 0.014,
-                    //     DeadbandExit = 0.028,
-                    //     MaxVelStepPerTick = 0.0100,
-                    //     Kp = 0,
-                    //     Ki = 0,
-                    //     Kd = 0,
-                    //     IOnBand = 1.0,
-                    //     IntegralLimit = 0.04,
-                    //     PositionFilterAlpha = 0.86,
-                    //     //TickMs = 15,
+                    
+                }
 
-                    //     // Core shape
-                    //     MaxVelocity = 1,      // was 0.70
-                    //     MinVelocity = 0.4,      // was 0.15  (raise if stiction)
-                    //     VelocityBand = 0.78,     // was 0.90  (hit max sooner)
-                    //     //CurveGamma = 0.75,       // was 1.10  (more aggressive near small errors)
+                if (false)
+                {
+                    var opts2 = new MotorTuningOptions
+                    {
+                        //MaxVelocity = 0.90,
+                        //MinVelocity = 0.15,
+                        //VelocityBand = 0.90,
+                        CurveGamma = 1.10,
+                        DeadbandEnter = 0.014,
+                        DeadbandExit = 0.028,
+                        MaxVelStepPerTick = 0.0100,
+                        Kp = 0,
+                        Ki = 0,
+                        Kd = 0,
+                        IOnBand = 1.0,
+                        IntegralLimit = 0.04,
+                        PositionFilterAlpha = 0.86,
+                        //TickMs = 15,
 
-                    //     //// Hysteresis
-                    //     //DeadbandEnter = 0.008,   // was 0.014
-                    //     //DeadbandExit = 0.016,   // was 0.028
+                        // Core shape
+                        MaxVelocity = 1,      // was 0.70
+                        MinVelocity = 0.4,      // was 0.15  (raise if stiction)
+                        VelocityBand = 0.78,     // was 0.90  (hit max sooner)
+                                                 //CurveGamma = 0.75,       // was 1.10  (more aggressive near small errors)
 
-                    //     //// Command dynamics
-                    //     //MaxVelStepPerTick = 0.035, // was 0.010 (faster ramp)
+                        //// Hysteresis
+                        //DeadbandEnter = 0.008,   // was 0.014
+                        //DeadbandExit = 0.016,   // was 0.028
 
-                    //     //// PID (light touch)
-                    //     //Kp = 0.0018,             // was 0.0006
-                    //     //Ki = 0.00002,            // keep tiny
-                    //     //Kd = 0.02,               // was 0.12 (too damping); try 0 first if needed
-                    //     //IOnBand = 1.0,
-                    //     //IntegralLimit = 0.08,    // was 0.04 (allow a little more I near target)
+                        //// Command dynamics
+                        //MaxVelStepPerTick = 0.035, // was 0.010 (faster ramp)
 
-                    //     //// Filtering & tick
-                    //     //PositionFilterAlpha = 0.70, // was 0.86 (less lag)
-                    //     //TickMs = 15
-                    // };
+                        //// PID (light touch)
+                        //Kp = 0.0018,             // was 0.0006
+                        //Ki = 0.00002,            // keep tiny
+                        //Kd = 0.02,               // was 0.12 (too damping); try 0 first if needed
+                        //IOnBand = 1.0,
+                        //IntegralLimit = 0.08,    // was 0.04 (allow a little more I near target)
 
-                    // var dc = new PhidgetsDCMotor(668066, 2, "", "", connection, opts); //Motor HUB and channel
-                    // dc.ErrorLog += DisplayErrorLog;
-                    // dc.InfoLog += DisplayInfoLog;
-                    // // Pot info:
-                    // dc.TargetVoltageInputHub = 668066; // VINT hub serial
-                    // dc.TargetVoltageInputPort = 3;     // port with the VoltageInput
-                    // dc.TargetVoltageInputChannel = 0;  // channel
-                    // dc.AttachTargetVoltageInput();
+                        //// Filtering & tick
+                        //PositionFilterAlpha = 0.70, // was 0.86 (less lag)
+                        //TickMs = 15
+                    };
+              
+
+                    var dc = new PhidgetsDCMotor(668066, 2, connection, "", "", 20, opts2); //Motor HUB and channel
+                    dc.ErrorLog += DisplayErrorLog;
+                    dc.InfoLog += DisplayInfoLog;
+                    // Pot info:
+                    dc.TargetVoltageInputHub = 668066; // VINT hub serial
+                    dc.TargetVoltageInputPort = 3;     // port with the VoltageInput
+                    dc.TargetVoltageInputChannel = 0;  // channel
+                    dc.AttachTargetVoltageInput();
                     // ;
                     // /////////////////////////////
                     // // Read from the prosim gauge
                     // //////////////////////////////
                     // // Prosim gauge reference map
 
-                    // dc.TargetPosMap = new double[] { 0, 5, 10, 17 }; 
-                    // // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
-                    //// dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
-                    // dc.TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
+                    dc.TargetPosMap = new double[] { 0, 5, 10, 17 };
+                    // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+                    //dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
+                    dc.TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
 
 
-                    // dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+                    dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
                 }
-
-
-
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           

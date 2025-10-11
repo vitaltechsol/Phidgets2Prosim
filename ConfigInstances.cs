@@ -146,26 +146,11 @@ namespace Phidgets2Prosim
 
     public class PhidgetsDCMotorInst : PhidgetDevice   
     {
-        public string prosimDatmRefBwd { get; set; }
+        public string prosimDataRefBwd { get; set; } = "";
 
-        public string prosimDatmRefFwd { get; set; }
+        public string prosimDataRefFwd { get; set; } = "";
 
-        // Add or remove offset if trying to match other motors
-        public int Offset { get; set; }
-
-        // Reverse the direction of the motor based on the refs
-        public bool Reversed { get; set; }
-
-        // Prosim ref to turn on the motor
-        public string RefTurnOn { get; set; }
-
-        // Prosim ref to use for current position
-        public string RefCurrentPos { get; set; }
-
-        // Prosim ref to use for target position
-        public string RefTargetPos { get; set; }
-
-        // Acceleration values between 0.1 and 1.0
+        // Acceleration values between 1 and 100
         public double Acceleration { get; set; }
 
         public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
