@@ -73,7 +73,11 @@ namespace Phidgets2Prosim
         {
             try
             {
-                digitalInput.Close();
+                if (digitalInput != null && digitalInput.IsOpen)
+                {
+
+                    digitalInput.Close();
+                }
                 SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
             }
             catch (System.Exception ex)

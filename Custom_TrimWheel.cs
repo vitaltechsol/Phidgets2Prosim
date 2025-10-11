@@ -34,7 +34,7 @@ namespace Phidgets2Prosim
             double APOnDirty,
             double APOnClean)
         {
-            dcm = new PhidgetsDCMotor(serial, hubPort, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", connection);
+            dcm = new PhidgetsDCMotor(serial, hubPort, connection, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", 100);
             dcm.pulsateMotor = true;
             dcm.ErrorLog += SendErrorLog;
             dcm.InfoLog += SendInfoLog;

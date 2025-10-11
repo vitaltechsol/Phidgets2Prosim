@@ -68,16 +68,19 @@ namespace Phidgets2Prosim
         public PhidgetsDCMotor(
             int serial,
             int hubPort,
+            ProSimConnect connection,
             string prosimDataRefFwd,
             string prosimDataRefBwd,
-            ProSimConnect connection,
+            double acceleration,
             MotorTuningOptions options = null
         ) : base(options)
         {
             try
             {
                 HubPort = hubPort;
+                Serial = serial;
                 Connection = connection;
+                Acceleration = acceleration;
                 this.prosimDatmRefBwd = prosimDataRefBwd;
                 this.prosimDatmRefFwd = prosimDataRefFwd;
 
@@ -86,11 +89,9 @@ namespace Phidgets2Prosim
                     dcMotor.HubPort = HubPort;
                     dcMotor.IsRemote = true;
                 }
-                dcMotor.Open(5000);
                 dcMotor.DeviceSerialNumber = serial;
-                dcMotor.Acceleration = 20;
-                dcMotor.TargetBrakingStrength = 1;
-                dcMotor.CurrentLimit = 4;
+                Open();
+                         
                 // ProSim bindings (kept)
                 if (prosimDataRefFwd != "")
                 {
@@ -254,11 +255,14 @@ namespace Phidgets2Prosim
             try
             {
                 await Task.Run(() => dcMotor.Open(500));
-                SendErrorLog("DC Motor Connected " + HubPort + "ch" + Channel);
+                dcMotor.Acceleration = Acceleration;
+                dcMotor.TargetBrakingStrength = 1;
+                dcMotor.CurrentLimit = 4;
+                SendInfoLog($"DC Motor Connected {Serial}: {HubPort}");
             }
             catch (Exception ex)
             {
-                SendErrorLog("Open failed for DC Motor " + HubPort);
+                SendErrorLog($"Open Fail for DC Motor {Serial}: {HubPort}");
                 SendErrorLog(ex.ToString());
             }
         }
@@ -291,7 +295,7 @@ namespace Phidgets2Prosim
             if (!dcMotor.Attached) return;
 
             dcMotor.TargetVelocity = velocity;
-
+            SendInfoLog($"[DC MOTOR ApplyVelocity] sent {velocity:F3}");
             Debug.WriteLine($"[{TS()}] [ApplyVelocity] sent {velocity:F3}, CurrentLimit={dcMotor.CurrentLimit}, Braking={dcMotor.BrakingStrength}");
 
         }

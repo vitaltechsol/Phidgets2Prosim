@@ -1046,36 +1046,36 @@ PhidgetsGateInstances:
     Channel: 3
     ProsimDataRef: B_LIGHT_TEST
  
-PhidgetsAudioInstances:
-  - Serial: 618534
-    HubPort: 5
-    Channel: 8
-    ProsimDataRef: "Gear_warning"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 9
-    ProsimDataRef: "Autopilot_Disconnect"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 10
-    ProsimDataRef: "Overspeed"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 11
-    ProsimDataRef: "Takeoff_Config"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 12
-    ProsimDataRef: "Fire_audio"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 13
-    ProsimDataRef: "High-Low_Chime"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 14
-    ProsimDataRef: "No_Smoking_Audio"
-    ProsimDataRefOff: "Seatbelt_Audio"
+# PhidgetsAudioInstances:
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 8
+#     ProsimDataRef: "Gear_warning"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 9
+#     ProsimDataRef: "Autopilot_Disconnect"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 10
+#     ProsimDataRef: "Overspeed"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 11
+#     ProsimDataRef: "Takeoff_Config"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 12
+#     ProsimDataRef: "Fire_audio"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 13
+#     ProsimDataRef: "High-Low_Chime"
+#   - Serial: 618534
+#     HubPort: 5
+#     Channel: 14
+#     ProsimDataRef: "No_Smoking_Audio"
+#     ProsimDataRefOff: "Seatbelt_Audio"
 
 PhidgetsInputInstances:
   - Serial: 618534
@@ -1902,7 +1902,8 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_RIGHT
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.8
-    # MaxVelocity: 0.60
+    Options:
+      MaxVelocity: 0.60
 
   - Serial: 668066
     HubPort: 1
@@ -1912,7 +1913,28 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_LEFT
     RefTargetPos: system.gauge.G_THROTTLE_LEFT
     Acceleration: 0.8
-    # MaxVelocity: 0.60
+    Options:
+      MaxVelocity: 0.60
+
+PhidgetsDCMotorInstances:
+  - Serial: 668066
+    HubPort: 2
+    Acceleration: 50
+    Options:
+      MaxVelocity: 1
+      MinVelocity: 0.4
+      VelocityBand: 0.90
+      CurveGamma: 1.10
+      DeadbandEnter: 0.014
+      DeadbandExit: 0.028
+      MaxVelStepPerTick: 0.0100
+      Kp: 0.0006
+      Ki: 0.00002
+      Kd: 0.12
+      IOnBand: 1.0
+      IntegralLimit: 0.04
+      PositionFilterAlpha: 0.86
+      TickMs: 15
 
 CustomTrimWheelInstance:
     Serial: 618534

@@ -2,6 +2,7 @@
 using ProSimSDK;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Phidgets2Prosim
@@ -25,7 +26,7 @@ namespace Phidgets2Prosim
         private bool _disposed;
 
         public PhidgetsBLDCMotor(
-            int deviceSerialNumber,
+            int serial,
             int hubPort,
             ProSimConnect connection,
             bool reversed,
@@ -41,6 +42,9 @@ namespace Phidgets2Prosim
             {
                 Reversed = reversed;
                 Offset = offset;
+                HubPort = hubPort;
+                Serial = serial;
+                Acceleration = acceleration;
 
                 if (hubPort >= 0)
                 {
@@ -48,10 +52,8 @@ namespace Phidgets2Prosim
                     _motor.IsRemote = true;
                 }
 
-                _motor.DeviceSerialNumber = deviceSerialNumber;
-                _motor.Open(5000);
-                _motor.Acceleration = acceleration;
-                _motor.TargetBrakingStrength = 1.0;
+                _motor.DeviceSerialNumber = serial;
+                Open();
 
                 // ProSim bindings (unchanged)
                 var drCurrent = new DataRef(refCurrentPos, 100, connection);
@@ -137,6 +139,22 @@ namespace Phidgets2Prosim
         {
             // Used by base when you decide to leverage RunVoltageChaseLoop in the future.
             try { _motor.TargetVelocity = velocity; } catch { }
+        }
+
+        public async void Open()
+        {
+            try
+            {
+                await Task.Run(() => _motor.Open(500));
+                _motor.Acceleration = Acceleration;
+                _motor.TargetBrakingStrength = 1.0;
+                SendInfoLog($"BLDC Motor Connected {Serial}: {HubPort}");
+            }
+            catch (Exception ex)
+            {
+                SendErrorLog($"BLOpen Fail for DC Motor {Serial}: {HubPort}");
+                SendErrorLog(ex.ToString());
+            }
         }
 
         public void Dispose()

@@ -29,6 +29,7 @@ namespace Phidgets2Prosim
         int OutputBlinkFastIntervalMs = 300;
         int OutputBlinkSlowIntervalMs = 600;
         double OutputDefaultDimValue = 0.7;
+        bool configsInsLoaded = false;
 
         PhidgetsInput [] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
@@ -38,6 +39,7 @@ namespace Phidgets2Prosim
         PhidgetsOutput[] phidgetsGate = new PhidgetsOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
+        PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -60,7 +62,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
         private BindingList<PhidgetsBLDCMotorInst> phidgetsBLDCMotorInstances;
-
+        private BindingList<PhidgetsDCMotorInst> phidgetsDCMotorInstances;
 
         public Form1()
         {
@@ -88,7 +90,10 @@ namespace Phidgets2Prosim
         void connection_onDisconnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(UnloadConfigIns));
+            if (configsInsLoaded)
+            {
+                Invoke(new MethodInvoker(UnloadConfigIns));
+            }
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
@@ -375,23 +380,24 @@ namespace Phidgets2Prosim
                         {
 							var opts = new MotorTuningOptions
 							{
-								MaxVelocity = instance.MaxVelocity,
-								MinVelocity = instance.MinVelocity,
-								VelocityBand = instance.VelocityBand,
-								CurveGamma = instance.CurveGamma,
-								DeadbandEnter = instance.DeadbandEnter,
-								DeadbandExit = instance.DeadbandExit,
-								MaxVelStepPerTick = instance.MaxVelStepPerTick,
-								Kp = instance.Kp,
-								Ki = instance.Ki,
-								Kd = instance.Kd,
-								IntegralLimit = instance.IntegralLimit,
-								PositionFilterAlpha = instance.PositionFilterAlpha,
-								TickMs = instance.TickMs
+								MaxVelocity = instance.Options.MaxVelocity,
+								MinVelocity = instance.Options.MinVelocity,
+								VelocityBand = instance.Options.VelocityBand,
+								CurveGamma = instance.Options.CurveGamma,
+								DeadbandEnter = instance.Options.DeadbandEnter,
+								DeadbandExit = instance.Options.DeadbandExit,
+								MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
+								Kp = instance.Options.Kp,
+								Ki = instance.Options.Ki,
+								Kd = instance.Options.Kd,
+                                IOnBand = instance.Options.IOnBand,
+                                IntegralLimit = instance.Options.IntegralLimit,
+								PositionFilterAlpha = instance.Options.PositionFilterAlpha,
+								TickMs = instance.Options.TickMs
 							};
 
 							phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
-								deviceSerialNumber: instance.Serial,
+								serial: instance.Serial,
 								hubPort: instance.HubPort,
 								connection: connection,
 								reversed: instance.Reversed,
@@ -439,7 +445,7 @@ namespace Phidgets2Prosim
                     }
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading config line for Custome Trim whee");
+                        DisplayErrorLog("Error loading config line for Custom Trim Wheel");
                         DisplayErrorLog(ex.ToString());
                     }
                 }
@@ -470,77 +476,117 @@ namespace Phidgets2Prosim
 				}
 
                 // DC Motors
-                try
-                {
 
-                    var opts = new MotorTuningOptions
+
+                // DC Motors
+                if (config.PhidgetsDCMotorInstances != null)
+                {
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsDCMotorInstances)
                     {
-                        //MaxVelocity = 0.90,
-                        //MinVelocity = 0.15,
-                        //VelocityBand = 0.90,
-                        CurveGamma = 1.10,
-                        DeadbandEnter = 0.014,
-                        DeadbandExit = 0.028,
-                        MaxVelStepPerTick = 0.0100,
-                        Kp = 0,
-                        Ki = 0,
-                        Kd = 0,
-                        IOnBand = 1.0,
-                        IntegralLimit = 0.04,
-                        PositionFilterAlpha = 0.86,
-                        //TickMs = 15,
+                        try
+                        {
+                            var opts = new MotorTuningOptions
+                            {
+                                MaxVelocity = instance.Options.MaxVelocity,
+                                MinVelocity = instance.Options.MinVelocity,
+                                VelocityBand = instance.Options.VelocityBand,
+                                CurveGamma = instance.Options.CurveGamma,
+                                DeadbandEnter = instance.Options.DeadbandEnter,
+                                DeadbandExit = instance.Options.DeadbandExit,
+                                MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
+                                Kp = instance.Options.Kp,
+                                Ki = instance.Options.Ki,
+                                Kd = instance.Options.Kd,
+                                IOnBand = instance.Options.IOnBand,
+                                IntegralLimit = instance.Options.IntegralLimit,
+                                PositionFilterAlpha = instance.Options.PositionFilterAlpha,
+                                TickMs = instance.Options.TickMs
+                            };
 
-                        // Core shape
-                        MaxVelocity = 1,      // was 0.70
-                        MinVelocity = 0.4,      // was 0.15  (raise if stiction)
-                        VelocityBand = 0.78,     // was 0.90  (hit max sooner)
-                        //CurveGamma = 0.75,       // was 1.10  (more aggressive near small errors)
+                            phidgetsDCMotors[idx] = new PhidgetsDCMotor(
+                                serial: instance.Serial,
+                                hubPort: instance.HubPort,
+                                connection: connection,
+                                prosimDataRefFwd: instance.prosimDatmRefFwd,
+                                prosimDataRefBwd: instance.prosimDatmRefBwd,
+                                acceleration: instance.Acceleration,
+                                options: opts
+                            );
 
-                        //// Hysteresis
-                        //DeadbandEnter = 0.008,   // was 0.014
-                        //DeadbandExit = 0.016,   // was 0.028
+                            phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
+                            phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading DC Motor Test");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                    }
 
-                        //// Command dynamics
-                        //MaxVelStepPerTick = 0.035, // was 0.010 (faster ramp)
+                    // var opts = new MotorTuningOptions
+                    // {
+                    //     //MaxVelocity = 0.90,
+                    //     //MinVelocity = 0.15,
+                    //     //VelocityBand = 0.90,
+                    //     CurveGamma = 1.10,
+                    //     DeadbandEnter = 0.014,
+                    //     DeadbandExit = 0.028,
+                    //     MaxVelStepPerTick = 0.0100,
+                    //     Kp = 0,
+                    //     Ki = 0,
+                    //     Kd = 0,
+                    //     IOnBand = 1.0,
+                    //     IntegralLimit = 0.04,
+                    //     PositionFilterAlpha = 0.86,
+                    //     //TickMs = 15,
 
-                        //// PID (light touch)
-                        //Kp = 0.0018,             // was 0.0006
-                        //Ki = 0.00002,            // keep tiny
-                        //Kd = 0.02,               // was 0.12 (too damping); try 0 first if needed
-                        //IOnBand = 1.0,
-                        //IntegralLimit = 0.08,    // was 0.04 (allow a little more I near target)
+                    //     // Core shape
+                    //     MaxVelocity = 1,      // was 0.70
+                    //     MinVelocity = 0.4,      // was 0.15  (raise if stiction)
+                    //     VelocityBand = 0.78,     // was 0.90  (hit max sooner)
+                    //     //CurveGamma = 0.75,       // was 1.10  (more aggressive near small errors)
 
-                        //// Filtering & tick
-                        //PositionFilterAlpha = 0.70, // was 0.86 (less lag)
-                        //TickMs = 15
-                    };
+                    //     //// Hysteresis
+                    //     //DeadbandEnter = 0.008,   // was 0.014
+                    //     //DeadbandExit = 0.016,   // was 0.028
 
-                    var dc = new PhidgetsDCMotor(668066, 2, "", "", connection, opts); //Motor HUB and channel
-                    dc.ErrorLog += DisplayErrorLog;
-                    dc.InfoLog += DisplayInfoLog;
-                    // Pot info:
-                    dc.TargetVoltageInputHub = 668066; // VINT hub serial
-                    dc.TargetVoltageInputPort = 3;     // port with the VoltageInput
-                    dc.TargetVoltageInputChannel = 0;  // channel
-                    dc.AttachTargetVoltageInput();
-                    ;
-                    /////////////////////////////
-                    // Read from the prosim gauge
-                    //////////////////////////////
-                    // Prosim gauge reference map
-                   
-                    dc.TargetPosMap = new double[] { 0, 5, 10, 17 }; 
-                    // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
-                   // dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
-                    dc.TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
+                    //     //// Command dynamics
+                    //     //MaxVelStepPerTick = 0.035, // was 0.010 (faster ramp)
 
-                  
-                    dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
-                }
-                catch (Exception ex)
-                {
-                    DisplayErrorLog("Error loading DC Motor Test");
-                    DisplayErrorLog(ex.ToString());
+                    //     //// PID (light touch)
+                    //     //Kp = 0.0018,             // was 0.0006
+                    //     //Ki = 0.00002,            // keep tiny
+                    //     //Kd = 0.02,               // was 0.12 (too damping); try 0 first if needed
+                    //     //IOnBand = 1.0,
+                    //     //IntegralLimit = 0.08,    // was 0.04 (allow a little more I near target)
+
+                    //     //// Filtering & tick
+                    //     //PositionFilterAlpha = 0.70, // was 0.86 (less lag)
+                    //     //TickMs = 15
+                    // };
+
+                    // var dc = new PhidgetsDCMotor(668066, 2, "", "", connection, opts); //Motor HUB and channel
+                    // dc.ErrorLog += DisplayErrorLog;
+                    // dc.InfoLog += DisplayInfoLog;
+                    // // Pot info:
+                    // dc.TargetVoltageInputHub = 668066; // VINT hub serial
+                    // dc.TargetVoltageInputPort = 3;     // port with the VoltageInput
+                    // dc.TargetVoltageInputChannel = 0;  // channel
+                    // dc.AttachTargetVoltageInput();
+                    // ;
+                    // /////////////////////////////
+                    // // Read from the prosim gauge
+                    // //////////////////////////////
+                    // // Prosim gauge reference map
+
+                    // dc.TargetPosMap = new double[] { 0, 5, 10, 17 }; 
+                    // // Voltage map based on TargetPosMap at 0 gauge will go to 1.0v, at 5 position gauge will go to voltage 2.2 and so on
+                    //// dc.TargetPosScaleMap = new double[] { 1.57, 2.21, 2.82, 3.5};
+                    // dc.TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
+
+
+                    // dc.RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
                 }
 
 
@@ -793,6 +839,7 @@ namespace Phidgets2Prosim
 
                     DisplayInfoLog("Loading Buttons done ");
                 }
+                configsInsLoaded = true;
             }
             catch (Exception ex)
             {
@@ -832,7 +879,10 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsInput[idx].Close();
+                            if (phidgetsInput[idx] != null)
+                            {
+                                phidgetsInput[idx].Close();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -925,25 +975,31 @@ namespace Phidgets2Prosim
         {
             if (connection.isConnected)
             {
-                if (!simIsPaused) 
-                { 
-                    DisplayInfoLog("Prosim CONNECTED");
-                    connectionStatusLabel.Text = "Connected";
-                    connectionStatusLabel.ForeColor = Color.LimeGreen;
-                }
-
-                if (simIsPaused)
-                {
-                    DisplayInfoLog("Prosim Paused");
-                    connectionStatusLabel.Text = "Paused";
-                    connectionStatusLabel.ForeColor = Color.OrangeRed;
-                }
+                updatePauseLabel();
             }
             else
             {
                 DisplayInfoLog("Prosim DISCONNECTED");
                 connectionStatusLabel.Text = "Disconnected";
                 connectionStatusLabel.ForeColor = Color.Red;
+            }
+
+        }
+
+        void updatePauseLabel()
+        {
+            if (connection.isConnected)
+            {
+                if (simIsPaused)
+                {
+                    DisplayInfoLog("Prosim Paused");
+                    connectionStatusLabel.Text = "Paused";
+                    connectionStatusLabel.ForeColor = Color.OrangeRed;
+                } else
+                {
+                    connectionStatusLabel.Text = "Connected";
+                    connectionStatusLabel.ForeColor = Color.LimeGreen;
+                }
             }
 
         }
@@ -963,10 +1019,8 @@ namespace Phidgets2Prosim
                     {
                         trimWheel?.pause(simIsPaused);
                     }
-                    bldcm_00?.Pause(simIsPaused);
-                    bldcm_01?.Pause(simIsPaused);
 
-                    Invoke(new MethodInvoker(updateStatusLabel));
+                    Invoke(new MethodInvoker(updatePauseLabel));
                 }
                 catch (Exception ex)
                 {

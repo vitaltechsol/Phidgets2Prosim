@@ -20,7 +20,8 @@ namespace Phidgets2Prosim
         public int TargetVoltageInputHub { get; set; } = -1;
         public int TargetVoltageInputPort { get; set; } = -1;
         public int TargetVoltageInputChannel { get; set; } = 0;
-
+        public double Acceleration { get; set; } = 100;
+        
         private VoltageRatioInput _vin = new VoltageRatioInput();
         protected double _feedbackVoltage = 0.0;
         protected double _filteredVoltage = 0.0;
@@ -124,7 +125,7 @@ namespace Phidgets2Prosim
 
             await Task.Run(() => _vin.Open(5000));
             Log("AttachTargetVoltageInput: opened");
-            _vin.VoltageRatioChangeTrigger = 0.02;
+            _vin.VoltageRatioChangeTrigger = 0.0002;
             _vin.DataInterval = 50;
         }
 
