@@ -90,8 +90,11 @@ namespace Phidgets2Prosim
                     dcMotor.IsRemote = true;
                 }
                 dcMotor.DeviceSerialNumber = serial;
-                Open();
-                         
+                dcMotor.Acceleration = Acceleration;
+                dcMotor.TargetBrakingStrength = 1;
+                dcMotor.CurrentLimit = 4;
+                SendInfoLog($"DC Motor Connected {Serial}: {HubPort}");
+
                 // ProSim bindings (kept)
                 if (prosimDataRefFwd != "")
                 {
