@@ -33,21 +33,29 @@ namespace Phidgets2Prosim
 
         public override async Task InitializeAsync()
         {
-            await base.InitializeAsync();
-
-            _motor.HubPort = HubPort;
-            _motor.Channel = Channel;
-            if (HubPort >= 0)
+            try
             {
-                _motor.HubPort = HubPort;
-                _motor.IsRemote = true;
-            }
-            _motor.DeviceSerialNumber = Serial;
-            _motor.Open(5000);
-            _motor.Acceleration = Acceleration;
-            _motor.CurrentLimit = 4;
+                await base.InitializeAsync();
 
-            SendInfoLog($"DCMotor open: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
+                _motor.HubPort = HubPort;
+                _motor.Channel = Channel;
+                if (HubPort >= 0)
+                {
+                    _motor.HubPort = HubPort;
+                    _motor.IsRemote = true;
+                }
+                _motor.DeviceSerialNumber = Serial;
+                _motor.Open(5000);
+                _motor.Acceleration = Acceleration;
+                _motor.CurrentLimit = 4;
+
+                SendInfoLog($"DCMotor Connected: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
+            }
+            catch (Exception ex)
+            {
+                SendErrorLog($"Open Fail for DC Motor {Serial}: {HubPort} ch={Channel}");
+                SendErrorLog(ex.ToString());
+            }
         }
 
         protected override void ApplyVelocity(double velocity)

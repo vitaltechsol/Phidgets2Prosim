@@ -98,7 +98,7 @@ namespace Phidgets2Prosim
     {
         public string ProsimDataRefOnOff { get; set; } = "";
         public List<double> InputPoints { get; set; } = new List<double> { 0.0, 1.0 };
-        public List<int> OutputPoints { get; set; } = new List<int> { 0, 255 };
+        public List<double> OutputPoints { get; set; } = new List<double> { 0, 255 };
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
         public double MinChangeTriggerValue { get; set; } = 0.002;
         public int DataInterval { get; set; } = 50;
@@ -152,6 +152,8 @@ namespace Phidgets2Prosim
 
         // Acceleration values between 1 and 100
         public double Acceleration { get; set; }
+
+        public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
 
         public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
     }

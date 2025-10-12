@@ -2,6 +2,7 @@
 using ProSimSDK;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.Remoting.Channels;
 using System.Threading;
 using System.Threading.Tasks;
@@ -90,10 +91,7 @@ namespace Phidgets2Prosim
                     dcMotor.IsRemote = true;
                 }
                 dcMotor.DeviceSerialNumber = serial;
-                dcMotor.Acceleration = Acceleration;
-                dcMotor.TargetBrakingStrength = 1;
-                dcMotor.CurrentLimit = 4;
-                SendInfoLog($"DC Motor Connected {Serial}: {HubPort}");
+                Open();
 
                 // ProSim bindings (kept)
                 if (prosimDataRefFwd != "")
@@ -257,11 +255,15 @@ namespace Phidgets2Prosim
         {
             try
             {
-                await Task.Run(() => dcMotor.Open(500));
-                dcMotor.Acceleration = Acceleration;
-                dcMotor.TargetBrakingStrength = 1;
-                dcMotor.CurrentLimit = 4;
+                dcMotor.Open(500);
+                if (dcMotor.IsOpen)
+                {
+                    dcMotor.Acceleration = Acceleration;
+                    dcMotor.TargetBrakingStrength = 1;
+                    dcMotor.CurrentLimit = 4;
+                }
                 SendInfoLog($"DC Motor Connected {Serial}: {HubPort}");
+
             }
             catch (Exception ex)
             {

@@ -13,13 +13,15 @@ namespace Phidgets2Prosim
         // ---- Phidgets Voltage Input (target feedback) ----
         public int TargetVoltageInputHub { get; set; } = -1;
         public int TargetVoltageInputPort { get; set; } = -1;
-        public int TargetVoltageInputChannel { get; set; } = 0;
+        public int TargetVoltageInputChannel { get; set; } = -1;
+
+        /// <summary>Phidgets VoltageRatioInput.VoltageRatioChangeTrigger (ratio units). Typical: 0.0005 ~ 0.002</summary>
+        public double VoltageRatioChangeTrigger { get; set; } = 0.001;
 
         /// <summary>If true, the incoming VoltageRatio will be transformed as 1 - ratio.</summary>
         public bool InvertInput { get; set; } = false;
 
-        /// <summary>Phidgets VoltageRatioInput.VoltageRatioChangeTrigger (ratio units). Typical: 0.0005 ~ 0.002</summary>
-        public double VoltageRatioChangeTrigger { get; set; } = 0.001;
+
 
         /// <summary>Milliseconds between safety ticks that keep the loop responsive even if no input events fire.</summary>
         public int TickMsSafety { get; set; } = 25;
@@ -53,7 +55,8 @@ namespace Phidgets2Prosim
         public double[] TargetPosMap { get; set; } = Array.Empty<double>();
         public double[] TargetPosScaleMap { get; set; } = Array.Empty<double>();
 
-        private readonly VoltageRatioInput _vin = new VoltageRatioInput();
+        public PhidgetsVoltageInput VoltageInput;
+
 
         // Loop state
         private readonly object _lock = new object();
@@ -96,35 +99,31 @@ namespace Phidgets2Prosim
         /// <summary>Open the VoltageRatioInput and wire events. Call this before commanding motion.</summary>
         public virtual async Task InitializeAsync()
         {
-            // Open and configure VIN (ratio input)
-            _vin.HubPort = TargetVoltageInputPort;
-            _vin.IsHubPortDevice = TargetVoltageInputChannel == -1;
-            _vin.Channel = TargetVoltageInputChannel;
-            _vin.DeviceSerialNumber = Serial;
+            if (VoltageInput != null)
+            {
+                SendInfoLog("DC Motor paired to Voltage Input");
+                VoltageInput.onScaledValueChanged += PhidgetsVoltageInput_onScaledValueChanged;
+            }
+         
+        }
 
-            _vin.VoltageRatioChange += Vin_VoltageRatioChange;
-            _vin.Open(5000);
-
-            // Apply noise trigger
-            _vin.VoltageRatioChangeTrigger = VoltageRatioChangeTrigger;
-
-            // Seed measured value
-            _rawRatio = Clamp01(_vin.VoltageRatio);
-            if (InvertInput) _rawRatio = 1.0 - _rawRatio;
-            _smoothedRatio = _rawRatio;
-
-            SendInfoLog($"VIN open: serial={Serial} hub={TargetVoltageInputHub} port={TargetVoltageInputPort} ch={TargetVoltageInputChannel} trig={VoltageRatioChangeTrigger}");
+        private void PhidgetsVoltageInput_onScaledValueChanged(double obj)
+        {
+            Debug.WriteLine($"[VIN] ScaledValueChanged: {obj}");
+            // Treat 'obj' as engineering units (e.g., 0..17) coming from your mapping
+            var alpha = Tuning.PositionFilterAlpha ?? 0.15;
+            _rawRatio = obj;
+            _smoothedRatio = _smoothedRatio + alpha * (obj - _smoothedRatio);
+            Debug.WriteLine($"[VIN] scaled={obj:F4} smoothed={_smoothedRatio:F4}");
         }
 
         public virtual void Dispose()
         {
-            try
+          
+            if (VoltageInput != null)
             {
-                _vin.VoltageRatioChange -= Vin_VoltageRatioChange;
+                VoltageInput.Close();
             }
-            catch { /* ignore */ }
-
-            try { _vin.Close(); } catch { /* ignore */ }
             _cts?.Cancel();
             _cts?.Dispose();
         }
@@ -137,26 +136,12 @@ namespace Phidgets2Prosim
         /// </summary>
         public Task OnTargetMoving(double movingTo)
         {
-            var targetMap = TargetPosMap;
-            var scaleMap = TargetPosScaleMap;
-
-            if (targetMap == null || scaleMap == null || targetMap.Length < 2 || targetMap.Length != scaleMap.Length)
-            {
-                throw new ArgumentException("targetMap/scaleMap must be non-null, equal length, and have at least 2 points.");
-            }
-
-            TargetPosMap = targetMap;
-            TargetPosScaleMap = scaleMap;
-
-            double mapped = MapOnce(movingTo, targetMap, scaleMap); // expected 0..1
-            mapped = Clamp01(mapped);
-
             lock (_lock)
             {
-                _latestMappedTarget = mapped;
-                Debug.WriteLine($"[Target] movingTo={movingTo:F3} mapped={mapped:F4}");
+                _latestMappedTarget = movingTo;
+                Debug.WriteLine($"[Target] movingTo={movingTo:F3}");
                 // If a new target arrives while in deadband, force “wake up” by marking out-of-band
-                if (_inDeadband && Math.Abs(mapped - _smoothedRatio) > (Tuning.DeadbandExit ?? 0.015))
+                if (_inDeadband && Math.Abs(_latestMappedTarget - _smoothedRatio) > (Tuning.DeadbandExit ?? 0.015))
                     _inDeadband = false;
 
                 if (!_loopRunning)
@@ -170,20 +155,6 @@ namespace Phidgets2Prosim
             }
 
             return Task.CompletedTask;
-        }
-
-        // ---- VIN event ------------------------------------------------------
-
-        private void Vin_VoltageRatioChange(object sender, VoltageRatioInputVoltageRatioChangeEventArgs e)
-        {
-            double r = Clamp01(e.VoltageRatio);
-            double tpa = Tuning.PositionFilterAlpha ?? 0.15;
-            if (InvertInput) r = 1.0 - r;
-
-            // Exponential smoothing
-            _rawRatio = r;
-            _smoothedRatio = _smoothedRatio + tpa * (r - _smoothedRatio);
-            Debug.WriteLine($"[VIN] raw={_rawRatio:F4} smoothed={_smoothedRatio:F4}");
         }
 
         // ---- Control loop ---------------------------------------------------
@@ -333,66 +304,6 @@ namespace Phidgets2Prosim
 
         // ---- Mapping --------------------------------------------------------
 
-        public static double MapOnce(double x, double[] xMap, double[] yMap)
-        {
-            if (xMap == null || yMap == null || xMap.Length < 2 || xMap.Length != yMap.Length)
-                throw new ArgumentException("xMap/yMap must be non-null, equal length, and have at least 2 points.");
-
-            int n = xMap.Length;
-
-            // Determine monotonic direction (treat equal endpoints as ascending fallback)
-            bool ascending = xMap[n - 1] >= xMap[0];
-
-            // Clamp out-of-range to the nearest endpoint
-            if (ascending)
-            {
-                if (x <= xMap[0]) { Debug.WriteLine($"MapOnce({x}) -> below [{xMap[0]}] -> {yMap[0]:F3}"); return yMap[0]; }
-                if (x >= xMap[n - 1]) { Debug.WriteLine($"MapOnce({x}) -> above [{xMap[n - 1]}] -> {yMap[n - 1]:F3}"); return yMap[n - 1]; }
-            }
-            else
-            {
-                if (x >= xMap[0]) { Debug.WriteLine($"MapOnce({x}) -> above [{xMap[0]}] (desc) -> {yMap[0]:F3}"); return yMap[0]; }
-                if (x <= xMap[n - 1]) { Debug.WriteLine($"MapOnce({x}) -> below [{xMap[n - 1]}] (desc) -> {yMap[n - 1]:F3}"); return yMap[n - 1]; }
-            }
-
-            // Binary search to find segment i so that x is between xMap[i] and xMap[i+1]
-            int lo = 0, hi = n - 1;
-            if (ascending)
-            {
-                while (hi - lo > 1)
-                {
-                    int mid = lo + ((hi - lo) >> 1);
-                    if (xMap[mid] <= x) lo = mid; else hi = mid;
-                }
-            }
-            else
-            {
-                while (hi - lo > 1)
-                {
-                    int mid = lo + ((hi - lo) >> 1);
-                    if (xMap[mid] >= x) lo = mid; else hi = mid;
-                }
-            }
-
-            double x0 = xMap[lo], x1 = xMap[lo + 1];
-            double y0 = yMap[lo], y1 = yMap[lo + 1];
-
-            // Guard: degenerate segment (duplicate x). Fall back to y0.
-            if (Math.Abs(x1 - x0) < 1e-12)
-            {
-                Debug.WriteLine($"MapOnce({x}) -> degenerate seg [{x0},{x1}] -> {y0:F3}");
-                return y0;
-            }
-
-            // Linear interpolation
-            double t = (x - x0) / (x1 - x0);          // works for both ascending and descending (denom can be negative)
-            double y = y0 + t * (y1 - y0);
-
-            Debug.WriteLine($"MapOnce({x}) -> seg {lo} [{x0},{x1}] t={t:F3} -> {y:F3}");
-            return y;
-        }
-
-        // ---- Helpers --------------------------------------------------------
 
         protected static double Clamp01(double v) => v < 0 ? 0 : (v > 1 ? 1 : v);
         protected static double Clamp(double v, double lo, double hi) => v < lo ? lo : (v > hi ? hi : v);
@@ -404,4 +315,6 @@ namespace Phidgets2Prosim
         }
         protected static double SignKeep(double signSource, double mag) => (signSource >= 0) ? mag : -mag;
     }
+
+
 }

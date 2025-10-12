@@ -1,6 +1,7 @@
 ﻿using Phidget22;
 using ProSimSDK;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using YamlDotNet.Core.Tokens;
 
@@ -31,8 +32,13 @@ namespace Phidgets2Prosim
         private VoltageRatioInput voltageInput = new VoltageRatioInput();
         public string ProsimDataRefOnOff { get; set; } = "";
         public double[] InputPoints { get; set; }
-        public int[] OutputPoints { get; set; }
+        public double[] OutputPoints { get; set; }
         public int DataInterval { get; set; }
+
+        // Event: subscribers get the new scaled value
+        public event Action<double> onScaledValueChanged;
+
+        public bool RoundUp { get; set; } = true;
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
         public double CurvePower { get; set; } = 2.0;
         public double MinChangeTriggerValue { get; set; }
@@ -42,11 +48,25 @@ namespace Phidgets2Prosim
         private object debounceLock = new object();
         private int? pendingStateChange = null;
 
+        private double _scaledValue = 0.0;
+        public double ScaledValue
+        {
+            get => _scaledValue;
+            private set
+            {
+                if (value != _scaledValue)   // <-- simple change detection
+                {
+                    _scaledValue = value;
+                    onScaledValueChanged?.Invoke(_scaledValue);
+                }
+            }
+        }
+
         public PhidgetsVoltageInput(int serial, int hubPort, int channel, ProSimConnect connection,
             string prosimDataRef,
             string prosimDataRefOnOff,
             double[] inputPoints,
-            int[] outputPoints,
+            double[] outputPoints,
             InterpolationMode interpolationMode = InterpolationMode.Spline,
             double curvePower = 2.0,
             int dataInterval = 50,
@@ -91,26 +111,31 @@ namespace Phidgets2Prosim
         {
             double value = e.VoltageRatio;
             double interpolated = Interpolate(value);
-            int valueScaled = (int)Math.Round(interpolated);
+            ScaledValue = interpolated;
 
-            DataRef dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
-            try
-            { 
-                SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
-                dataRef.value = valueScaled;
-            }
-            catch (Exception ex)
+            var valueScaled = RoundUp ? Convert.ToInt32(Math.Round(interpolated)) : interpolated;
+
+            if (ProsimDataRef != null && ProsimDataRef != "")
             {
-                SendInfoLog($"Error: Voltage Input  [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");
-                SendErrorLog(ex.ToString());
-            }
-            if (ProsimDataRefOnOff != "")
-            {
-                lock (debounceLock)
+                DataRef dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
+                try
                 {
-                    pendingStateChange = valueScaled == 0 ? 0 : 1;
-                    debounceTimer.Stop();  // Reset timer
-                    debounceTimer.Start(); // Start again
+                    SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
+                    dataRef.value = valueScaled;
+                }
+                catch (Exception ex)
+                {
+                    SendInfoLog($"Error: Voltage Input  [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");
+                    SendErrorLog(ex.ToString());
+                }
+                if (ProsimDataRefOnOff != "")
+                {
+                    lock (debounceLock)
+                    {
+                        pendingStateChange = valueScaled == 0 ? 0 : 1;
+                        debounceTimer.Stop();  // Reset timer
+                        debounceTimer.Start(); // Start again
+                    }
                 }
             }
         }
@@ -133,6 +158,13 @@ namespace Phidgets2Prosim
 
         private double Interpolate(double x)
         {
+
+            if (InputPoints == null || OutputPoints == null || OutputPoints.Length < 2 || InputPoints.Length != OutputPoints.Length)
+            {
+                throw new ArgumentException("InputPoints/OutputPoints must be non-null, equal length, and have at least 2 points.");
+            }
+
+
             switch (InterpolationMode)
             {
                 case InterpolationMode.Curve:
@@ -159,8 +191,9 @@ namespace Phidgets2Prosim
                     return y0 + (y1 - y0) * t;
                 }
             }
-
-            return x <= InputPoints[0] ? OutputPoints[0] : OutputPoints[OutputPoints.Length - 1];
+            var interpolated = x <= InputPoints[0] ? OutputPoints[0] : OutputPoints[OutputPoints.Length - 1];
+            Debug.WriteLine($"[LinearInterpolate] x={x}, interpolated={interpolated}");
+            return interpolated;
         }
 
 

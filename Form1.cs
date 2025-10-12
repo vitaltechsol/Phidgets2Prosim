@@ -510,43 +510,26 @@ namespace Phidgets2Prosim
                                 options: opts
                                 )
                             {
-                                Reversed = false,
-                                TargetVoltageInputHub = 668066,
-                                TargetVoltageInputPort = 3,
-                                VoltageRatioChangeTrigger = 0.001,
-                                TargetVoltageInputChannel = 0,
-                                // Map: real-world units (e.g., degrees) -> normalized pot ratio (0..1)
-                                TargetPosMap = new double[] { 0, 5, 10, 17 },
-                                TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 }
+                                Reversed = false
                             };
+                            if (instance.VoltageInput != null)
+                            {
+                                var voltageIn = new PhidgetsVoltageInput(
+                                  instance.VoltageInput.Serial,
+                                  instance.VoltageInput.HubPort,
+                                  instance.VoltageInput.Channel,
+                                  connection,
+                                  "", "",
+                                   instance.VoltageInput.InputPoints.ToArray(),
+                                   instance.VoltageInput.OutputPoints.ToArray()
+                                  );
+                                voltageIn.MinChangeTriggerValue = instance.VoltageInput.MinChangeTriggerValue;
+
+                                phidgetsDCMotors2[idx].VoltageInput = voltageIn;
+                            }
 
                             await phidgetsDCMotors2[idx].InitializeAsync();
                             phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
-
-                            //phidgetsDCMotors[idx] = new PhidgetsDCMotor(
-                            //    instance.Serial, 
-                            //    instance.HubPort, 
-                            //    connection, 
-                            //    instance.prosimDataRefFwd,
-                            //    instance.prosimDataRefBwd, 
-                            //    20, 
-                            //  opts); 
-
-                            //phidgetsDCMotors[idx].TargetVoltageInputHub = 668066; // VINT hub serial
-                            //phidgetsDCMotors[idx].TargetVoltageInputPort = 3;     // port with the VoltageInput
-                            //phidgetsDCMotors[idx].TargetVoltageInputChannel = 0;  // channel
-                            //phidgetsDCMotors[idx].AttachTargetVoltageInput();
-                            ///////////////////////////////
-                            //// Read from the prosim gauge
-                            ////////////////////////////////
-                            //phidgetsDCMotors[idx].TargetPosMap = new double[] { 0, 5, 10, 17 };
-                            //// Based on voltage ratio <---
-                            //phidgetsDCMotors[idx].TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
-                            //phidgetsDCMotors[idx].RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
-
-
-                            //phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
-                            //phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
                         }
                         catch (Exception ex)
                         {
