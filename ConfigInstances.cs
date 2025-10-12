@@ -103,10 +103,6 @@ namespace Phidgets2Prosim
         public double MinChangeTriggerValue { get; set; } = 0.002;
         public int DataInterval { get; set; } = 50;
         public double CurvePower { get; set; } = 2.0;
-        //public string Name { get; set; }        // << NEW (link key)
-        public bool IsHubPortDevice { get; set; } = false;
-        public bool IsRemote { get; set; } = true;
-        public string UserVariable { get; set; } = null;
 
     }
 
