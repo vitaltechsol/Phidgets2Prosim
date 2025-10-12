@@ -92,7 +92,6 @@
     <Compile Include="PhidgetDevice.cs" />
     <Compile Include="PhidgetsButton.cs" />
     <Compile Include="PhidgetsDCMotor2.cs" />
-    <Compile Include="PhidgetsMotorBase2.cs" />
     <Compile Include="PhidgetsMotorBase.cs" />
     <Compile Include="PhidgetsVoltageInput.cs" />
     <Compile Include="PhidgetsInput.cs" />

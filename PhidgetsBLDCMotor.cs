@@ -4,14 +4,19 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Phidgets2Prosim
 {
     internal class PhidgetsBLDCMotor : MotorBase, IDisposable
     {
-        // ===== Public knobs preserved from your file =====
+        // ===== Public knobs preserved =====
         public bool Reversed { get; set; } = false;
         public int Offset { get; set; } = 0;
+
+        // (Optional) for logs/telemetry
+        public int HubPort { get; private set; } = -1;
+        public int Serial { get; private set; } = 0;
 
         // ===== Internals =====
         private readonly BLDCMotor _motor = new BLDCMotor();
@@ -21,7 +26,6 @@ namespace Phidgets2Prosim
         private volatile bool _motorOn = false;
         private double _targetPos = 0.0;
         private double _currentPos = 0.0;
-
         private double _currentPosFiltered = 0.0;
         private bool _disposed;
 
@@ -40,18 +44,18 @@ namespace Phidgets2Prosim
         {
             try
             {
+                // Wire user knobs/tuning into base
                 Reversed = reversed;
                 Offset = offset;
+
                 HubPort = hubPort;
                 Serial = serial;
-                Acceleration = acceleration;
 
                 if (hubPort >= 0)
                 {
                     _motor.HubPort = hubPort;
                     _motor.IsRemote = true;
                 }
-
                 _motor.DeviceSerialNumber = serial;
                 Open();
 
@@ -105,28 +109,31 @@ namespace Phidgets2Prosim
                 tgt = _targetPos;
             }
 
-            // Filter feedback (use base LPF)
+            // Filter feedback
             _currentPosFiltered = LowPass(_currentPosFiltered, cur);
 
             // Signed error (apply reverse if needed)
             double error = tgt - _currentPosFiltered;
             if (Reversed) error = -error;
 
-            // Hysteresis + velocity calc via shared helpers
+            // Hysteresis + velocity calc via base
             UpdateHysteresis(Math.Abs(error));
-            double desiredVel = VelocityFromError(error, TickMs / 1000.0);
-            _velCmd = SlewTowards(_velCmd, desiredVel);
+            double dt = Math.Max(1e-6, TickMs / 1000.0);
+            double desiredVel = VelocityFromError(error, dt);
+            VelCmd = SlewTowards(_velCmd, desiredVel);
 
             // Snap to 0 when truly settled
-            if (_isSettled && Math.Abs(_velCmd) < MinVelocity * 0.5) _velCmd = 0.0;
+            double vMin = Math.Max(0.0, MinVelocity);
+            if (_isSettled && Math.Abs(_velCmd) < vMin * 0.5) _velCmd = 0.0;
 
-            try { _motor.TargetVelocity = _velCmd; } catch { /* ignore transient phidgets errors */ }
+            // Apply to hardware
+            ApplyVelocity(_velCmd);
         }
 
         private void StopMotor()
         {
             _velCmd = 0;
-            _integral = 0;
+            _integralState = 0;
             _lastError = 0;
             _isSettled = true;
             try { _motor.TargetVelocity = 0; } catch { }
@@ -137,8 +144,7 @@ namespace Phidgets2Prosim
 
         protected override void ApplyVelocity(double velocity)
         {
-            // Used by base when you decide to leverage RunVoltageChaseLoop in the future.
-            try { _motor.TargetVelocity = velocity; } catch { }
+            try { _motor.TargetVelocity = velocity; } catch { /* ignore transient phidgets errors */ }
         }
 
         public async void Open()
@@ -174,5 +180,9 @@ namespace Phidgets2Prosim
                 try { _motor.TargetVelocity = 0; } catch { }
             }
         }
+
+        // -------- Optional: shared logging hooks (no-ops here unless you wire them) --------
+        private void SendInfoLog(string s) { System.Diagnostics.Debug.WriteLine(s); }
+        private void SendErrorLog(string s) { System.Diagnostics.Debug.WriteLine(s); }
     }
 }

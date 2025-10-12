@@ -2,11 +2,12 @@
 using ProSimSDK;
 using System;
 using System.Diagnostics;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
 {
-    internal class PhidgetsDCMotor2 : MotorBase2
+    internal class PhidgetsDCMotor2 : MotorBase
     {
         // ---- ProSim refs (optional) -----------------------------------------
         public string RefTurnOn { get; set; } = string.Empty;
@@ -19,8 +20,8 @@ namespace Phidgets2Prosim
         private readonly DCMotor _motor = new DCMotor();
 
         public PhidgetsDCMotor2(
-            int deviceSerialNumber, 
-            int hubPort, 
+            int deviceSerialNumber,
+            int hubPort,
             ProSimConnect connection,
             MotorTuningOptions options = null
             ) : base(options)

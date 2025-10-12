@@ -213,9 +213,7 @@ namespace Phidgets2Prosim
                 Debug.WriteLine($"Target ref name:{dataRef.name} - Moving to: {dataRef.value} ");
 
                 await OnTargetMoving (
-                    movingTo: value,
-                    targetMap: TargetPosMap,
-                    scaleMap: TargetPosScaleMap
+                    movingTo: value
                 );
 
             }

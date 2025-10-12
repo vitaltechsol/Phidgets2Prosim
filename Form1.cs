@@ -423,8 +423,70 @@ namespace Phidgets2Prosim
                     totalOuts += idx;
                 }
 
-				// Custom - Trim wheel
-				if (config.CustomTrimWheelInstance != null)
+                // DC Motors
+                if (config.PhidgetsDCMotorInstances != null)
+                {
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsDCMotorInstances)
+                    {
+                        try
+                        {
+                            var opts = new MotorTuningOptions
+                            {
+                                MaxVelocity = instance.Options.MaxVelocity,
+                                MinVelocity = instance.Options.MinVelocity,
+                                VelocityBand = instance.Options.VelocityBand,
+                                CurveGamma = instance.Options.CurveGamma,
+                                DeadbandEnter = instance.Options.DeadbandEnter,
+                                DeadbandExit = instance.Options.DeadbandExit,
+                                MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
+                                Kp = instance.Options.Kp,
+                                Ki = instance.Options.Ki,
+                                Kd = instance.Options.Kd,
+                                IOnBand = instance.Options.IOnBand,
+                                IntegralLimit = instance.Options.IntegralLimit,
+                                PositionFilterAlpha = instance.Options.PositionFilterAlpha,
+                                TickMs = instance.Options.TickMs
+                            };
+
+                            phidgetsDCMotors2[idx] = new PhidgetsDCMotor2(
+                                instance.Serial,
+                                instance.HubPort,
+                                connection,
+                                options: opts
+                                )
+                            {
+                                Reversed = false
+                            };
+                            if (instance.VoltageInput != null)
+                            {
+                                var voltageIn = new PhidgetsVoltageInput(
+                                  instance.VoltageInput.Serial,
+                                  instance.VoltageInput.HubPort,
+                                  instance.VoltageInput.Channel,
+                                  connection,
+                                  "", "",
+                                   instance.VoltageInput.InputPoints.ToArray(),
+                                   instance.VoltageInput.OutputPoints.ToArray()
+                                  );
+                                voltageIn.MinChangeTriggerValue = instance.VoltageInput.MinChangeTriggerValue;
+
+                                phidgetsDCMotors2[idx].VoltageInput = voltageIn;
+                            }
+
+                            await phidgetsDCMotors2[idx].InitializeAsync();
+                            phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading DC Motor Test");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                    }
+                }
+
+                // Custom - Trim wheel
+                if (config.CustomTrimWheelInstance != null)
                 {
                     var instance  = config.CustomTrimWheelInstance;
                     try
@@ -476,71 +538,6 @@ namespace Phidgets2Prosim
 					}
 				}
 
-
-                // DC Motors
-                if (config.PhidgetsDCMotorInstances != null)
-                {
-                    var idx = 0;
-                    foreach (var instance in config.PhidgetsDCMotorInstances)
-                    {
-                        try
-                        {
-                            var opts = new MotorTuningOptions
-                            {
-                                MaxVelocity = instance.Options.MaxVelocity,
-                                MinVelocity = instance.Options.MinVelocity,
-                                VelocityBand = instance.Options.VelocityBand,
-                                CurveGamma = instance.Options.CurveGamma,
-                                DeadbandEnter = instance.Options.DeadbandEnter,
-                                DeadbandExit = instance.Options.DeadbandExit,
-                                MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
-                                Kp = instance.Options.Kp,
-                                Ki = instance.Options.Ki,
-                                Kd = instance.Options.Kd,
-                                IOnBand = instance.Options.IOnBand,
-                                IntegralLimit = instance.Options.IntegralLimit,
-                                PositionFilterAlpha = instance.Options.PositionFilterAlpha,
-                                TickMs = instance.Options.TickMs
-                            };
-
-                            phidgetsDCMotors2[idx] = new PhidgetsDCMotor2(
-                                instance.Serial, 
-                                instance.HubPort,
-                                connection,
-                                options: opts
-                                )
-                            {
-                                Reversed = false
-                            };
-                            if (instance.VoltageInput != null)
-                            {
-                                var voltageIn = new PhidgetsVoltageInput(
-                                  instance.VoltageInput.Serial,
-                                  instance.VoltageInput.HubPort,
-                                  instance.VoltageInput.Channel,
-                                  connection,
-                                  "", "",
-                                   instance.VoltageInput.InputPoints.ToArray(),
-                                   instance.VoltageInput.OutputPoints.ToArray()
-                                  );
-                                voltageIn.MinChangeTriggerValue = instance.VoltageInput.MinChangeTriggerValue;
-
-                                phidgetsDCMotors2[idx].VoltageInput = voltageIn;
-                            }
-
-                            await phidgetsDCMotors2[idx].InitializeAsync();
-                            phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
-                        }
-                        catch (Exception ex)
-                        {
-                            DisplayErrorLog("Error loading DC Motor Test");
-                            DisplayErrorLog(ex.ToString());
-                        }
-                    }
-
-                    
-                }
-
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
@@ -557,7 +554,6 @@ namespace Phidgets2Prosim
                 DisplayErrorLog("Error loading config");
                 DisplayErrorLog(ex.ToString());
             }
-
         }
 
         private async void LoadConfigIns()
