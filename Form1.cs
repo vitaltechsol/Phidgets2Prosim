@@ -113,7 +113,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
-                    .Build();
+					.Build();
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
@@ -455,9 +455,13 @@ namespace Phidgets2Prosim
                                 connection,
                                 options: opts
                                 )
+
                             {
-                                Reversed = false
+                                Reversed = false,
+                                Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50 // Added
+
                             };
+
                             if (instance.VoltageInput != null)
                             {
                                 var voltageIn = new PhidgetsVoltageInput(
@@ -476,12 +480,15 @@ namespace Phidgets2Prosim
 
                             await phidgetsDCMotors2[idx].InitializeAsync();
                             phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
+
+                            idx++;
                         }
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error loading DC Motor Test");
                             DisplayErrorLog(ex.ToString());
                         }
+                        
                     }
                 }
 
@@ -567,7 +574,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
-                    .Build();
+					.Build();
 
                 // Wait before starting
                 //var taskDelay = Task.Delay(2000);
@@ -804,6 +811,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
+
                     .Build();
 
                 // Wait before starting

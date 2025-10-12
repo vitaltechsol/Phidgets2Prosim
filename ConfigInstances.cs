@@ -11,7 +11,7 @@ namespace Phidgets2Prosim
 
     public class Config
     {
-        public GeneralConfig GeneralConfig { get; set; }
+        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig(); //added this
         public List<string> PhidgetsHubsInstances { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
         public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
