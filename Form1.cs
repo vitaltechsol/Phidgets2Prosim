@@ -40,6 +40,7 @@ namespace Phidgets2Prosim
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
         PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
+        PhidgetsDCMotor2[] phidgetsDCMotors2 = new PhidgetsDCMotor2[10];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -502,30 +503,50 @@ namespace Phidgets2Prosim
                                 TickMs = instance.Options.TickMs
                             };
 
-                            phidgetsDCMotors[idx] = new PhidgetsDCMotor(
+                            phidgetsDCMotors2[idx] = new PhidgetsDCMotor2(
                                 instance.Serial, 
-                                instance.HubPort, 
-                                connection, 
-                                instance.prosimDataRefFwd,
-                                instance.prosimDataRefBwd, 
-                                20, 
-                              opts); 
+                                instance.HubPort,
+                                connection,
+                                options: opts
+                                )
+                            {
+                                Reversed = false,
+                                TargetVoltageInputHub = 668066,
+                                TargetVoltageInputPort = 3,
+                                VoltageRatioChangeTrigger = 0.001,
+                                TargetVoltageInputChannel = 0,
+                                // Map: real-world units (e.g., degrees) -> normalized pot ratio (0..1)
+                                TargetPosMap = new double[] { 0, 5, 10, 17 },
+                                TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 }
+                            };
 
-                            phidgetsDCMotors[idx].TargetVoltageInputHub = 668066; // VINT hub serial
-                            phidgetsDCMotors[idx].TargetVoltageInputPort = 3;     // port with the VoltageInput
-                            phidgetsDCMotors[idx].TargetVoltageInputChannel = 0;  // channel
-                            phidgetsDCMotors[idx].AttachTargetVoltageInput();
-                            /////////////////////////////
-                            // Read from the prosim gauge
-                            //////////////////////////////
-                            phidgetsDCMotors[idx].TargetPosMap = new double[] { 0, 5, 10, 17 };
-                            // Based on voltage ratio <---
-                            phidgetsDCMotors[idx].TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
-                            phidgetsDCMotors[idx].RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
+                            await phidgetsDCMotors2[idx].InitializeAsync();
+                            phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
+
+                            //phidgetsDCMotors[idx] = new PhidgetsDCMotor(
+                            //    instance.Serial, 
+                            //    instance.HubPort, 
+                            //    connection, 
+                            //    instance.prosimDataRefFwd,
+                            //    instance.prosimDataRefBwd, 
+                            //    20, 
+                            //  opts); 
+
+                            //phidgetsDCMotors[idx].TargetVoltageInputHub = 668066; // VINT hub serial
+                            //phidgetsDCMotors[idx].TargetVoltageInputPort = 3;     // port with the VoltageInput
+                            //phidgetsDCMotors[idx].TargetVoltageInputChannel = 0;  // channel
+                            //phidgetsDCMotors[idx].AttachTargetVoltageInput();
+                            ///////////////////////////////
+                            //// Read from the prosim gauge
+                            ////////////////////////////////
+                            //phidgetsDCMotors[idx].TargetPosMap = new double[] { 0, 5, 10, 17 };
+                            //// Based on voltage ratio <---
+                            //phidgetsDCMotors[idx].TargetPosScaleMap = new double[] { 0.275, 0.412, 0.54, 0.74 };
+                            //phidgetsDCMotors[idx].RefTargetPos = "system.gauge.G_PED_ELEV_TRIM"; // Prosim gauge reference, this will start listening to changes
 
 
-                            phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
-                            phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
+                            //phidgetsDCMotors[idx].ErrorLog += DisplayErrorLog;
+                            //phidgetsDCMotors[idx].InfoLog += DisplayInfoLog;
                         }
                         catch (Exception ex)
                         {
@@ -1094,6 +1115,12 @@ namespace Phidgets2Prosim
             tabLog.BackColor = Color.White;
             tabColors[logTabIndex] = Color.Black;
             txtLog.Text = string.Empty;
+        }
+
+        private void btnDCMotor1Go_Click(object sender, EventArgs e)
+        {
+            double target = Convert.ToDouble(txtDCMotor1Target.Text);
+            phidgetsDCMotors2[0].OnTargetMoving(target);
         }
     }
 }

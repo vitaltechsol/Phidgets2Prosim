@@ -250,39 +250,62 @@ namespace Phidgets2Prosim
             }
         }
 
-        private static double MapOnce(double movingTo, double[] targetMap, double[] scaleMap)
+        public static double MapOnce(double x, double[] xMap, double[] yMap)
         {
-            int n = targetMap.Length;
+            if (xMap == null || yMap == null || xMap.Length < 2 || xMap.Length != yMap.Length)
+                throw new ArgumentException("xMap/yMap must be non-null, equal length, and have at least 2 points.");
 
-            if (movingTo <= targetMap[0])
+            int n = xMap.Length;
+
+            // Determine monotonic direction (treat equal endpoints as ascending fallback)
+            bool ascending = xMap[n - 1] >= xMap[0];
+
+            // Clamp out-of-range to the nearest endpoint
+            if (ascending)
             {
-                Log($"OnTargetMoving({movingTo}) -> below [{targetMap[0]}] -> voltage {scaleMap[0]:F3}");
-                return scaleMap[0];
+                if (x <= xMap[0]) { Debug.WriteLine($"MapOnce({x}) -> below [{xMap[0]}] -> {yMap[0]:F3}"); return yMap[0]; }
+                if (x >= xMap[n - 1]) { Debug.WriteLine($"MapOnce({x}) -> above [{xMap[n - 1]}] -> {yMap[n - 1]:F3}"); return yMap[n - 1]; }
             }
-            if (movingTo >= targetMap[n - 1])
+            else
             {
-                Log($"OnTargetMoving({movingTo}) -> above [{targetMap[n - 1]}] -> voltage {scaleMap[n - 1]:F3}");
-                return scaleMap[n - 1];
+                if (x >= xMap[0]) { Debug.WriteLine($"MapOnce({x}) -> above [{xMap[0]}] (desc) -> {yMap[0]:F3}"); return yMap[0]; }
+                if (x <= xMap[n - 1]) { Debug.WriteLine($"MapOnce({x}) -> below [{xMap[n - 1]}] (desc) -> {yMap[n - 1]:F3}"); return yMap[n - 1]; }
             }
 
-            int i = 0;
-            for (; i < n - 1; i++)
+            // Binary search to find segment i so that x is between xMap[i] and xMap[i+1]
+            int lo = 0, hi = n - 1;
+            if (ascending)
             {
-                if (targetMap[i] <= movingTo && movingTo <= targetMap[i + 1]) break;
+                while (hi - lo > 1)
+                {
+                    int mid = lo + ((hi - lo) >> 1);
+                    if (xMap[mid] <= x) lo = mid; else hi = mid;
+                }
+            }
+            else
+            {
+                while (hi - lo > 1)
+                {
+                    int mid = lo + ((hi - lo) >> 1);
+                    if (xMap[mid] >= x) lo = mid; else hi = mid;
+                }
             }
 
-            double x0 = targetMap[i], x1 = targetMap[i + 1];
-            double y0 = scaleMap[i], y1 = scaleMap[i + 1];
+            double x0 = xMap[lo], x1 = xMap[lo + 1];
+            double y0 = yMap[lo], y1 = yMap[lo + 1];
 
+            // Guard: degenerate segment (duplicate x). Fall back to y0.
             if (Math.Abs(x1 - x0) < 1e-12)
             {
-                Log($"OnTargetMoving({movingTo}) -> degenerate seg [{x0},{x1}] -> voltage {y0:F3}");
+                Debug.WriteLine($"MapOnce({x}) -> degenerate seg [{x0},{x1}] -> {y0:F3}");
                 return y0;
             }
 
-            double t = (movingTo - x0) / (x1 - x0); // 0..1
+            // Linear interpolation
+            double t = (x - x0) / (x1 - x0);          // works for both ascending and descending (denom can be negative)
             double y = y0 + t * (y1 - y0);
-            Log($"OnTargetMoving({movingTo}) -> segment {i} [{x0},{x1}] -> {t:F2} -> voltage {y:F3}");
+
+            Debug.WriteLine($"MapOnce({x}) -> seg {lo} [{x0},{x1}] t={t:F3} -> {y:F3}");
             return y;
         }
 

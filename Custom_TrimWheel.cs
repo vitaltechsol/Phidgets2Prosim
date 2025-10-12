@@ -76,9 +76,9 @@ namespace Phidgets2Prosim
         private void DataRef_trim_onDataChange(DataRef dataRef)
         {
             // txtCDU1.Text = dataRef.name;
-            var newTrim = Math.Round((double)dataRef.value, 2);
-            Debug.WriteLine("trim changed  " + (prevTrim - newTrim).ToString());
-            prevTrim = newTrim;
+            //var newTrim = Math.Round((double)dataRef.value, 2);
+            //Debug.WriteLine("trim changed  " + (prevTrim - newTrim).ToString());
+            //prevTrim = newTrim;
 
         }
 

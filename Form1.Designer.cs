@@ -53,6 +53,9 @@ namespace Phidgets2Prosim
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txtDCMotor1Target = new System.Windows.Forms.TextBox();
+            this.btnDCMotor1Go = new System.Windows.Forms.Button();
             this.tabGroups.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
@@ -68,6 +71,7 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).BeginInit();
             this.tabButtons.SuspendLayout();
             this.tabLog.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabGroups
@@ -80,6 +84,7 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabVoltageIn);
             this.tabGroups.Controls.Add(this.tabButtons);
             this.tabGroups.Controls.Add(this.tabLog);
+            this.tabGroups.Controls.Add(this.tabPage1);
             this.tabGroups.Location = new System.Drawing.Point(16, 73);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.SelectedIndex = 0;
@@ -287,6 +292,35 @@ namespace Phidgets2Prosim
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.btnDCMotor1Go);
+            this.tabPage1.Controls.Add(this.txtDCMotor1Target);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(630, 279);
+            this.tabPage1.TabIndex = 8;
+            this.tabPage1.Text = "DCMotor";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // txtDCMotor1Target
+            // 
+            this.txtDCMotor1Target.Location = new System.Drawing.Point(19, 6);
+            this.txtDCMotor1Target.Name = "txtDCMotor1Target";
+            this.txtDCMotor1Target.Size = new System.Drawing.Size(100, 20);
+            this.txtDCMotor1Target.TabIndex = 0;
+            // 
+            // btnDCMotor1Go
+            // 
+            this.btnDCMotor1Go.Location = new System.Drawing.Point(125, 4);
+            this.btnDCMotor1Go.Name = "btnDCMotor1Go";
+            this.btnDCMotor1Go.Size = new System.Drawing.Size(52, 23);
+            this.btnDCMotor1Go.TabIndex = 1;
+            this.btnDCMotor1Go.Text = "Go";
+            this.btnDCMotor1Go.UseVisualStyleBackColor = true;
+            this.btnDCMotor1Go.Click += new System.EventHandler(this.btnDCMotor1Go_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -315,6 +349,8 @@ namespace Phidgets2Prosim
             this.tabButtons.ResumeLayout(false);
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -347,5 +383,8 @@ namespace Phidgets2Prosim
         private DataGridView dataGridViewMultiInputs;
         private TabPage tabVoltageIn;
         private DataGridView dataGridViewVoltageIn;
+        private TabPage tabPage1;
+        private Button btnDCMotor1Go;
+        private TextBox txtDCMotor1Target;
     }
 }
