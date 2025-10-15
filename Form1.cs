@@ -458,8 +458,7 @@ namespace Phidgets2Prosim
 
                             {
                                 Reversed = false,
-                                Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50 // Added
-
+                                Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50 
                             };
 
                             if (instance.VoltageInput != null)
@@ -488,7 +487,7 @@ namespace Phidgets2Prosim
                             DisplayErrorLog("Error loading DC Motor Test");
                             DisplayErrorLog(ex.ToString());
                         }
-                        
+                        idx++;
                     }
                 }
 
@@ -1086,6 +1085,7 @@ namespace Phidgets2Prosim
 
         private void Form1_Closed(object sender, EventArgs e)
         {
+            Invoke(new MethodInvoker(UnloadConfigIns));
             Debug.WriteLine("closed");
         }
 

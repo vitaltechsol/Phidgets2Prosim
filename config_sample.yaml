@@ -1953,13 +1953,29 @@ PhidgetsButtonInstances:
 PhidgetsDCMotorInstances:
   - Serial: 668066
     HubPort: 2
-    Acceleration: 50
+    Acceleration: 100
     VoltageInput:
       Serial: 668066
       HubPort: 3
       Channel: 0
-      MinChangeTriggerValue: 0.002
-      InputPoints: [0.275, 0.412, 0.559, 0.7112, 0.74]
+      MinChangeTriggerValue: 0.005
+      InputPoints:  [0.275, 0.412, 0.559, 0.7112, 0.74]
       OutputPoints: [0, 5, 10, 15, 17]
-    
+    Options:
+      MaxVelocity: 0.9
+      MinVelocity: 0.35
+      VelocityBand: 0.6
+      CurveGamma: 0.2
+      DeadbandEnter: 0.04
+      DeadbandExit: 0.08
+      MaxVelStepPerTick: 0.10
+      Kp: 0.60
+      Ki: 0.12
+      Kd: 0.0
+      IOnBand: 0.5
+      IntegralLimit: 0.04
+      PositionFilterAlpha: 0.85
+      TickMs: 15
+      SetpointSlewPerTick: 0.015
+
         

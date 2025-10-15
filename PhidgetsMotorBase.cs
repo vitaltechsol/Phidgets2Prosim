@@ -40,7 +40,8 @@ namespace Phidgets2Prosim
             IOnBand = 0.10,
             IntegralLimit = 0.5,
             TickMs = 20,
-            PositionFilterAlpha = 0.15
+            PositionFilterAlpha = 0.15,
+            SetpointSlewPerTick = 0.10  // rate-limiter for the target value that the motor controller is chasing. Only move the target this much per control tick
         };
 
         /// <summary>Acceleration to apply to the concrete motor (if supported).</summary>
@@ -63,6 +64,8 @@ namespace Phidgets2Prosim
         private double _prevErr = 0.0;
         private double _currentVelCmd = 0.0;        // last velocity sent, [-1..1]
         private bool _inDeadband = false;
+        private double _tgtSlewed = 0.0;
+        private bool _tgtInit = false;
 
         // ----- Exposed read-only state for subclasses / diagnostics -----
         protected double CurrentSmoothed => _smoothedRatio;
@@ -135,6 +138,8 @@ namespace Phidgets2Prosim
             if (options.IntegralLimit.HasValue) Tuning.IntegralLimit = options.IntegralLimit.Value;
             if (options.PositionFilterAlpha.HasValue) Tuning.PositionFilterAlpha = options.PositionFilterAlpha.Value;
             if (options.TickMs.HasValue) Tuning.TickMs = options.TickMs.Value;
+            if (options.SetpointSlewPerTick.HasValue) Tuning.SetpointSlewPerTick = options.SetpointSlewPerTick.Value;
+
         }
 
         // ---- Lifecycle ------------------------------------------------------
@@ -238,6 +243,21 @@ namespace Phidgets2Prosim
                         pos = _smoothedRatio;
                     }
 
+                    // Optional setpoint slew (smooth target steps)
+                    double __slewStep = 0.0;
+                    if (Tuning.SetpointSlewPerTick.HasValue && Tuning.SetpointSlewPerTick.Value > 0.0)
+                        __slewStep = Tuning.SetpointSlewPerTick.Value;
+                    if (!_tgtInit) { _tgtSlewed = target; _tgtInit = true; }
+                    if (__slewStep > 0.0)
+                    {
+                        double __dSlew = target - _tgtSlewed;
+                        if (Math.Abs(__dSlew) > __slewStep)
+                            _tgtSlewed += Math.Sign(__dSlew) * __slewStep;
+                        else
+                            _tgtSlewed = target;
+                        target = _tgtSlewed;
+                    }
+
                     double err = target - pos;
                     double aerr = Math.Abs(err);
 
@@ -285,8 +305,9 @@ namespace Phidgets2Prosim
                         // --- Magnitude: taper PID magnitude, but DO NOT taper the stiction floor ---
                         double pidMag = Math.Min(vMax, Math.Abs(pid)) * taper;
 
-                        // Stiction floor applies whenever we're outside the deadband (do not scale it down)
-                        double floor = (aerr > dbEnter) ? vMin : 0.0;
+                        // Soft stiction floor: fades as we near the target (no MapClamped; pure math)
+                        double scaled = vMin * Math.Min(1.0, (velBand > 1e-6) ? (aerr / velBand) : 1.0);
+                        double floor = _inDeadband ? 0.0 : Math.Max(0.10, scaled);
 
                         double cmdMag = Math.Max(floor, pidMag);
                         cmdMag = Math.Min(cmdMag, vMax);
@@ -476,5 +497,7 @@ namespace Phidgets2Prosim
         public double? IntegralLimit { get; set; }
         public double? PositionFilterAlpha { get; set; }
         public int? TickMs { get; set; }
+
+        public double? SetpointSlewPerTick { get; set; }
     }
 }
