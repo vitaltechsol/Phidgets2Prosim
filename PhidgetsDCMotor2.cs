@@ -50,8 +50,8 @@ namespace Phidgets2Prosim
                 _motor.Open(5000);
                 if (Acceleration <= 0) Acceleration = 50;
                 _motor.Acceleration = Acceleration;
-				_motor.CurrentLimit = 4;
-				
+				_motor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
+
 
 				SendInfoLog($"DCMotor Connected: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
             }

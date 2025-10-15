@@ -39,14 +39,16 @@ namespace Phidgets2Prosim
 
         // (Optional, Required with RefTargetPos) Scale motor target position based on analog input range
         public double[] TargetPosScaleMap { get; set; } = new double[] { 0, 5 };
+		public double CurrentLimit { get; set; }
 
-        public bool pulsateMotor { get; set; } = false;
+		public bool pulsateMotor { get; set; } = false;
         public int PulsateMotorInterval { get; set; } = 550;
         public int PulsateMotorIntervalPause { get; set; } = 200;
         private int pulseIntervalPauseReduced = 0;
 
         private double[] range = new double[] { -1, 1 };
         public double[] Range
+
         {
             get => range;
             set
@@ -258,8 +260,8 @@ namespace Phidgets2Prosim
                 {
                     dcMotor.Acceleration = Acceleration;
                     dcMotor.TargetBrakingStrength = 1;
-                    dcMotor.CurrentLimit = 4;
-                }
+                    dcMotor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
+				}
                 SendInfoLog($"DC Motor Connected {Serial}: {HubPort}");
 
             }
