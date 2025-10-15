@@ -65,7 +65,9 @@ PhidgetsBLDCMotorInstances:
 PhidgetsDCMotorInstances:
   - Serial: 746062
     HubPort: 3
-    Acceleration: 50
+    Acceleration: 100
+    Reversed: false
+    CurrentLimit: 4.0
     
     VoltageInput:
       Serial: 742347
@@ -77,18 +79,19 @@ PhidgetsDCMotorInstances:
     Options:
       MaxVelocity: 0.9
       MinVelocity: 0.3
-      VelocityBand: 0.2
-      CurveGamma: 1.0
-      DeadbandEnter: 0.2
-      DeadbandExit: 0.3
-      MaxVelStepPerTick: 0.05
-      Kp: 0
-      Ki: 0
+      VelocityBand: 0.6
+      CurveGamma: 0.2
+      DeadbandEnter: 0.04
+      DeadbandExit: 0.08
+      MaxVelStepPerTick: 0.10
+      Kp: 0.60
+      Ki: 0.12
       Kd: 0
-      IOnBand: 1.0
+      IOnBand: 0.5
       IntegralLimit: 0.04
       PositionFilterAlpha: 0.86
       TickMs: 15
+      SetpointSlewPerTick: 0.015
 
 
 PhidgetsGateInstances:

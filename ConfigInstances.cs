@@ -148,8 +148,10 @@ namespace Phidgets2Prosim
 
         // Acceleration values between 1 and 100
         public double Acceleration { get; set; }
+		public bool Reversed { get; set; }
+		public double CurrentLimit { get; set; }
 
-        public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
+		public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
 
         public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
     }

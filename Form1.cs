@@ -457,8 +457,11 @@ namespace Phidgets2Prosim
                                 )
 
                             {
-                                Reversed = false,
-                                Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50 
+                                //Reversed = false,
+                                Reversed = instance.Reversed,
+								CurrentLimit = instance.CurrentLimit,
+
+								Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50
                             };
 
                             if (instance.VoltageInput != null)

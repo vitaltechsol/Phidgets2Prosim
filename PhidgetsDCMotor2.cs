@@ -16,8 +16,9 @@ namespace Phidgets2Prosim
 
         // ---- Motor direction helpers ----------------------------------------
         public bool Reversed { get; set; } = false;
+		public double CurrentLimit { get; set; }
 
-        private readonly DCMotor _motor = new DCMotor();
+		private readonly DCMotor _motor = new DCMotor();
 
         public PhidgetsDCMotor2(
             int deviceSerialNumber,
@@ -49,9 +50,10 @@ namespace Phidgets2Prosim
                 _motor.Open(5000);
                 if (Acceleration <= 0) Acceleration = 50;
                 _motor.Acceleration = Acceleration;
-                _motor.CurrentLimit = 4;
+				_motor.CurrentLimit = 4;
+				
 
-                SendInfoLog($"DCMotor Connected: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
+				SendInfoLog($"DCMotor Connected: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
             }
             catch (Exception ex)
             {
