@@ -436,50 +436,6 @@ namespace Phidgets2Prosim
             double step = Math.Max(0.0, Tuning.MaxVelStepPerTick ?? 0.2);
             return Slew(current, desired, step);
         }
-
-        /// <summary>
-        /// Piecewise-linear interpolate y for x across breakpoints (with extrapolation).
-        /// </summary>
-        protected static double MapOnce(double x, double[] targetMap, double[] scaleMap)
-        {
-            if (targetMap == null || scaleMap == null || targetMap.Length != scaleMap.Length || targetMap.Length == 0)
-                throw new ArgumentException("MapOnce requires equal-length, non-empty targetMap/scaleMap.");
-
-            int n = targetMap.Length;
-
-            double Lerp(double y0, double y1, double t) => y0 + (y1 - y0) * t;
-            double SafeT(double _x, double _a, double _b)
-            {
-                double d = _b - _a;
-                if (Math.Abs(d) < 1e-12) return 0.0;
-                return (_x - _a) / d;
-            }
-
-            // Below first
-            if (x <= targetMap[0])
-            {
-                if (n == 1) return scaleMap[0];
-                return Lerp(scaleMap[0], scaleMap[1], SafeT(x, targetMap[0], targetMap[1]));
-            }
-            // Above last
-            if (x >= targetMap[n - 1])
-            {
-                if (n == 1) return scaleMap[0];
-                return Lerp(scaleMap[n - 2], scaleMap[n - 1], SafeT(x, targetMap[n - 2], targetMap[n - 1]));
-            }
-            // Inside
-            for (int i = 0; i < n - 1; i++)
-            {
-                double a = targetMap[i];
-                double b = targetMap[i + 1];
-                if (x >= a && x <= b)
-                {
-                    double t = SafeT(x, a, b);
-                    return Lerp(scaleMap[i], scaleMap[i + 1], t);
-                }
-            }
-            return scaleMap[n - 1]; // fallback (shouldn't hit)
-        }
     }
     public class MotorTuningOptions
     {

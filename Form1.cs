@@ -25,7 +25,7 @@ namespace Phidgets2Prosim
 
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
-        int logTabIndex = 7;
+        int logTabIndex = 0;
         int OutputBlinkFastIntervalMs = 300;
         int OutputBlinkSlowIntervalMs = 600;
         double OutputDefaultDimValue = 0.7;
@@ -426,6 +426,12 @@ namespace Phidgets2Prosim
                 // DC Motors
                 if (config.PhidgetsDCMotorInstances != null)
                 {
+
+                    phidgetsDCMotorInstances = new BindingList<PhidgetsDCMotorInst>(config.PhidgetsDCMotorInstances);
+                    dataGridDCMotors.DataSource = phidgetsDCMotorInstances;
+                    dataGridDCMotors.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    
+
                     var idx = 0;
                     foreach (var instance in config.PhidgetsDCMotorInstances)
                     {
@@ -1110,7 +1116,7 @@ namespace Phidgets2Prosim
         private void btnDCMotor1Go_Click(object sender, EventArgs e)
         {
             double target = Convert.ToDouble(txtDCMotor1Target.Text);
-            phidgetsDCMotors2[0].OnTargetMoving(target);
+            phidgetsDCMotors2[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
         }
     }
 }
