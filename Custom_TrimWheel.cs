@@ -3,9 +3,11 @@ using ProSimSDK;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Phidgets2Prosim
@@ -20,26 +22,43 @@ namespace Phidgets2Prosim
         double cleanDown;
         double APOnDirty;
         double APOnClean;
-		double targetFwdVelocity;
-        double targetBwdVelocity;
+		double targetFwdVelocity = 1.0;
+        double targetBwdVelocity = 1.0;
         double prevTrim = 0;
 
         bool isAPOn = false;
         double flaps = 0;
+        double currentVel = 0;
+        bool isMotorMoving = false;
+        bool isPaused = false;
+        System.Timers.Timer pulsateTimer;
+            
+        public bool pulsateMotor { get; set; } = true;
+        public int PulsateMotorInterval { get; set; } = 550;
+        public int PulsateMotorIntervalPause { get; set; } = 200;
+        private int pulseIntervalPauseReduced = 0;
 
-		
-		public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
+        private readonly string prosimDataRefFwd = "system.gates.B_TRIM_MOTOR_UP";
+        private readonly string prosimDataRefBwd = "system.gates.B_TRIM_MOTOR_DOWN";
+
+        public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
             double dirtyUp, double dirtyDown, 
             double cleanUp, double cleanDown, 
             double APOnDirty,
             double APOnClean)
         {
-            dcm = new PhidgetsDCMotor(serial, hubPort, connection, "system.gates.B_TRIM_MOTOR_UP", "system.gates.B_TRIM_MOTOR_DOWN", 100);
-            dcm.pulsateMotor = true;
+            dcm = new PhidgetsDCMotor(serial, hubPort, connection)
+            {
+                Reversed = false,
+                CurrentLimit = 4,
+                Acceleration = 100,
+                TargetBrakingStrength = 1
+            };
             dcm.ErrorLog += SendErrorLog;
             dcm.InfoLog += SendInfoLog;
+            dcm.InitializeAsync().Wait();
 
-			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+            DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
@@ -54,6 +73,12 @@ namespace Phidgets2Prosim
 
             dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
             dataRefAP.onDataChange += DataRef_onAPDataChange;
+
+            // ProSim bindings (kept)
+            DataRef dataRef = new DataRef(prosimDataRefFwd, 100, connection);
+            dataRef.onDataChange += DataRef_onDataChange;
+            DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
+            dataRef2.onDataChange += DataRef_onDataChange;
         }
 
 
@@ -85,9 +110,8 @@ namespace Phidgets2Prosim
         private async void UpdateVelocity()
         {
 
-            Debug.WriteLine("UpdateVelocity isApon  " + isAPOn);
-            Debug.WriteLine("UpdateVelocity Flasp  " + flaps);
-
+            Debug.WriteLine("UpdateVelocity is AP on  " + isAPOn);
+            Debug.WriteLine("UpdateVelocity Flaps  " + flaps);
 
             if (isAPOn) { 
                 // Dirty
@@ -120,15 +144,114 @@ namespace Phidgets2Prosim
 
             Debug.WriteLine("UpdateVelocity fw   " + targetFwdVelocity);
             Debug.WriteLine("UpdateVelocity bw   " + targetBwdVelocity);
-
-
-            dcm.changeTargetFwdVelocity(targetFwdVelocity);
-            dcm.changeTargetBwdVelocity(targetBwdVelocity);
         }
 
-        public void pause(bool isPaused)
+        private async void DataRef_onDataChange(DataRef dataRef)
         {
-            dcm.pause(isPaused);
+            Debug.WriteLine("trim name " + dataRef.name);
+            try
+            {
+                var value = Convert.ToBoolean(dataRef.value);
+                Debug.WriteLine("trim value " + dataRef.value + " | Paused:" + isPaused);
+
+                pulseIntervalPauseReduced = PulsateMotorIntervalPause;
+
+                if (dataRef.name == prosimDataRefFwd && !isPaused)
+                {
+                    if (value == true)
+                    {
+                        currentVel = targetFwdVelocity * -1;
+                        isMotorMoving = true;
+                        dcm.SetTargetVelocity(currentVel);
+                        if (pulsateMotor)
+                        {
+                            if (pulsateTimer == null)
+                            {
+                                pulsateTimer = new System.Timers.Timer();
+                                pulsateTimer.Interval = PulsateMotorInterval;
+                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Start();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isMotorMoving = false;
+                        if (pulsateTimer != null)
+                        {
+                            pulsateTimer.Stop();
+                            pulsateTimer.Dispose();
+                            pulsateTimer = null;
+                        }
+                        // Kickback when stopping
+                        currentVel = 0;
+                        dcm.SetTargetVelocity(0.5);
+                        Thread.Sleep(200);
+                        dcm.SetTargetVelocity(currentVel);
+                    }
+                }
+
+                if (dataRef.name == prosimDataRefBwd && !isPaused)
+                {
+                    if (value == true)
+                    {
+                        currentVel = targetBwdVelocity;
+                        isMotorMoving = true;
+                        dcm.SetTargetVelocity(currentVel);
+                        if (pulsateMotor)
+                        {
+                            if (pulsateTimer == null)
+                            {
+                                pulsateTimer = new System.Timers.Timer();
+                                pulsateTimer.Interval = PulsateMotorInterval;
+                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Start();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isMotorMoving = false;
+                        if (pulsateTimer != null)
+                        {
+                            pulsateTimer.Stop();
+                            pulsateTimer.Dispose();
+                            pulsateTimer = null;
+                        }
+                        currentVel = 0;
+                        dcm.SetTargetVelocity(-0.5);
+                        Thread.Sleep(200);
+                        dcm.SetTargetVelocity(currentVel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Stop motor
+                currentVel = 0;
+                // dcMotor.TargetVelocity = 0;
+                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine("value " + dataRef.value);
+            }
+
+        }
+
+        private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (isMotorMoving)
+            {
+                dcm.SetTargetVelocity(0);
+                await Task.Delay(pulseIntervalPauseReduced);
+                pulseIntervalPauseReduced -= 30;
+                if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0; }
+                dcm.SetTargetVelocity(currentVel);
+            }
+        }
+
+
+        public void Pause(bool isPaused)
+        {
+            dcm.Pause(isPaused);
         }
     }
 }

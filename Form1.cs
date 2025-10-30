@@ -40,7 +40,6 @@ namespace Phidgets2Prosim
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
         PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
-        PhidgetsDCMotor2[] phidgetsDCMotors2 = new PhidgetsDCMotor2[10];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -455,7 +454,7 @@ namespace Phidgets2Prosim
                                 TickMs = instance.Options.TickMs
                             };
 
-                            phidgetsDCMotors2[idx] = new PhidgetsDCMotor2(
+                            phidgetsDCMotors[idx] = new PhidgetsDCMotor(
                                 instance.Serial,
                                 instance.HubPort,
                                 connection,
@@ -466,7 +465,6 @@ namespace Phidgets2Prosim
                                 //Reversed = false,
                                 Reversed = instance.Reversed,
 								CurrentLimit = instance.CurrentLimit,
-
 								Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50
                             };
 
@@ -483,11 +481,11 @@ namespace Phidgets2Prosim
                                   );
                                 voltageIn.MinChangeTriggerValue = instance.VoltageInput.MinChangeTriggerValue;
 
-                                phidgetsDCMotors2[idx].VoltageInput = voltageIn;
+                                phidgetsDCMotors[idx].VoltageInput = voltageIn;
                             }
 
-                            await phidgetsDCMotors2[idx].InitializeAsync();
-                            phidgetsDCMotors2[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
+                            await phidgetsDCMotors[idx].InitializeAsync();
+                            phidgetsDCMotors[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
 
                             idx++;
                         }
@@ -979,7 +977,7 @@ namespace Phidgets2Prosim
                     // Pause motors
                     if (trimWheel != null)
                     {
-                        trimWheel?.pause(simIsPaused);
+                        trimWheel?.Pause(simIsPaused);
                     }
 
                     Invoke(new MethodInvoker(updatePauseLabel));
@@ -1116,7 +1114,7 @@ namespace Phidgets2Prosim
         private void btnDCMotor1Go_Click(object sender, EventArgs e)
         {
             double target = Convert.ToDouble(txtDCMotor1Target.Text);
-            phidgetsDCMotors2[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
+            phidgetsDCMotors[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
         }
     }
 }
