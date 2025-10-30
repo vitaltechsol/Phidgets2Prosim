@@ -282,6 +282,7 @@ namespace Phidgets2Prosim
                         _integral = 0.0; // reset windup when stable
                         // Stay in the loop; respond instantly if new target moves us out of deadband
                         await Task.Delay(Math.Max(1, Math.Min(tickMs, TickMsSafety)), ct);
+                        // Debug.WriteLine($"[Loop] In deadband at pos={pos:F3} target={target:F3}");
                         continue;
                     }
                     else
@@ -302,23 +303,25 @@ namespace Phidgets2Prosim
                         // --- Direction: if PID is tiny (e.g., kp=0), keep sign from the error ---
                         double dirSource = (Math.Abs(pid) > 1e-6) ? pid : err;
 
-                        // --- Magnitude: taper PID magnitude, but DO NOT taper the stiction floor ---
+                        // --- Magnitude: taper PID magnitude
                         double pidMag = Math.Min(vMax, Math.Abs(pid)) * taper;
 
-                        // Soft stiction floor: fades as we near the target (no MapClamped; pure math)
-                        double scaled = vMin * Math.Min(1.0, (velBand > 1e-6) ? (aerr / velBand) : 1.0);
-                        double floor = _inDeadband ? 0.0 : Math.Max(0.10, scaled);
+                        // ---- HARD FLOOR: never below MinVelocity when moving (outside deadband)
+                        double floor = _inDeadband ? 0.0 : vMin;
 
                         double cmdMag = Math.Max(floor, pidMag);
                         cmdMag = Math.Min(cmdMag, vMax);
 
                         double cmd = (dirSource >= 0) ? cmdMag : -cmdMag;
 
-                        // If we were stopped or below the stiction floor, and the new command
-                        // wants to move with at least the floor, snap straight to the floor.
-                        if (Math.Abs(_currentVelCmd) < (vMin - 1e-6) && Math.Abs(cmd) >= vMin)
+                        // Ensure command respects the floor even if pidMag goes tiny
+                        if (!_inDeadband && Math.Abs(cmd) > 1e-12 && Math.Abs(cmd) < floor)
+                            cmd = Math.Sign(cmd) * floor;
+
+                        // If we were stopped or below the floor and new command wants to move, snap to floor
+                        if (!_inDeadband && Math.Abs(_currentVelCmd) < (floor - 1e-6) && Math.Abs(cmd) >= floor)
                         {
-                            _currentVelCmd = (cmd >= 0 ? 1 : -1) * vMin;
+                            _currentVelCmd = (cmd >= 0 ? 1 : -1) * floor;
                             ApplyVelocity(_currentVelCmd);
                         }
                         else
@@ -336,6 +339,7 @@ namespace Phidgets2Prosim
                     // Safety tick — loop still runs even if no VIN events
                     await Task.Delay(Math.Max(1, Math.Min(tickMs, TickMsSafety)), ct);
                 }
+                SendInfoLog("DC Motor stopped");
             }
             catch (TaskCanceledException) { /* normal */ }
             catch (Exception ex)
@@ -437,6 +441,8 @@ namespace Phidgets2Prosim
             return Slew(current, desired, step);
         }
     }
+
+        
     public class MotorTuningOptions
     {
         public double? MaxVelocity { get; set; }

@@ -508,6 +508,7 @@ namespace Phidgets2Prosim
                             instance.Serial,
                             instance.HubPort,
                             connection,
+                            instance.Reversed,
                             instance.DirtyUp,
                             instance.DirtyDown,
                             instance.CleanUp,

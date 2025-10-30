@@ -32,7 +32,6 @@ namespace Phidgets2Prosim
         bool isMotorMoving = false;
         bool isPaused = false;
         System.Timers.Timer pulsateTimer;
-            
         public bool pulsateMotor { get; set; } = true;
         public int PulsateMotorInterval { get; set; } = 550;
         public int PulsateMotorIntervalPause { get; set; } = 200;
@@ -42,6 +41,7 @@ namespace Phidgets2Prosim
         private readonly string prosimDataRefBwd = "system.gates.B_TRIM_MOTOR_DOWN";
 
         public Custom_TrimWheel(int serial, int hubPort, ProSimConnect connection, 
+            bool reversed,
             double dirtyUp, double dirtyDown, 
             double cleanUp, double cleanDown, 
             double APOnDirty,
@@ -49,7 +49,7 @@ namespace Phidgets2Prosim
         {
             dcm = new PhidgetsDCMotor(serial, hubPort, connection)
             {
-                Reversed = false,
+                Reversed = reversed,
                 CurrentLimit = 4,
                 Acceleration = 100,
                 TargetBrakingStrength = 1

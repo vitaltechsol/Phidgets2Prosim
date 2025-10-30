@@ -169,6 +169,9 @@ namespace Phidgets2Prosim
 
     public class CustomTrimWheelInst : PhidgetDevice
     {
+        // Reverse the direction of the motor
+        public bool Reversed { get; set; } = false;
+
         // Speed when dirty config. Nose up
         public double DirtyUp { get; set; }
 
