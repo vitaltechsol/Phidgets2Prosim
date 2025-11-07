@@ -121,7 +121,7 @@ namespace Phidgets2Prosim
                 try
                 {
                     SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
-                    dataRef.value = valueScaled;
+                    dataRef.value = Convert.ToInt32(valueScaled);
                 }
                 catch (Exception ex)
                 {

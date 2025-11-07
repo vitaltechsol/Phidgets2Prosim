@@ -733,6 +733,7 @@ namespace Phidgets2Prosim
                                 instance.CurvePower,
                                 instance.DataInterval,
                                 instance.MinChangeTriggerValue);
+                            phidgetsVoltageInput[idx].RoundUp = true;
                             phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsVoltageInput[idx].InfoLog += DisplayInfoLog;
 
