@@ -49,7 +49,7 @@ namespace Phidgets2Prosim
             }
         }
 
-        public async void Open()
+        public async Task Open()
         {
 
             try
@@ -62,7 +62,7 @@ namespace Phidgets2Prosim
                         voltageOutput.HubPort = HubPort;
                         voltageOutput.IsRemote = true;
                     }
-                    await Task.Run(() => voltageOutput.Open(2000));
+                    await Task.Run(() => voltageOutput.Open(4000));
                     voltageOutput.Voltage = 0;
                 }
             }

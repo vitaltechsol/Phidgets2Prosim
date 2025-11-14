@@ -1891,7 +1891,14 @@ PhidgetsVoltageInputInstances:
     Channel: 6
     ProsimDataRef: A_ASP_SPKR_VOLUME
     ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
-
+  - Serial: 668522
+    HubPort: 5
+    Channel: 0
+    UseRange: true
+    InputPoints: [0,15]
+    OutputPoints: [1, 255]
+    MinChangeTriggerValue: 0.3
+    ProsimDataRef: A_HUD_BRIGHTNESS
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066

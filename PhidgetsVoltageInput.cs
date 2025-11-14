@@ -29,11 +29,16 @@ namespace Phidgets2Prosim
 
     internal class PhidgetsVoltageInput : PhidgetDevice
     {
-        private VoltageRatioInput voltageInput = new VoltageRatioInput();
+        private VoltageRatioInput voltageRatioInput = new VoltageRatioInput();
+        private VoltageInput voltageInput = new VoltageInput();
+
         public string ProsimDataRefOnOff { get; set; } = "";
         public double[] InputPoints { get; set; }
         public double[] OutputPoints { get; set; }
         public int DataInterval { get; set; }
+
+        // Use voltage range input instead of ratio
+        public bool UseRange { get; set; } = false;
 
         // Event: subscribers get the new scaled value
         public event Action<double> onScaledValueChanged;
@@ -70,7 +75,8 @@ namespace Phidgets2Prosim
             InterpolationMode interpolationMode = InterpolationMode.Spline,
             double curvePower = 2.0,
             int dataInterval = 50,
-            double minChangeDetection = 0.002
+            double minChangeDetection = 0.002,
+            bool useRange = false
            )
         {
             ProsimDataRef = prosimDataRef;
@@ -85,13 +91,21 @@ namespace Phidgets2Prosim
             CurvePower = curvePower;
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
+            UseRange = useRange;
 
             if (InterpolationMode == InterpolationMode.Spline)
             {
                 ComputeSplineCoefficients();
             }
-            Open();
-
+            if (UseRange)
+            {
+                OpenRange();
+            }
+           
+            else
+            {
+                Open();
+            }
             debounceTimer = new System.Timers.Timer(180); // 180ms debounce
             debounceTimer.AutoReset = false; // Only fire once per change
             debounceTimer.Elapsed += (sender, e) =>
@@ -107,9 +121,18 @@ namespace Phidgets2Prosim
             };
         }
 
+        private void StateRangeChange(object sender, Phidget22.Events.VoltageInputVoltageChangeEventArgs e)
+        {
+            UpdateValue(e.Voltage);
+        }
+
         private void StateChange(object sender, Phidget22.Events.VoltageRatioInputVoltageRatioChangeEventArgs e)
         {
-            double value = e.VoltageRatio;
+            UpdateValue(e.VoltageRatio);
+        }
+
+        private void UpdateValue(double value)
+        {
             double interpolated = Interpolate(value);
             ScaledValue = interpolated;
 
@@ -120,12 +143,13 @@ namespace Phidgets2Prosim
                 DataRef dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
                 try
                 {
-                    SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef}");
+                    SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef} " +
+                        $"| Use Range: {UseRange}"); 
                     dataRef.value = Convert.ToInt32(valueScaled);
                 }
                 catch (Exception ex)
                 {
-                    SendInfoLog($"Error: Voltage Input  [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");
+                    SendInfoLog($"Error: Voltage Input [{HubPort}] Ch {Channel}: {value} | Ref: {ProsimDataRef}");
                     SendErrorLog(ex.ToString());
                 }
                 if (ProsimDataRefOnOff != "")
@@ -139,6 +163,7 @@ namespace Phidgets2Prosim
                 }
             }
         }
+
 
         // Turn switch on off after voltage changes have stopped
         private void debouncedSwitch(int state)
@@ -282,11 +307,56 @@ namespace Phidgets2Prosim
 
         public void Close()
         {
-            voltageInput.Close();
+            if (voltageRatioInput.IsOpen)
+            {
+                voltageRatioInput.Close();
+            }
+            if (voltageInput.IsOpen)
+            {
+                voltageInput.Close();
+            }
             SendInfoLog($"-> Detached/Closed {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
         }
 
         public async void Open()
+        {
+            try
+            {
+                if (!voltageRatioInput.IsOpen)
+                {
+                    if (HubPort >= 0)
+                    {
+                        voltageRatioInput.HubPort = HubPort;
+                        voltageRatioInput.IsRemote = true;
+                        voltageRatioInput.IsHubPortDevice = Channel == -1;
+                    }
+                    voltageRatioInput.Channel = Channel;
+                    voltageRatioInput.VoltageRatioChange += StateChange;
+                        
+                    voltageRatioInput.DeviceSerialNumber = Serial;
+                    SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+
+                    await Task.Run(() => voltageRatioInput.Open(5000));
+                    voltageRatioInput.VoltageRatioChangeTrigger = MinChangeTriggerValue;
+                    voltageRatioInput.DataInterval = DataInterval;
+
+
+
+                    SendInfoLog($"-> Attached {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
+                }
+                else
+                {
+                    SendErrorLog("Error: --> Channel (ALREADY OPEN) " + Channel + " Input " + ProsimDataRef);
+                }
+            }
+            catch (Exception ex)
+            {
+                SendErrorLog("Error: -->  Opening Channel " + Channel + " Input " + ProsimDataRef);
+                SendErrorLog(ex.ToString());
+            }
+        }
+
+        public async void OpenRange()
         {
             try
             {
@@ -298,17 +368,17 @@ namespace Phidgets2Prosim
                         voltageInput.IsRemote = true;
                         voltageInput.IsHubPortDevice = Channel == -1;
                     }
-
-                    voltageInput.Channel = Channel;
-                    voltageInput.VoltageRatioChange += StateChange;
+                    if (Channel > 0)
+                    {
+                        voltageInput.Channel = Channel;
+                    }
+                    voltageInput.VoltageChange += StateRangeChange;
                     voltageInput.DeviceSerialNumber = Serial;
                     SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
 
                     await Task.Run(() => voltageInput.Open(5000));
-                    voltageInput.VoltageRatioChangeTrigger = MinChangeTriggerValue;
+                    voltageInput.VoltageChangeTrigger = MinChangeTriggerValue;
                     voltageInput.DataInterval = DataInterval;
-
-
 
                     SendInfoLog($"-> Attached {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
                 }

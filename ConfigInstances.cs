@@ -104,6 +104,9 @@ namespace Phidgets2Prosim
         public int DataInterval { get; set; } = 50;
         public double CurvePower { get; set; } = 2.0;
 
+        // Use voltage range input instead of ratio
+        public bool UseRange { get; set; } = false;
+
     }
 
     public class PhidgetsMultiInputInst : PhidgetDevice
