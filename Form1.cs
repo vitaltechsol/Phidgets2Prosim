@@ -25,10 +25,11 @@ namespace Phidgets2Prosim
 
         ProSimConnect connection = new ProSimConnect();
         bool phidgetsAdded = false;
-        int logTabIndex = 7;
+        int logTabIndex = 0;
         int OutputBlinkFastIntervalMs = 300;
         int OutputBlinkSlowIntervalMs = 600;
         double OutputDefaultDimValue = 0.7;
+        bool configsInsLoaded = false;
 
         PhidgetsInput [] phidgetsInputPreview = new PhidgetsInput[360];
         PhidgetsInput[] phidgetsInput = new PhidgetsInput[360];
@@ -38,6 +39,7 @@ namespace Phidgets2Prosim
         PhidgetsOutput[] phidgetsGate = new PhidgetsOutput[360];
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
+        PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -60,7 +62,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
         private BindingList<PhidgetsBLDCMotorInst> phidgetsBLDCMotorInstances;
-
+        private BindingList<PhidgetsDCMotorInst> phidgetsDCMotorInstances;
 
         public Form1()
         {
@@ -88,7 +90,10 @@ namespace Phidgets2Prosim
         void connection_onDisconnect()
         {
             Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(UnloadConfigIns));
+            if (configsInsLoaded)
+            {
+                Invoke(new MethodInvoker(UnloadConfigIns));
+            }
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
@@ -107,7 +112,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
-                    .Build();
+					.Build();
 
                 var config = deserializer.Deserialize<Config>(yamlContent);
                 // Create instances based on the configuration
@@ -375,23 +380,24 @@ namespace Phidgets2Prosim
                         {
 							var opts = new MotorTuningOptions
 							{
-								MaxVelocity = instance.MaxVelocity,
-								MinVelocity = instance.MinVelocity,
-								VelocityBand = instance.VelocityBand,
-								CurveGamma = instance.CurveGamma,
-								DeadbandEnter = instance.DeadbandEnter,
-								DeadbandExit = instance.DeadbandExit,
-								MaxVelStepPerTick = instance.MaxVelStepPerTick,
-								Kp = instance.Kp,
-								Ki = instance.Ki,
-								Kd = instance.Kd,
-								IntegralLimit = instance.IntegralLimit,
-								PositionFilterAlpha = instance.PositionFilterAlpha,
-								TickMs = instance.TickMs
+								MaxVelocity = instance.Options.MaxVelocity,
+								MinVelocity = instance.Options.MinVelocity,
+								VelocityBand = instance.Options.VelocityBand,
+								CurveGamma = instance.Options.CurveGamma,
+								DeadbandEnter = instance.Options.DeadbandEnter,
+								DeadbandExit = instance.Options.DeadbandExit,
+								MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
+								Kp = instance.Options.Kp,
+								Ki = instance.Options.Ki,
+								Kd = instance.Options.Kd,
+                                IOnBand = instance.Options.IOnBand,
+                                IntegralLimit = instance.Options.IntegralLimit,
+								PositionFilterAlpha = instance.Options.PositionFilterAlpha,
+								TickMs = instance.Options.TickMs
 							};
 
 							phidgetsBLDCMotors[idx] = new PhidgetsBLDCMotor(
-								deviceSerialNumber: instance.Serial,
+								serial: instance.Serial,
 								hubPort: instance.HubPort,
 								connection: connection,
 								reversed: instance.Reversed,
@@ -402,7 +408,6 @@ namespace Phidgets2Prosim
 								acceleration: instance.Acceleration,
 								options: opts
 							);
-
 
 							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;
                             phidgetsBLDCMotors[idx].InfoLog += DisplayInfoLog;
@@ -417,16 +422,93 @@ namespace Phidgets2Prosim
                     totalOuts += idx;
                 }
 
-				// Custom - Trim wheel
-				if (config.CustomTrimWheelInstance != null)
+                // DC Motors
+                if (config.PhidgetsDCMotorInstances != null)
+                {
+
+                    phidgetsDCMotorInstances = new BindingList<PhidgetsDCMotorInst>(config.PhidgetsDCMotorInstances);
+                    dataGridDCMotors.DataSource = phidgetsDCMotorInstances;
+                    dataGridDCMotors.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    
+
+                    var idx = 0;
+                    foreach (var instance in config.PhidgetsDCMotorInstances)
+                    {
+                        try
+                        {
+                            var opts = new MotorTuningOptions
+                            {
+                                MaxVelocity = instance.Options.MaxVelocity,
+                                MinVelocity = instance.Options.MinVelocity,
+                                VelocityBand = instance.Options.VelocityBand,
+                                CurveGamma = instance.Options.CurveGamma,
+                                DeadbandEnter = instance.Options.DeadbandEnter,
+                                DeadbandExit = instance.Options.DeadbandExit,
+                                MaxVelStepPerTick = instance.Options.MaxVelStepPerTick,
+                                Kp = instance.Options.Kp,
+                                Ki = instance.Options.Ki,
+                                Kd = instance.Options.Kd,
+                                IOnBand = instance.Options.IOnBand,
+                                IntegralLimit = instance.Options.IntegralLimit,
+                                PositionFilterAlpha = instance.Options.PositionFilterAlpha,
+                                TickMs = instance.Options.TickMs
+                            };
+
+                            phidgetsDCMotors[idx] = new PhidgetsDCMotor(
+                                instance.Serial,
+                                instance.HubPort,
+                                connection,
+                                options: opts
+                                )
+
+                            {
+                                //Reversed = false,
+                                Reversed = instance.Reversed,
+								CurrentLimit = instance.CurrentLimit,
+								Acceleration = (instance.Acceleration > 0) ? instance.Acceleration : 50
+                            };
+
+                            if (instance.VoltageInput != null)
+                            {
+                                var voltageIn = new PhidgetsVoltageInput(
+                                  instance.VoltageInput.Serial,
+                                  instance.VoltageInput.HubPort,
+                                  instance.VoltageInput.Channel,
+                                  connection,
+                                  "", "",
+                                   instance.VoltageInput.InputPoints.ToArray(),
+                                   instance.VoltageInput.OutputPoints.ToArray()
+                                  );
+                                voltageIn.MinChangeTriggerValue = instance.VoltageInput.MinChangeTriggerValue;
+
+                                phidgetsDCMotors[idx].VoltageInput = voltageIn;
+                            }
+
+                            await phidgetsDCMotors[idx].InitializeAsync();
+                            phidgetsDCMotors[idx].UseRefTarget("system.gauge.G_PED_ELEV_TRIM");
+
+                            idx++;
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading DC Motor Test");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        idx++;
+                    }
+                }
+
+                // Custom - Trim wheel
+                if (config.CustomTrimWheelInstance != null)
                 {
                     var instance  = config.CustomTrimWheelInstance;
                     try
                     {
                         trimWheel = new Custom_TrimWheel(
-                            instance.Serial, 
-                            instance.HubPort, 
+                            instance.Serial,
+                            instance.HubPort,
                             connection,
+                            instance.Reversed,
                             instance.DirtyUp,
                             instance.DirtyDown,
                             instance.CleanUp,
@@ -435,12 +517,12 @@ namespace Phidgets2Prosim
                             instance.APOnDirty
                         );
 
-						trimWheel.ErrorLog += DisplayErrorLog;
+                        trimWheel.ErrorLog += DisplayErrorLog;
                         trimWheel.InfoLog += DisplayInfoLog;
                     }
                     catch (Exception ex)
                     {
-                        DisplayErrorLog("Error loading config line for Voltage Output");
+                        DisplayErrorLog("Error loading config line for Custom Trim Wheel");
                         DisplayErrorLog(ex.ToString());
                     }
                 }
@@ -470,9 +552,7 @@ namespace Phidgets2Prosim
 					}
 				}
 
-
-
-				DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
+                DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
                 lblPsIP.Text = config.GeneralConfig.ProSimIP;
@@ -488,7 +568,6 @@ namespace Phidgets2Prosim
                 DisplayErrorLog("Error loading config");
                 DisplayErrorLog(ex.ToString());
             }
-
         }
 
         private async void LoadConfigIns()
@@ -502,7 +581,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
-                    .Build();
+					.Build();
 
                 // Wait before starting
                 //var taskDelay = Task.Delay(2000);
@@ -653,7 +732,9 @@ namespace Phidgets2Prosim
                                 instance.InterpolationMode,
                                 instance.CurvePower,
                                 instance.DataInterval,
-                                instance.MinChangeTriggerValue);
+                                instance.MinChangeTriggerValue,
+                                instance.UseRange);
+                            phidgetsVoltageInput[idx].RoundUp = true;
                             phidgetsVoltageInput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsVoltageInput[idx].InfoLog += DisplayInfoLog;
 
@@ -720,6 +801,7 @@ namespace Phidgets2Prosim
 
                     DisplayInfoLog("Loading Buttons done ");
                 }
+                configsInsLoaded = true;
             }
             catch (Exception ex)
             {
@@ -738,6 +820,7 @@ namespace Phidgets2Prosim
 
                 // Deserialize YAML to objects
                 var deserializer = new DeserializerBuilder()
+
                     .Build();
 
                 // Wait before starting
@@ -759,7 +842,10 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            phidgetsInput[idx].Close();
+                            if (phidgetsInput[idx] != null)
+                            {
+                                phidgetsInput[idx].Close();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -852,25 +938,31 @@ namespace Phidgets2Prosim
         {
             if (connection.isConnected)
             {
-                if (!simIsPaused) 
-                { 
-                    DisplayInfoLog("Prosim CONNECTED");
-                    connectionStatusLabel.Text = "Connected";
-                    connectionStatusLabel.ForeColor = Color.LimeGreen;
-                }
-
-                if (simIsPaused)
-                {
-                    DisplayInfoLog("Prosim Paused");
-                    connectionStatusLabel.Text = "Paused";
-                    connectionStatusLabel.ForeColor = Color.OrangeRed;
-                }
+                updatePauseLabel();
             }
             else
             {
                 DisplayInfoLog("Prosim DISCONNECTED");
                 connectionStatusLabel.Text = "Disconnected";
                 connectionStatusLabel.ForeColor = Color.Red;
+            }
+
+        }
+
+        void updatePauseLabel()
+        {
+            if (connection.isConnected)
+            {
+                if (simIsPaused)
+                {
+                    DisplayInfoLog("Prosim Paused");
+                    connectionStatusLabel.Text = "Paused";
+                    connectionStatusLabel.ForeColor = Color.OrangeRed;
+                } else
+                {
+                    connectionStatusLabel.Text = "Connected";
+                    connectionStatusLabel.ForeColor = Color.LimeGreen;
+                }
             }
 
         }
@@ -888,12 +980,10 @@ namespace Phidgets2Prosim
                     // Pause motors
                     if (trimWheel != null)
                     {
-                        trimWheel?.pause(simIsPaused);
+                        trimWheel?.Pause(simIsPaused);
                     }
-                    bldcm_00?.Pause(simIsPaused);
-                    bldcm_01?.Pause(simIsPaused);
 
-                    Invoke(new MethodInvoker(updateStatusLabel));
+                    Invoke(new MethodInvoker(updatePauseLabel));
                 }
                 catch (Exception ex)
                 {
@@ -1005,6 +1095,7 @@ namespace Phidgets2Prosim
 
         private void Form1_Closed(object sender, EventArgs e)
         {
+            Invoke(new MethodInvoker(UnloadConfigIns));
             Debug.WriteLine("closed");
         }
 
@@ -1021,6 +1112,12 @@ namespace Phidgets2Prosim
             tabLog.BackColor = Color.White;
             tabColors[logTabIndex] = Color.Black;
             txtLog.Text = string.Empty;
+        }
+
+        private void btnDCMotor1Go_Click(object sender, EventArgs e)
+        {
+            double target = Convert.ToDouble(txtDCMotor1Target.Text);
+            phidgetsDCMotors[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
         }
     }
 }

@@ -1051,10 +1051,10 @@ PhidgetsAudioInstances:
     HubPort: 5
     Channel: 8
     ProsimDataRef: "Gear_warning"
-  - Serial: 618534
-    HubPort: 5
-    Channel: 9
-    ProsimDataRef: "Autopilot_Disconnect"
+  # - Serial: 618534
+  #   HubPort: 5
+  #   Channel: 9
+  #   ProsimDataRef: "Autopilot_Disconnect"
   - Serial: 618534
     HubPort: 5
     Channel: 10
@@ -1891,7 +1891,14 @@ PhidgetsVoltageInputInstances:
     Channel: 6
     ProsimDataRef: A_ASP_SPKR_VOLUME
     ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
-
+  - Serial: 668522
+    HubPort: 5
+    Channel: 0
+    UseRange: true
+    InputPoints: [0,15]
+    OutputPoints: [1, 255]
+    MinChangeTriggerValue: 0.3
+    ProsimDataRef: A_HUD_BRIGHTNESS
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
@@ -1917,6 +1924,7 @@ PhidgetsBLDCMotorInstances:
 CustomTrimWheelInstance:
     Serial: 618534
     HubPort: 0
+    Reversed: true
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
@@ -1949,4 +1957,34 @@ PhidgetsButtonInstances:
     ProsimDataRef: S_MIP_LIGHTTEST
     InputValue: 2
     OffInputValue: 0 
+
+PhidgetsDCMotorInstances:
+  - Serial: 668066
+    HubPort: 2
+    Acceleration: 30
+    CurrentLimit: 4
+    VoltageInput:
+      Serial: 668066
+      HubPort: 3
+      Channel: 0
+      MinChangeTriggerValue: 0.005
+      InputPoints:  [0.164, 0.292, 0.411, 0.55, 0.616]
+      OutputPoints: [0, 5, 10, 15, 17]
+    Options:
+      MaxVelocity: 0.45
+      MinVelocity: 0.12
+      VelocityBand: 0.6
+      CurveGamma: 0.2
+      DeadbandEnter: 0.10 
+      DeadbandExit: 0.08
+      MaxVelStepPerTick: 0.10
+      Kp: 0.60
+      Ki: 0.12
+      Kd: 0.0
+      IOnBand: 0.5
+      IntegralLimit: 0.04
+      PositionFilterAlpha: 0.85
+      TickMs: 15 
+      SetpointSlewPerTick: 0.012 
+
         

@@ -11,7 +11,7 @@ namespace Phidgets2Prosim
 
     public class Config
     {
-        public GeneralConfig GeneralConfig { get; set; }
+        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig(); //added this
         public List<string> PhidgetsHubsInstances { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
         public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
@@ -20,20 +20,21 @@ namespace Phidgets2Prosim
         public List<PhidgetsMultiInputInst> PhidgetsMultiInputInstances { get; set; }
         public List<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
+        public List<PhidgetsDCMotorInst> PhidgetsDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
-		public List<UserVariableInst> UserVariableInstances { get; set; } 
-		public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
-		public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
+        public List<UserVariableInst> UserVariableInstances { get; set; }
+        public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
+        public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
 
-	}
+    }
 
-	public class UserVariableInst
-	{
-		public string Name { get; set; } // e.g., "ParkingBrakeSwitch", "ParkingBrakeRelay"
-	}
+    public class UserVariableInst
+    {
+        public string Name { get; set; } // e.g., "ParkingBrakeSwitch", "ParkingBrakeRelay"
+    }
 
-	public class PhidgetsOutputInst : PhidgetDevice
+    public class PhidgetsOutputInst : PhidgetDevice
     {
         // (Optional) Wait specified amount of milliseconds before turning on 
         public int? DelayOn { get; set; }
@@ -51,12 +52,12 @@ namespace Phidgets2Prosim
         public double ValueOn { get; set; } = 1;
         // (Optional) Value when off (0 is 0%), default is 0
         public double ValueOff { get; set; } = 0;
-        
+
         // (Optional) Value when dim (0.7 is 70%), default is 0.7
         public double ValueDim { get; set; } = 0.7;
 
-		public string UserVariable { get; set; } = null;
-	}
+        public string UserVariable { get; set; } = null;
+    }
 
     public class PhidgetsAudioInst : PhidgetsOutputInst
     {
@@ -64,16 +65,16 @@ namespace Phidgets2Prosim
 
     public class PhidgetsGateInst : PhidgetDevice
     {
-		// (Optional)Wait specified amount of milliseconds before turning on
-		public int? DelayOn { get; set; } = null;
+        // (Optional)Wait specified amount of milliseconds before turning on
+        public int? DelayOn { get; set; } = null;
 
         public bool Inverse { get; set; } = false;
 
-		// (Optional)Use a different prosim data ref to turn off 
-		public string ProsimDataRefOff { get; set; } = null;
+        // (Optional)Use a different prosim data ref to turn off 
+        public string ProsimDataRefOff { get; set; } = null;
 
-		// (Optional)Wait specified amount of milliseconds and then turn off 
-		public int? MaxTimeOn { get; set; } = null;
+        // (Optional)Wait specified amount of milliseconds and then turn off 
+        public int? MaxTimeOn { get; set; } = null;
     }
 
     public class PhidgetsInputInst : PhidgetDevice
@@ -81,28 +82,30 @@ namespace Phidgets2Prosim
         // The desired value to send to prosim when input is on
         public int InputValue { get; set; }
 
-		// (Optional)The desired value to send to prosim when input is off, by default is 0
-		public int OffInputValue { get; set; } = 0;
-		public string UserVariable { get; set; } = null;
+        // (Optional)The desired value to send to prosim when input is off, by default is 0
+        public int OffInputValue { get; set; } = 0;
+        public string UserVariable { get; set; } = null;
 
-		// (Optional)Additional prosim ref to change with same input
-		public string ProsimDataRef2 { get; set; } = null;
+        // (Optional)Additional prosim ref to change with same input
+        public string ProsimDataRef2 { get; set; } = null;
 
-		// (Optional)Other additional prosim ref to change with same input
-		public string ProsimDataRef3 { get; set; } = null;
-		
-	}
+        // (Optional)Other additional prosim ref to change with same input
+        public string ProsimDataRef3 { get; set; } = null;
 
-    public class PhidgetsVoltageInputInst : PhidgetDevice
+    }
+
+    public class PhidgetsVoltageInputInst : PhidgetDevice       //########################################################
     {
         public string ProsimDataRefOnOff { get; set; } = "";
         public List<double> InputPoints { get; set; } = new List<double> { 0.0, 1.0 };
-        public List<int> OutputPoints { get; set; } = new List<int> { 0, 255 };
-
+        public List<double> OutputPoints { get; set; } = new List<double> { 0, 255 };
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
         public double MinChangeTriggerValue { get; set; } = 0.002;
         public int DataInterval { get; set; } = 50;
         public double CurvePower { get; set; } = 2.0;
+
+        // Use voltage range input instead of ratio
+        public bool UseRange { get; set; } = false;
 
     }
 
@@ -136,52 +139,26 @@ namespace Phidgets2Prosim
         // Acceleration values between 0.1 and 1.0
         public double Acceleration { get; set; }
 
-		//Maximum allowed motor velocity (0..1). Used when the error is large
-		public double? MaxVelocity { get; set; }
-
-		//Minimum velocity to overcome static friction when error is small
-		public double? MinVelocity { get; set; }
-
-		//Error distance (in position units) at which the motor reaches MaxVelocity
-		public double? VelocityBand { get; set; }
-
-		//Curve shaping factor for error-to-velocity mapping (0.5–1.0 = softer near zero)
-		public double? CurveGamma { get; set; }
-
-		//Distance threshold to enter the settled (stopped) zone.
-		public double? DeadbandEnter { get; set; }
-
-		//Distance threshold to exit the settled (stopped) zone (should be > DeadbandEnter)
-		public double? DeadbandExit { get; set; }
-
-		//Maximum allowed change in commanded velocity per control loop tick (slew limiter)
-		public double?  MaxVelStepPerTick { get; set; }
-
-		//Proportional gain (optional) to reduce steady-state error
-		public double? Kp { get; set; }
-
-		//Integral gain (optional) to remove small bias error (start at 0.0)
-		public double? Ki { get; set; }
-
-		//Derivative gain (damping) on error rate to suppress oscillations
-		public double? Kd { get; set; }
-
-		// Only integrate when |error| ≤ this band (prevents wind-up and hunting).
-		// Tune ~6–12 in your position units.
-		public double? IOnBand { get; set; }
-
-		//Maximum absolute integral term value to prevent wind-up
-		public double? IntegralLimit { get; set; }
-
-		//Smoothing factor for low-pass filtering of position feedback (0..1, higher = less filtering)
-		public double? PositionFilterAlpha { get; set; }
-
-		//Interval (in milliseconds) for the control loop tick. Lower = faster updates
-		public int? TickMs { get; set; }
+        public MotorTuningOptions Options  { get; set; } = new MotorTuningOptions();
+    }
 
 
+    public class PhidgetsDCMotorInst : PhidgetDevice   
+    {
+        public string prosimDataRefBwd { get; set; } = "";
 
-	}
+        public string prosimDataRefFwd { get; set; } = "";
+
+        // Acceleration values between 1 and 100
+        public double Acceleration { get; set; }
+		public bool Reversed { get; set; }
+        public double CurrentLimit { get; set; } = 4;
+
+		public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
+
+        public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
+    }
+
 
     public class PhidgetsVoltageOutputInst : PhidgetDevice
     {
@@ -195,6 +172,9 @@ namespace Phidgets2Prosim
 
     public class CustomTrimWheelInst : PhidgetDevice
     {
+        // Reverse the direction of the motor
+        public bool Reversed { get; set; } = false;
+
         // Speed when dirty config. Nose up
         public double DirtyUp { get; set; }
 
@@ -212,9 +192,9 @@ namespace Phidgets2Prosim
 
         // Speed when Auto Pilot is on. Dirty config
         public double APOnDirty { get; set; }
-	}
+    }
 
-	public class PhidgetsButtonInst : PhidgetDevice
+    public class PhidgetsButtonInst : PhidgetDevice
     {
         // Name of the button
         public string Name { get; set; }
@@ -235,8 +215,8 @@ namespace Phidgets2Prosim
         public int OutputBlinkSlowIntervalMs { get; set; } = 600;
         // Default value used for dim output state when not specified
         public double OutputDefaultDimValue { get; set; } = 0.7;
-		public class VariableInst { public string Name { get; set; } }
-	}
+        public class VariableInst { public string Name { get; set; } }
+    }
     public class CustomParkingBrakeInst
     {
         public string SwitchVariable { get; set; }
