@@ -192,6 +192,10 @@ namespace Phidgets2Prosim
 
         // Speed when Auto Pilot is on. Dirty config
         public double APOnDirty { get; set; }
+
+        // Range for motor speed. -1 Is full reverse, 1 is full forward. 0 is stopped
+        public double[] Range { get; set; } = new double[] { -1.0, 1.0 };
+
     }
 
     public class PhidgetsButtonInst : PhidgetDevice
