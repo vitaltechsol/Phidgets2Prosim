@@ -514,7 +514,8 @@ namespace Phidgets2Prosim
                             instance.CleanUp,
                             instance.CleanDown,
                             instance.APOnDirty,
-                            instance.APOnDirty
+                            instance.APOnDirty,
+                            instance.Range.ToArray()
                         );
 
                         trimWheel.ErrorLog += DisplayErrorLog;
@@ -526,7 +527,6 @@ namespace Phidgets2Prosim
                         DisplayErrorLog(ex.ToString());
                     }
                 }
-
 
 				// Custom - Parking Brake
 				if (config.CustomParkingBrakeInstance != null )
