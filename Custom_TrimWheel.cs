@@ -54,7 +54,8 @@ namespace Phidgets2Prosim
             double cleanUp, double cleanDown,
             double APOnDirty,
             double APOnClean,
-            double[] range
+			bool pulsateMotorConfig,
+			double[] range
         )
         {
             dcm = new PhidgetsDCMotor(serial, hubPort, connection)
@@ -101,8 +102,9 @@ namespace Phidgets2Prosim
             this.cleanDown = cleanDown;
             this.APOnDirty = APOnDirty;
             this.APOnClean = APOnClean;
+            this.pulsateMotor = pulsateMotorConfig;
 
-            dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
+			dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
             dataRefAP.onDataChange += DataRef_onAPDataChange;
 
             // ProSim bindings (kept)
@@ -244,8 +246,8 @@ namespace Phidgets2Prosim
                         // Kickback when stopping
                         currentVel = 0;
                         // Kick in opposite logical direction (+0.5)
-                    //    dcm.SetTargetVelocity(MapVelocity(0.5));
-                    //    Thread.Sleep(200);
+                        dcm.SetTargetVelocity(MapVelocity(0.5));
+                        Thread.Sleep(200);
                         dcm.SetTargetVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -280,8 +282,8 @@ namespace Phidgets2Prosim
                         }
                         currentVel = 0;
                         // Kick in opposite logical direction (-0.5)
-                  //      dcm.SetTargetVelocity(MapVelocity(-0.5));
-                  //      Thread.Sleep(200);
+                        dcm.SetTargetVelocity(MapVelocity(-0.5));
+                        Thread.Sleep(200);
                         dcm.SetTargetVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -308,6 +310,7 @@ namespace Phidgets2Prosim
                 if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0; }
                 dcm.SetTargetVelocity(MapVelocity(currentVel));
             }
+
         }
 
 
