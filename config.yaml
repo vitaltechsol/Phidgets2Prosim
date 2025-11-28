@@ -65,7 +65,7 @@ PhidgetsBLDCMotorInstances:
 PhidgetsDCMotorInstances:
   - Serial: 746062
     HubPort: 3
-    Acceleration: 100
+    Acceleration: 70
     Reversed: false
     CurrentLimit: 4.0
     
@@ -73,25 +73,25 @@ PhidgetsDCMotorInstances:
       Serial: 742347
       HubPort: 2
       Channel: -1 # IsHubPortDevice = true (-1) false (0)
-      MinChangeTriggerValue: 0.002
-      InputPoints: [0.275, 0.412, 0.559, 0.7112, 0.76]
+      MinChangeTriggerValue: 0.003
+      InputPoints: [0.264, 0.4153, 0.5517, 0.7004, 0.7598] # from Phidgets: @0-.264, @5-.4178, @10-.5517, @15-.7004, @17-.7598
       OutputPoints: [0, 5, 10, 15, 17]
     Options:
-      MaxVelocity: 0.9
-      MinVelocity: 0.3
-      VelocityBand: 0.6
-      CurveGamma: 0.2
-      DeadbandEnter: 0.04
-      DeadbandExit: 0.08
-      MaxVelStepPerTick: 0.10
-      Kp: 0.60
-      Ki: 0.12
-      Kd: 0
-      IOnBand: 0.5
-      IntegralLimit: 0.04
-      PositionFilterAlpha: 0.86
+      MaxVelocity: 0.30
+      MinVelocity: 0.22
+      VelocityBand: 0.45
+      CurveGamma: 1.2
+      DeadbandEnter: 0.02
+      DeadbandExit: 0.04
+      MaxVelStepPerTick: 0.04
+      Kp: 0.026
+      Ki: 0
+      Kd: 0.0045
+      IOnBand: 0.04
+      IntegralLimit: 0.012
+      PositionFilterAlpha: 0.40
       TickMs: 15
-      SetpointSlewPerTick: 0.015
+      SetpointSlewPerTick: 0.04
 
 
 PhidgetsGateInstances:
@@ -165,3 +165,14 @@ CustomParkingBrakeInstance:
   RelayVariable: BrakeLatchRelay
   ToeBrakeThreshold: 500
 
+CustomTrimWheelInstance:
+    Serial: 742347
+    HubPort: 5
+    Reversed: true
+    DirtyUp: 1
+    DirtyDown: 0.8
+    CleanUp: 0.6
+    CleanDown: 0.6
+    APOnClean: 0.7
+    APOnDirty: 0.5
+    Range: [0,1]

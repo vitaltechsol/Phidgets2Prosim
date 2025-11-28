@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,14 +74,22 @@ namespace Phidgets2Prosim
                 // Default behavior: Phidgets-style -1..1
                 rangeMin = -1.0;
                 rangeMax = 1.0;
-            }
+				dcm.Centered01Input = false;   // treat as standard [-1,1]
+			}
             else
             {
                 rangeMin = range[0];
                 rangeMax = range[1];
-            }
 
-            DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+				// If the configured range is non-negative (e.g. [0,1]),
+				// interpret it as a centered 0..1 range where 0.5 = stop.
+                dcm.Centered01Input = (rangeMin >= 0.0);
+			}
+
+			
+			Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3} centered01={dcm.Centered01Input}");
+
+			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
@@ -121,8 +130,13 @@ namespace Phidgets2Prosim
             double t = (v + 1.0) / 2.0;
 
             // Map normalized [0,1] into [rangeMin, rangeMax]
-            return rangeMin + t * (rangeMax - rangeMin);
-        }
+            double mapped = rangeMin + t * (rangeMax - rangeMin);
+
+            Debug.WriteLine($"[TrimWheel MapVelocity] logical={v:F3} mapped={mapped:F3} range=[{rangeMin:F3},{rangeMax:F3}]");
+
+			return mapped;
+
+		}
 
         private async void DataRef_onFlapsDataChange(DataRef dataRef)
         {
@@ -230,8 +244,8 @@ namespace Phidgets2Prosim
                         // Kickback when stopping
                         currentVel = 0;
                         // Kick in opposite logical direction (+0.5)
-                        dcm.SetTargetVelocity(MapVelocity(0.5));
-                        Thread.Sleep(200);
+                    //    dcm.SetTargetVelocity(MapVelocity(0.5));
+                    //    Thread.Sleep(200);
                         dcm.SetTargetVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -266,8 +280,8 @@ namespace Phidgets2Prosim
                         }
                         currentVel = 0;
                         // Kick in opposite logical direction (-0.5)
-                        dcm.SetTargetVelocity(MapVelocity(-0.5));
-                        Thread.Sleep(200);
+                  //      dcm.SetTargetVelocity(MapVelocity(-0.5));
+                  //      Thread.Sleep(200);
                         dcm.SetTargetVelocity(MapVelocity(currentVel));
                     }
                 }
