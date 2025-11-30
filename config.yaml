@@ -168,7 +168,7 @@ CustomParkingBrakeInstance:
 CustomTrimWheelInstance:
     Serial: 742347
     HubPort: 5
-    Reversed: true
+    Reversed: false
     DirtyUp: 1
     DirtyDown: 0.8
     CleanUp: 0.6
