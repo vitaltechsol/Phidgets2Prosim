@@ -357,7 +357,7 @@ namespace Phidgets2Prosim
         // ---- Abstract for concrete motors ----------------------------------
 
         /// <summary>Send a velocity command in [-1..1] to the hardware.</summary>
-        protected abstract void ApplyVelocity(double velocity);
+        public abstract void ApplyVelocity(double velocity);
 
         // ---- Mapping / Math helpers ----------------------------------------
 

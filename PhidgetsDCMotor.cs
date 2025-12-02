@@ -19,7 +19,6 @@ namespace Phidgets2Prosim
 
         // ---- Motor direction helpers ----------------------------------------
         public bool Reversed { get; set; } = false;
-		public bool Centered01Input { get; set; } = false;
 		public double CurrentLimit { get; set; }
 
         public double TargetBrakingStrength { get; set; }
@@ -71,107 +70,21 @@ namespace Phidgets2Prosim
             }
         }
 
-		/*        protected override void ApplyVelocity(double velocity)
-				{
-					// Clamp and apply direction
-					double v = Math.Max(-1.0, Math.Min(1.0, velocity));
-					if (Reversed) v = -v;
+        public override void ApplyVelocity(double velocity)
+        {
+            double v = velocity;
+            if (Reversed) v = -v;
+            if (!_motor.Attached) return;
 
-					if (!_motor.Attached) return;
+            _motor.TargetVelocity = v;
+            CurrentVelocity = v;
+            Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
+        }
 
-					_motor.TargetVelocity = v;
-					CurrentVelocity = v;
-					Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
-				}
-		*/
+        // ---- Hook ProSim target ref to controller ---------------------------
 
-
-		protected override void ApplyVelocity(double velocity)
-		{
-			double v;
-
-			if (Centered01Input)
-			{
-				// Expect input in [0,1] with 0.5 = stop.
-				double x = Math.Max(0.0, Math.Min(1.0, velocity)); 
-                // clamp to [0,1]
-				// Map [0,1] with center 0.5 back to [-1,1]:
-				// 0   -> -1, 0.5 -> 0, 1 -> +1
-				v = (x - 0.5) * 2.0;
-			}
-			else
-			{
-				// Standard Phidgets-style: already in [-1,1]
-				v = Math.Max(-1.0, Math.Min(1.0, velocity));
-			}
-
-			if (Reversed) v = -v;
-
-			if (!_motor.Attached) return;
-
-			_motor.TargetVelocity = v;
-			CurrentVelocity = v;
-			Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed}, centered01={Centered01Input})");
-		}
-
-
-
-		/*       public void SetTargetVelocity(double velocity)
-			   {
-				   // Clamp and apply direction
-				   double v = Math.Max(-1.0, Math.Min(1.0, velocity));
-				   if (Reversed) v = -v;
-
-				   if (!_motor.Attached) return;
-
-				   _motor.TargetVelocity = v;
-				   CurrentVelocity = v;
-				   Debug.WriteLine($"[SetTargetVelocity] v={v:F3} (reversed={Reversed})");
-			   }
-		*/
-
-		public void SetTargetVelocity(double velocity)
-		{
-			double v;
-
-			if (Centered01Input)
-			{
-				//
-				// In centered-0..1 mode:
-				//   0.0 = backwards
-				//   0.5 = stop
-				//   1.0 = forwards
-				//
-				// SEND RAW 0..1 DIRECTLY TO PHIDGETS
-				//
-				v = Math.Max(0.0, Math.Min(1.0, velocity));
-			}
-			else
-			{
-				//
-				// Normal [-1,1] mode
-				//
-				v = Math.Max(-1.0, Math.Min(1.0, velocity));
-				if (Reversed) v = -v;
-			}
-
-			if (!_motor.Attached) return;
-
-			_motor.TargetVelocity = v;
-			CurrentVelocity = v;
-			Debug.WriteLine(
-				$"[SetTargetVelocity] v={v:F3} (reversed={Reversed}, centered01={Centered01Input})"
-			);
-		}
-
-
-
-
-
-		// ---- Hook ProSim target ref to controller ---------------------------
-
-		/// <summary>Subscribe to a ProSim data ref; on change, move to mapped target.</summary>
-		public void UseRefTarget(string refTargetName)
+        /// <summary>Subscribe to a ProSim data ref; on change, move to mapped target.</summary>
+        public void UseRefTarget(string refTargetName)
         {
             if (string.IsNullOrWhiteSpace(refTargetName)) return;
 

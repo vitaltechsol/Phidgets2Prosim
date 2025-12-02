@@ -193,8 +193,8 @@ namespace Phidgets2Prosim
         // Speed when Auto Pilot is on. Dirty config
         public double APOnDirty { get; set; }
 
-		// DC Motor Pulsation, true for DC motors, false for PWM output-only signals
-		public bool PulsateMotor { get; set; }
+        // Accelerate the trim wheel as it spins
+        public bool Accelerate { get; set; } = true;
 
 		// Range for motor speed. -1 Is full reverse, 1 is full forward. 0 is stopped. [-1, 1]
 		public List<double> Range { get; set; } = new List<double> { -1.0, 1.0 };

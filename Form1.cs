@@ -515,7 +515,7 @@ namespace Phidgets2Prosim
                             instance.CleanDown,
                             instance.APOnDirty,
                             instance.APOnDirty,
-							instance.PulsateMotor,
+							instance.Accelerate,
 							instance.Range.ToArray()
                         );
 

@@ -33,9 +33,9 @@ namespace Phidgets2Prosim
         bool isMotorMoving = false;
         bool isPaused = false;
         System.Timers.Timer pulsateTimer;
-        public bool pulsateMotor { get; set; } = true;
-        public int PulsateMotorInterval { get; set; } = 550;
-        public int PulsateMotorIntervalPause { get; set; } = 200;
+        public bool AccelerateMotor { get; set; } = true;
+        public int AccelerateMotorRate { get; set; } = 550;
+        public int AccelerateMotorIntervalPause { get; set; } = 200;
         private int pulseIntervalPauseReduced = 0;
 
         // Mapping for physical motor range
@@ -54,7 +54,7 @@ namespace Phidgets2Prosim
             double cleanUp, double cleanDown,
             double APOnDirty,
             double APOnClean,
-			bool pulsateMotorConfig,
+			bool accelerateMotor,
 			double[] range
         )
         {
@@ -75,20 +75,15 @@ namespace Phidgets2Prosim
                 // Default behavior: Phidgets-style -1..1
                 rangeMin = -1.0;
                 rangeMax = 1.0;
-				dcm.Centered01Input = false;   // treat as standard [-1,1]
 			}
             else
             {
                 rangeMin = range[0];
                 rangeMax = range[1];
-
-				// If the configured range is non-negative (e.g. [0,1]),
-				// interpret it as a centered 0..1 range where 0.5 = stop.
-                dcm.Centered01Input = (rangeMin >= 0.0);
 			}
 
 			
-			Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3} centered01={dcm.Centered01Input}");
+			Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3}");
 
 			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
@@ -102,7 +97,7 @@ namespace Phidgets2Prosim
             this.cleanDown = cleanDown;
             this.APOnDirty = APOnDirty;
             this.APOnClean = APOnClean;
-            this.pulsateMotor = pulsateMotorConfig;
+            this.AccelerateMotor = accelerateMotor;
 
 			dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
             dataRefAP.onDataChange += DataRef_onAPDataChange;
@@ -213,7 +208,7 @@ namespace Phidgets2Prosim
                 var value = Convert.ToBoolean(dataRef.value);
                 Debug.WriteLine("trim value " + dataRef.value + " | Paused:" + isPaused);
 
-                pulseIntervalPauseReduced = PulsateMotorIntervalPause;
+                pulseIntervalPauseReduced = AccelerateMotorIntervalPause;
 
                 if (dataRef.name == prosimDataRefFwd && !isPaused)
                 {
@@ -222,14 +217,14 @@ namespace Phidgets2Prosim
                         // Forward gate ON -> logical negative velocity
                         currentVel = targetFwdVelocity * -1;
                         isMotorMoving = true;
-                        dcm.SetTargetVelocity(MapVelocity(currentVel));
-                        if (pulsateMotor)
+                        dcm.ApplyVelocity(MapVelocity(currentVel));
+                        if (AccelerateMotor)
                         {
                             if (pulsateTimer == null)
                             {
                                 pulsateTimer = new System.Timers.Timer();
-                                pulsateTimer.Interval = PulsateMotorInterval;
-                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Interval = AccelerateMotorRate;
+                                pulsateTimer.Elapsed += Accelerate;
                                 pulsateTimer.Start();
                             }
                         }
@@ -246,9 +241,9 @@ namespace Phidgets2Prosim
                         // Kickback when stopping
                         currentVel = 0;
                         // Kick in opposite logical direction (+0.5)
-                        dcm.SetTargetVelocity(MapVelocity(0.5));
+                        dcm.ApplyVelocity(MapVelocity(0.5));
                         Thread.Sleep(200);
-                        dcm.SetTargetVelocity(MapVelocity(currentVel));
+                        dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }
 
@@ -259,14 +254,14 @@ namespace Phidgets2Prosim
                         // Backward gate ON -> logical positive velocity
                         currentVel = targetBwdVelocity;
                         isMotorMoving = true;
-                        dcm.SetTargetVelocity(MapVelocity(currentVel));
-                        if (pulsateMotor)
+                        dcm.ApplyVelocity(MapVelocity(currentVel));
+                        if (AccelerateMotor)
                         {
                             if (pulsateTimer == null)
                             {
                                 pulsateTimer = new System.Timers.Timer();
-                                pulsateTimer.Interval = PulsateMotorInterval;
-                                pulsateTimer.Elapsed += PulsateMotor;
+                                pulsateTimer.Interval = AccelerateMotorRate;
+                                pulsateTimer.Elapsed += Accelerate;
                                 pulsateTimer.Start();
                             }
                         }
@@ -282,9 +277,9 @@ namespace Phidgets2Prosim
                         }
                         currentVel = 0;
                         // Kick in opposite logical direction (-0.5)
-                        dcm.SetTargetVelocity(MapVelocity(-0.5));
+                        dcm.ApplyVelocity(MapVelocity(-0.5));
                         Thread.Sleep(200);
-                        dcm.SetTargetVelocity(MapVelocity(currentVel));
+                        dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }
             }
@@ -294,25 +289,24 @@ namespace Phidgets2Prosim
                 currentVel = 0;
                 Debug.WriteLine(ex.ToString());
                 Debug.WriteLine("value " + dataRef.value);
-                dcm.SetTargetVelocity(MapVelocity(0)); // ensure motor stopped
+                dcm.ApplyVelocity(MapVelocity(0)); // ensure motor stopped
             }
 
         }
 
-        private async void PulsateMotor(object sender, System.Timers.ElapsedEventArgs e)
+        private async void Accelerate(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (isMotorMoving)
             {
                 // Pause: motor logical 0 (stop), then resume current logical velocity
-                dcm.SetTargetVelocity(MapVelocity(0));
+                dcm.ApplyVelocity(MapVelocity(0));
                 await Task.Delay(pulseIntervalPauseReduced);
                 pulseIntervalPauseReduced -= 30;
                 if (pulseIntervalPauseReduced < 0) { pulseIntervalPauseReduced = 0; }
-                dcm.SetTargetVelocity(MapVelocity(currentVel));
+                dcm.ApplyVelocity(MapVelocity(currentVel));
             }
 
         }
-
 
         public void Pause(bool isPaused)
         {
