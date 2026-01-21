@@ -54,6 +54,8 @@ namespace Phidgets2Prosim
         private int? pendingStateChange = null;
 
         private double _scaledValue = 0.0;
+        private readonly DataRef _dataRef;
+
         public double ScaledValue
         {
             get => _scaledValue;
@@ -92,6 +94,7 @@ namespace Phidgets2Prosim
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
             UseRange = useRange;
+            _dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
 
             if (InterpolationMode == InterpolationMode.Spline)
             {
@@ -101,7 +104,7 @@ namespace Phidgets2Prosim
             {
                 OpenRange();
             }
-           
+
             else
             {
                 Open();
@@ -140,12 +143,11 @@ namespace Phidgets2Prosim
 
             if (ProsimDataRef != null && ProsimDataRef != "")
             {
-                DataRef dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
                 try
                 {
                     SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef} " +
                         $"| Use Range: {UseRange}"); 
-                    dataRef.value = Convert.ToInt32(valueScaled);
+                    _dataRef.value = Convert.ToInt32(valueScaled);
                 }
                 catch (Exception ex)
                 {

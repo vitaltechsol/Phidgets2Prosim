@@ -1,15 +1,18 @@
 ﻿using Phidget22;
+using Phidget22;
 using ProSimSDK;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Windows.Forms.AxHost;
 
 namespace Phidgets2Prosim
 {
@@ -54,10 +57,15 @@ namespace Phidgets2Prosim
             double cleanUp, double cleanDown,
             double APOnDirty,
             double APOnClean,
-			bool accelerateMotor,
-			double[] range
+            bool accelerateMotor,
+            double[] range,
+            PhidgetsEncoderInst encoder = null
         )
         {
+            Serial = serial;
+            HubPort = hubPort;
+            Connection = connection;
+
             dcm = new PhidgetsDCMotor(serial, hubPort, connection)
             {
                 Reversed = reversed,
@@ -75,17 +83,17 @@ namespace Phidgets2Prosim
                 // Default behavior: Phidgets-style -1..1
                 rangeMin = -1.0;
                 rangeMax = 1.0;
-			}
+            }
             else
             {
                 rangeMin = range[0];
                 rangeMax = range[1];
-			}
+            }
 
-			
-			Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3}");
 
-			DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
+            Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3}");
+
+            DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
             var dataRefTrim = new DataRef("system.gauge.G_PED_ELEV_TRIM", 500, connection);
@@ -99,7 +107,7 @@ namespace Phidgets2Prosim
             this.APOnClean = APOnClean;
             this.AccelerateMotor = accelerateMotor;
 
-			dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
+            dataRefSpeed.onDataChange += DataRef_onFlapsDataChange;
             dataRefAP.onDataChange += DataRef_onAPDataChange;
 
             // ProSim bindings (kept)
@@ -107,6 +115,23 @@ namespace Phidgets2Prosim
             dataRef.onDataChange += DataRef_onDataChange;
             DataRef dataRef2 = new DataRef(prosimDataRefBwd, 100, connection);
             dataRef2.onDataChange += DataRef_onDataChange;
+
+            // If encoder for manual trim is configured, create and enable it
+            if (encoder != null)
+            {
+                var trimWheelEncoder = new PhidgetsEncoder(
+                    deviceSerialNumber: encoder.Serial,
+                    hubPort: encoder.HubPort,
+                    channel: encoder.Channel,
+                    prosimDataRef: "system.encoders.E_TRIM_WHEEL",
+                    connection: Connection,
+                    shouldUpdate: () => currentVel == 0
+                );
+                trimWheelEncoder.Enabled = true;
+                trimWheelEncoder.ScaleFactor = encoder.ScaleFactor;
+                trimWheelEncoder.InfoLog += SendInfoLog;
+                trimWheelEncoder.ErrorLog += SendErrorLog;
+            }
         }
 
         /// <summary>
@@ -129,11 +154,11 @@ namespace Phidgets2Prosim
             // Map normalized [0,1] into [rangeMin, rangeMax]
             double mapped = rangeMin + t * (rangeMax - rangeMin);
 
-            Debug.WriteLine($"[TrimWheel MapVelocity] logical={v:F3} mapped={mapped:F3} range=[{rangeMin:F3},{rangeMax:F3}]");
+            // Debug.WriteLine($"[TrimWheel MapVelocity] logical={v:F3} mapped={mapped:F3} range=[{rangeMin:F3},{rangeMax:F3}]");
 
-			return mapped;
+            return mapped;
 
-		}
+        }
 
         private async void DataRef_onFlapsDataChange(DataRef dataRef)
         {
@@ -241,8 +266,8 @@ namespace Phidgets2Prosim
                         // Kickback when stopping
                         currentVel = 0;
                         // Kick in opposite logical direction (+0.5)
-                        dcm.ApplyVelocity(MapVelocity(0.5));
-                        Thread.Sleep(200);
+                        dcm.ApplyVelocity(MapVelocity(0.8));
+                        Thread.Sleep(250);
                         dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -277,8 +302,8 @@ namespace Phidgets2Prosim
                         }
                         currentVel = 0;
                         // Kick in opposite logical direction (-0.5)
-                        dcm.ApplyVelocity(MapVelocity(-0.5));
-                        Thread.Sleep(200);
+                        dcm.ApplyVelocity(MapVelocity(-0.8));
+                        Thread.Sleep(250);
                         dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }

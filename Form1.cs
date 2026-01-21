@@ -315,7 +315,7 @@ namespace Phidgets2Prosim
                         {
                             phidgetsOutput[idx] = new PhidgetsOutput(
                                     instance.Serial, instance.HubPort, instance.Channel,
-                                    "system.audio." + instance.ProsimDataRef, connection, false,
+                                    "system.audio." + instance.ProsimDataRef, connection, true,
                                     instance.ProsimDataRefOff != null ? "system.audio." + instance.ProsimDataRefOff : null
                                  );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
@@ -516,7 +516,8 @@ namespace Phidgets2Prosim
                             instance.APOnDirty,
                             instance.APOnDirty,
 							instance.Accelerate,
-							instance.Range.ToArray()
+							instance.Range.ToArray(),
+                            instance.Encoder
                         );
 
                         trimWheel.ErrorLog += DisplayErrorLog;

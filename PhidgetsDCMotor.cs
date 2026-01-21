@@ -78,7 +78,7 @@ namespace Phidgets2Prosim
 
             _motor.TargetVelocity = v;
             CurrentVelocity = v;
-            Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
+            // Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
         }
 
         // ---- Hook ProSim target ref to controller ---------------------------

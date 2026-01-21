@@ -791,32 +791,61 @@ PhidgetsOutputInstances:
 
   - Serial: 745566
     HubPort: 1
-    Channel: 8
+    Channel: 0
     ProsimDataRef: I_ASP_VHF_1_SEND
   - Serial: 745566
     HubPort: 1
-    Channel: 9
+    Channel: 2
     ProsimDataRef: I_ASP_VHF_2_SEND
   - Serial: 745566
     HubPort: 1
-    Channel: 10
+    Channel: 3
     ProsimDataRef: I_ASP_HF_1_SEND
   - Serial: 745566
     HubPort: 1
-    Channel: 11
-    ProsimDataRef: I_ASP_FLT_SEND
+    Channel: 4
+    ProsimDataRef: I_ASP_HF_2_SEND
   - Serial: 745566
     HubPort: 1
-    Channel: 12
+    Channel: 5
     ProsimDataRef: I_ASP_SVC_SEND
   - Serial: 745566
     HubPort: 1
-    Channel: 13
+    Channel: 6
+    ProsimDataRef: I_ASP_FLT_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 7
     ProsimDataRef: I_ASP_PA_SEND
+ 
+  - Serial: 745566
+    HubPort: 1
+    Channel: 8
+    ProsimDataRef: I_ASP2_VHF_1_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 9
+    ProsimDataRef: I_ASP2_VHF_2_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 10
+    ProsimDataRef: I_ASP2_HF_1_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 11
+    ProsimDataRef: I_ASP2_FLT_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 12
+    ProsimDataRef: I_ASP2_SVC_SEND
+  - Serial: 745566
+    HubPort: 1
+    Channel: 13
+    ProsimDataRef: I_ASP2_PA_SEND
   - Serial: 745566
     HubPort: 1
     Channel: 14
-    ProsimDataRef: I_ASP_VHF_3_SEND
+    ProsimDataRef: I_ASP2_VHF_3_SEND
 
   - Serial: 668659
     HubPort: 3
@@ -1051,10 +1080,10 @@ PhidgetsAudioInstances:
     HubPort: 5
     Channel: 8
     ProsimDataRef: "Gear_warning"
-  # - Serial: 618534
-  #   HubPort: 5
-  #   Channel: 9
-  #   ProsimDataRef: "Autopilot_Disconnect"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 9
+    ProsimDataRef: "Autopilot_Disconnect"
   - Serial: 618534
     HubPort: 5
     Channel: 10
@@ -1559,38 +1588,82 @@ PhidgetsInputInstances:
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
-    Channel: 8
+    Channel: 0
     ProsimDataRef: S_ASP_VHF_1_SEND
     InputValue: 0
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
-    Channel: 9
+    Channel: 1
     ProsimDataRef: S_ASP_VHF_2_SEND
     InputValue: 0
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
-    Channel: 10
+    Channel: 2
     ProsimDataRef: S_ASP_HF_1_SEND
     InputValue: 0
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
-    Channel: 11
+    Channel: 3
+    ProsimDataRef: S_ASP_HF_2_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 4
+    ProsimDataRef: S_ASP_SVC_SEND
+    InputValue: 0
+    OffInputValue: 5
+  - Serial: 745566
+    HubPort: 0
+    Channel: 5
     ProsimDataRef: S_ASP_FLT_SEND
     InputValue: 0
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
-    Channel: 12
+    Channel: 6
     ProsimDataRef: S_ASP_PA_SEND
+    InputValue: 0
+    OffInputValue: 1
+
+
+  - Serial: 745566
+    HubPort: 0
+    Channel: 8
+    ProsimDataRef: S_ASP2_VHF_1_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 9
+    ProsimDataRef: S_ASP2_VHF_2_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 10
+    ProsimDataRef: S_ASP2_HF_1_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 11
+    ProsimDataRef: S_ASP2_FLT_SEND
+    InputValue: 0
+    OffInputValue: 1
+  - Serial: 745566
+    HubPort: 0
+    Channel: 12
+    ProsimDataRef: S_ASP2_PA_SEND
     InputValue: 0
     OffInputValue: 1
   - Serial: 745566
     HubPort: 0
     Channel: 13
-    ProsimDataRef: S_ASP_SVC_SEND
+    ProsimDataRef: S_ASP2_SVC_SEND
     InputValue: 0
     OffInputValue: 1
 
@@ -1856,41 +1929,84 @@ PhidgetsVoltageOutputInstances:
     ProsimDataRef: G_OH_OUTFLOW_VALVE
 
 PhidgetsVoltageInputInstances: 
+
   - Serial: 745566
-    HubPort: 2
+    HubPort: 3
     Channel: 0
     ProsimDataRef: A_ASP_VHF_1_VOLUME
     ProsimDataRefOnOff: S_ASP_VHF_1_REC_LATCH
   - Serial: 745566
-    HubPort: 2
+    HubPort: 3
     Channel: 1
     ProsimDataRef: A_ASP_VHF_2_VOLUME
     ProsimDataRefOnOff: S_ASP_VHF_2_REC_LATCH
   - Serial: 745566
-    HubPort: 2
+    HubPort: 3
     Channel: 2
+    ProsimDataRef: A_ASP_HF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_HF_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 3
+    Channel: 3
+    ProsimDataRef: A_ASP_SPKR_VOLUME
+    ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
+  - Serial: 745566
+    HubPort: 3
+    Channel: 4
+    ProsimDataRef: A_ASP_PA_VOLUME
+    ProsimDataRefOnOff: S_ASP_PA_REC_LATCH
+  - Serial: 745566
+    HubPort: 3
+    Channel: 5
+
+    ProsimDataRef: A_ASP_FLT_VOLUME
+    ProsimDataRefOnOff: S_ASP_FLT_REC_LATCH
+  - Serial: 745566
+    HubPort: 3
+    Channel: 6
+    ProsimDataRef: A_ASP_ADF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_ADF_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 3
+    Channel: 7
+    ProsimDataRef: A_ASP_NAV_1_VOLUME
+    ProsimDataRefOnOff: S_ASP_NAV_1_REC_LATCH
+
+  - Serial: 745566
+    HubPort: 2
+    Channel: 0
     ProsimDataRef: A_ASP2_VHF_1_VOLUME
     ProsimDataRefOnOff: S_ASP2_VHF_1_REC_LATCH
   - Serial: 745566
     HubPort: 2
+    Channel: 1
+    ProsimDataRef: A_ASP2_VHF_2_VOLUME
+    ProsimDataRefOnOff: S_ASP2_VHF_2_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
+    Channel: 2
+    ProsimDataRef: A_ASP2_HF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP2_HF_1_REC_LATCH
+  - Serial: 745566
+    HubPort: 2
     Channel: 3
-    ProsimDataRef: A_ASP_FLT_VOLUME
-    ProsimDataRefOnOff: S_ASP_FLT_REC_LATCH
+    ProsimDataRef: A_ASP2_FLT_VOLUME
+    ProsimDataRefOnOff: S_ASP2_FLT_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 4
-    ProsimDataRef: A_ASP_NAV_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_NAV_1_REC_LATCH
+    ProsimDataRef: A_ASP2_NAV_1_VOLUME
+    ProsimDataRefOnOff: S_ASP2_NAV_1_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 5
-    ProsimDataRef: A_ASP_ADF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_ADF_1_REC_LATCH
+    ProsimDataRef: A_ASP2_ADF_1_VOLUME
+    ProsimDataRefOnOff: S_ASP2_ADF_1_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 6
-    ProsimDataRef: A_ASP_SPKR_VOLUME
-    ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
+    ProsimDataRef: A_ASP2_SPKR_VOLUME
+    ProsimDataRefOnOff: S_ASP2_SPKR_REC_LATCH
   - Serial: 668522
     HubPort: 5
     Channel: 0
@@ -1927,10 +2043,15 @@ CustomTrimWheelInstance:
     Reversed: true
     DirtyUp: 1
     DirtyDown: 0.8
-    CleanUp: 0.6
-    CleanDown: 0.6
-    APOnClean: 0.7
-    APOnDirty: 0.5
+    CleanUp: 0.4
+    CleanDown: 0.4
+    APOnClean: 0.5
+    APOnDirty: 0.3
+    Encoder:
+      Serial: 618534
+      Channel: 0
+      HubPort: 0
+      ScaleFactor: 0.15
 
 PhidgetsButtonInstances:
   - Name: Door Unlock
@@ -1986,5 +2107,4 @@ PhidgetsDCMotorInstances:
       PositionFilterAlpha: 0.85
       TickMs: 15 
       SetpointSlewPerTick: 0.012 
-
         

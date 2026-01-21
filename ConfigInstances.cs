@@ -139,11 +139,11 @@ namespace Phidgets2Prosim
         // Acceleration values between 0.1 and 1.0
         public double Acceleration { get; set; }
 
-        public MotorTuningOptions Options  { get; set; } = new MotorTuningOptions();
+        public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
     }
 
 
-    public class PhidgetsDCMotorInst : PhidgetDevice   
+    public class PhidgetsDCMotorInst : PhidgetDevice
     {
         public string prosimDataRefBwd { get; set; } = "";
 
@@ -151,10 +151,10 @@ namespace Phidgets2Prosim
 
         // Acceleration values between 1 and 100
         public double Acceleration { get; set; }
-		public bool Reversed { get; set; }
+        public bool Reversed { get; set; }
         public double CurrentLimit { get; set; } = 4;
 
-		public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
+        public PhidgetsVoltageInputInst VoltageInput { get; set; } = null;
 
         public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
     }
@@ -168,6 +168,12 @@ namespace Phidgets2Prosim
         // Offset the value
         public double Offset { get; set; } = 0;
 
+    }
+
+    public class PhidgetsEncoderInst : PhidgetDevice
+    {
+        // Scale the encoder value into a prosim value
+        public double ScaleFactor { get; set; }
     }
 
     public class CustomTrimWheelInst : PhidgetDevice
@@ -196,8 +202,11 @@ namespace Phidgets2Prosim
         // Accelerate the trim wheel as it spins
         public bool Accelerate { get; set; } = true;
 
-		// Range for motor speed. -1 Is full reverse, 1 is full forward. 0 is stopped. [-1, 1]
-		public List<double> Range { get; set; } = new List<double> { -1.0, 1.0 };
+        // Range for motor speed. -1 Is full reverse, 1 is full forward. 0 is stopped. [-1, 1]
+        public List<double> Range { get; set; } = new List<double> { -1.0, 1.0 };
+
+        // Encoder for manual trim wheel position
+        public PhidgetsEncoderInst Encoder { get; set; } = null;
 
     }
 
