@@ -315,7 +315,7 @@ namespace Phidgets2Prosim
                         {
                             phidgetsOutput[idx] = new PhidgetsOutput(
                                     instance.Serial, instance.HubPort, instance.Channel,
-                                    "system.audio." + instance.ProsimDataRef, connection, true,
+                                    "system.audio." + instance.ProsimDataRef, connection, false,
                                     instance.ProsimDataRefOff != null ? "system.audio." + instance.ProsimDataRefOff : null
                                  );
                             phidgetsOutput[idx].ErrorLog += DisplayErrorLog;
