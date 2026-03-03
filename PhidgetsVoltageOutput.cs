@@ -20,7 +20,7 @@ namespace Phidgets2Prosim
 
         public int Interval { get; set; } = 10;  // Timer interval in milliseconds
 
-        // Existing smoothing value (kept). In single-channel mode this is "volts per tick".
+        // In single-channel mode this is "volts per tick".
         public double SmoothFactor { get; set; } = 0.1;
 
         // ---------------------------
@@ -34,7 +34,7 @@ namespace Phidgets2Prosim
         public bool UseSinCos { get; set; } = false;
 
         /// <summary>
-        /// Output amplitude for SIN/COS. Your compass/pitch/roll tables use 10V.
+        /// Output amplitude for SIN/COS. usually 10V.
         /// </summary>
         public double AmplitudeVolts { get; set; } = 10.0;
 
@@ -57,6 +57,16 @@ namespace Phidgets2Prosim
         /// Units are degrees per tick (since your refs are degrees).
         /// </summary>
         public double SmoothAngleStep { get; set; } = 0.0;
+
+
+        /// <summary>
+        /// --- Smoothing / throttling for SIN/COS mode ---
+        /// Even if ProSim sends many updates per second, we'll only "pull" the target at this cadence
+        /// and low-pass filter it so the needle doesn't jitter.
+        /// </summary>
+        public int TargetUpdateIntervalMs { get; set; } = 50;     // 20 Hz target update
+        public double TargetFilterAlpha { get; set; } = 0.15;     // 0..1 (higher = snappier)
+        public double DeadbandDegrees { get; set; } = 0.05;       // ignore tiny changes (deg)
 
         /// <summary>
         /// COS output identity. For OUT1001 modules, Channel is typically 0 and you differentiate by Serial/HubPort.
@@ -84,6 +94,11 @@ namespace Phidgets2Prosim
 
         private double currentAngleDeg = 0;   // used in SIN/COS mode (degrees)
         private double targetAngleDeg = 0;    // used in SIN/COS mode (degrees)
+
+
+        private double rawAngleDeg = 0;       // latest angle from ProSim (degrees)
+        private double filteredAngleDeg = 0;  // low-pass filtered target (degrees)
+        private DateTime lastTargetPullUtc = DateTime.MinValue;
 
         private readonly Timer timer;
 
@@ -115,20 +130,22 @@ namespace Phidgets2Prosim
         {
             try
             {
-                if (!voltageOutput.IsOpen)
+                if (voltageOutput.IsOpen)
                 {
-                    voltageOutput.DeviceSerialNumber = Serial;
-                    voltageOutput.Channel = SinChannel;
-
-                    if (HubPort >= 0)
-                    {
-                        voltageOutput.HubPort = HubPort;
-                        voltageOutput.IsRemote = true;
-                    }
-
-                    await Task.Run(() => voltageOutput.Open(4000));
-                    voltageOutput.Voltage = 0;
+                    voltageOutput.Close();
                 }
+
+                voltageOutput.DeviceSerialNumber = Serial;
+                voltageOutput.Channel = SinChannel;
+
+                if (HubPort >= 0)
+                {
+                    voltageOutput.HubPort = HubPort;
+                    voltageOutput.IsRemote = true;
+                }
+
+                await Task.Run(() => voltageOutput.Open(4000));
+                voltageOutput.Voltage = 0;
 
                 // Only open the COS channel/device if SIN/COS mode is enabled
                 if (UseSinCos && !cosVoltageOutput.IsOpen)
@@ -199,12 +216,23 @@ namespace Phidgets2Prosim
             if (WrapDegrees360)
                 angleDeg = NormalizeDegrees360(angleDeg);
 
-            if (targetAngleDeg != angleDeg)
+            // Deadband: ignore tiny changes to reduce jitter
+            if (WrapDegrees360)
             {
-                targetAngleDeg = angleDeg;
-                if (!timer.Enabled)
-                    timer.Start();
+                if (Math.Abs(ShortestDeltaDegrees(rawAngleDeg, angleDeg)) < DeadbandDegrees)
+                    return;
             }
+            else
+            {
+                if (Math.Abs(angleDeg - rawAngleDeg) < DeadbandDegrees)
+                    return;
+            }
+
+            rawAngleDeg = angleDeg;
+
+            // Ensure timer is running so we can pull/filter the target at a steady cadence
+            if (!timer.Enabled)
+                timer.Start();
         }
 
         // ---------------------------
@@ -256,6 +284,33 @@ namespace Phidgets2Prosim
             }
 
             // SIN/COS smoothing: move angle toward target, then output sin/cos
+
+            // Pull/low-pass filter the raw target at a controlled rate (throttling)
+            var nowUtc = DateTime.UtcNow;
+            if (lastTargetPullUtc == DateTime.MinValue)
+            {
+                filteredAngleDeg = rawAngleDeg;
+                targetAngleDeg = rawAngleDeg;
+                lastTargetPullUtc = nowUtc;
+            }
+
+            if ((nowUtc - lastTargetPullUtc).TotalMilliseconds >= TargetUpdateIntervalMs)
+            {
+                // Update filtered target toward the latest raw angle
+                if (WrapDegrees360)
+                {
+                    double d = ShortestDeltaDegrees(filteredAngleDeg, rawAngleDeg);
+                    filteredAngleDeg = NormalizeDegrees360(filteredAngleDeg + (TargetFilterAlpha * d));
+                }
+                else
+                {
+                    filteredAngleDeg = filteredAngleDeg + (TargetFilterAlpha * (rawAngleDeg - filteredAngleDeg));
+                }
+
+                targetAngleDeg = filteredAngleDeg;
+                lastTargetPullUtc = nowUtc;
+            }
+
             double step = SmoothAngleStep > 0 ? SmoothAngleStep : Math.Abs(SmoothFactor);
             if (step <= 0) step = 0.1;
 
