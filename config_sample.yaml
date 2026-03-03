@@ -7,6 +7,7 @@ PhidgetsHubsInstances:
    - hub5000-PED-2
    - hub5000-MIP-1
    - hub5000-MIP-2 
+   - hub5000-MIP-3
    - hub5000-motors
    - hub5000-OH-1
    - hub5000-OH-2

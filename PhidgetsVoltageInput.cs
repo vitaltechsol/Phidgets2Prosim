@@ -94,12 +94,12 @@ namespace Phidgets2Prosim
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
             UseRange = useRange;
-            _dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
-
             if (InterpolationMode == InterpolationMode.Spline)
             {
                 ComputeSplineCoefficients();
             }
+            _dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
+
             if (UseRange)
             {
                 OpenRange();
@@ -109,6 +109,7 @@ namespace Phidgets2Prosim
             {
                 Open();
             }
+
             debounceTimer = new System.Timers.Timer(180); // 180ms debounce
             debounceTimer.AutoReset = false; // Only fire once per change
             debounceTimer.Elapsed += (sender, e) =>
