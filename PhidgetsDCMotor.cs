@@ -19,7 +19,7 @@ namespace Phidgets2Prosim
 
         // ---- Motor direction helpers ----------------------------------------
         public bool Reversed { get; set; } = false;
-		public double CurrentLimit { get; set; }
+        public double CurrentLimit { get; set; }
 
         public double TargetBrakingStrength { get; set; }
 
@@ -56,7 +56,7 @@ namespace Phidgets2Prosim
                 _motor.Open(5000);
                 if (Acceleration <= 0) Acceleration = 50;
                 _motor.Acceleration = Acceleration;
-				_motor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
+                _motor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
                 _motor.TargetBrakingStrength = TargetBrakingStrength;
 
 
@@ -70,32 +70,16 @@ namespace Phidgets2Prosim
             }
         }
 
-        protected override void ApplyVelocity(double velocity)
+        public override void ApplyVelocity(double velocity)
         {
-            // Clamp and apply direction
-            double v = Math.Max(-1.0, Math.Min(1.0, velocity));
+            double v = velocity;
             if (Reversed) v = -v;
-
             if (!_motor.Attached) return;
 
             _motor.TargetVelocity = v;
             CurrentVelocity = v;
-            Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
+            // Debug.WriteLine($"[ApplyVelocity] v={v:F3} (reversed={Reversed})");
         }
-
-        public void SetTargetVelocity(double velocity)
-        {
-            // Clamp and apply direction
-            double v = Math.Max(-1.0, Math.Min(1.0, velocity));
-            if (Reversed) v = -v;
-
-            if (!_motor.Attached) return;
-
-            _motor.TargetVelocity = v;
-            CurrentVelocity = v;
-            Debug.WriteLine($"[SetTargetVelocity] v={v:F3} (reversed={Reversed})");
-        }
-
 
         // ---- Hook ProSim target ref to controller ---------------------------
 

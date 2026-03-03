@@ -157,12 +157,12 @@ namespace Phidgets2Prosim
 
         private void PhidgetsVoltageInput_onScaledValueChanged(double obj)
         {
-            Debug.WriteLine($"[VIN] ScaledValueChanged: {obj}");
+            // Debug.WriteLine($"[VIN] ScaledValueChanged: {obj}");
             // Treat 'obj' as engineering units (e.g., 0..17) coming from your mapping
             var alpha = Tuning.PositionFilterAlpha ?? 0.15;
             _rawRatio = obj;
             _smoothedRatio = _smoothedRatio + alpha * (obj - _smoothedRatio);
-            Debug.WriteLine($"[VIN] scaled={obj:F4} smoothed={_smoothedRatio:F4}");
+            // Debug.WriteLine($"[VIN] scaled={obj:F4} smoothed={_smoothedRatio:F4}");
         }
 
         public virtual void Dispose()
@@ -186,7 +186,7 @@ namespace Phidgets2Prosim
             lock (_lock)
             {
                 _latestMappedTarget = movingTo;
-                Debug.WriteLine($"[Target] movingTo={movingTo:F3}");
+                // Debug.WriteLine($"[Target] movingTo={movingTo:F3}");
                 // If a new target arrives while in deadband, force “wake up” by marking out-of-band
                 if (_inDeadband && Math.Abs(_latestMappedTarget - _smoothedRatio) > (Tuning.DeadbandExit ?? 0.015))
                     _inDeadband = false;
@@ -357,7 +357,7 @@ namespace Phidgets2Prosim
         // ---- Abstract for concrete motors ----------------------------------
 
         /// <summary>Send a velocity command in [-1..1] to the hardware.</summary>
-        protected abstract void ApplyVelocity(double velocity);
+        public abstract void ApplyVelocity(double velocity);
 
         // ---- Mapping / Math helpers ----------------------------------------
 
@@ -442,7 +442,7 @@ namespace Phidgets2Prosim
         }
     }
 
-        
+
     public class MotorTuningOptions
     {
         public double? MaxVelocity { get; set; }

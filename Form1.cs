@@ -515,7 +515,9 @@ namespace Phidgets2Prosim
                             instance.CleanDown,
                             instance.APOnDirty,
                             instance.APOnDirty,
-                            instance.Range.ToArray()
+							instance.Accelerate,
+							instance.Range.ToArray(),
+                            instance.Encoder
                         );
 
                         trimWheel.ErrorLog += DisplayErrorLog;
