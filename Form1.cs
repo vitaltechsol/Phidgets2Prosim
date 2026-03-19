@@ -357,8 +357,26 @@ namespace Phidgets2Prosim
 
                             phidgetsVoltageOutput[idx].ScaleFactor = instance.ScaleFactor;
                             phidgetsVoltageOutput[idx].Offset = instance.Offset;
+                            phidgetsVoltageOutput[idx].Interval = instance.Interval;
+                            phidgetsVoltageOutput[idx].SmoothFactor = instance.SmoothFactor;
+                            phidgetsVoltageOutput[idx].UseSinCos = instance.UseSinCos;
+                            phidgetsVoltageOutput[idx].AmplitudeVolts = instance.AmplitudeVolts;
+                            phidgetsVoltageOutput[idx].WrapDegrees360 = instance.WrapDegrees360;
+                            phidgetsVoltageOutput[idx].SwapSinCos = instance.SwapSinCos;
+                            phidgetsVoltageOutput[idx].InvertSin = instance.InvertSin;
+                            phidgetsVoltageOutput[idx].InvertCos = instance.InvertCos;
+                            phidgetsVoltageOutput[idx].SmoothAngleStep = instance.SmoothAngleStep;
+                            phidgetsVoltageOutput[idx].TargetUpdateIntervalMs = instance.TargetUpdateIntervalMs;
+                            phidgetsVoltageOutput[idx].TargetFilterAlpha = instance.TargetFilterAlpha;
+                            phidgetsVoltageOutput[idx].DeadbandDegrees = instance.DeadbandDegrees;
+                            phidgetsVoltageOutput[idx].CosSerial = instance.CosSerial;
+                            phidgetsVoltageOutput[idx].CosHubPort = instance.CosHubPort;
+                            phidgetsVoltageOutput[idx].SinChannel = instance.SinChannel;
+                            phidgetsVoltageOutput[idx].CosChannel = instance.CosChannel;
                             phidgetsVoltageOutput[idx].ErrorLog += DisplayErrorLog;
                             phidgetsVoltageOutput[idx].InfoLog += DisplayInfoLog;
+
+                            _ = phidgetsVoltageOutput[idx].Open();
                         }
                         catch (Exception ex)
                         {

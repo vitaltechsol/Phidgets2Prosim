@@ -330,10 +330,47 @@ PhidgetsVoltageOutputInstances:
     ProsimDataRef: G_MIP_BRAKE_PRESSURE
 ```
 
+SIN/COS mode example:
+
+```yaml
+PhidgetsVoltageOutputInstances:
+  - Serial: 745138
+    HubPort: 4
+    ProsimDataRef: G_MIP_STDBY_ATT_BANK
+    UseSinCos: true
+    CosSerial: 745138
+    CosHubPort: 5
+    WrapDegrees360: false
+    AmplitudeVolts: 10.0
+    ScaleFactor: 1
+    SmoothFactor: 0.1
+    Interval: 10
+    SmoothAngleStep: 0.50
+    TargetUpdateIntervalMs: 20
+    TargetFilterAlpha: 0.12
+    DeadbandDegrees: 0.03
+```
+
 **Properties:**
 
 - `ScaleFactor`: Scales ProSim value output to the analogue voltage output. For example if the Phidgets voltage output is 0v to 5v but the Prosim Output is 0 to 10, then ScaleFactor would be 2 since we have to divide the Prosim Value by 2 to match the correct range. 
 - `Offset`: Addiotional Offset applied to the output. For example the gauge full range is 1v to 5v then Offset 1 will add one extra volt to the calculated value (after Scale Factor is applied). If you are using a -10v to 10v Phidgets analog output, then a -10 offset will set the calcualated range to start at -10v.
+- `Interval`: (Optional) Output update interval in milliseconds. Default is `10`.
+- `SmoothFactor`: (Optional) Smoothing step. In single-channel mode it is volts per tick. In SIN/COS mode it is used as the fallback angle step if `SmoothAngleStep` is not set. Default is `0.1`.
+- `UseSinCos`: (Optional) Enables dual-output SIN/COS mode. Default is `false`.
+- `AmplitudeVolts`: (Optional) SIN/COS output amplitude in volts. Default is `10.0`.
+- `WrapDegrees360`: (Optional) Wraps the angle to `0..360` and uses shortest-path motion. Use `true` for heading-style gauges and `false` for pitch/roll. Default is `false`.
+- `SwapSinCos`: (Optional) Swaps the SIN and COS output voltages. Default is `false`.
+- `InvertSin`: (Optional) Inverts the SIN output voltage. Default is `false`.
+- `InvertCos`: (Optional) Inverts the COS output voltage. Default is `false`.
+- `SmoothAngleStep`: (Optional) Maximum angle movement in degrees per timer tick for SIN/COS mode. If `0` or less, `SmoothFactor` is used instead. Default is `0.0`.
+- `TargetUpdateIntervalMs`: (Optional) How often to pull and filter the latest target angle in SIN/COS mode. Default is `50`.
+- `TargetFilterAlpha`: (Optional) Low-pass filter strength for the target angle in SIN/COS mode. Range `0..1`. Higher is more responsive. Default is `0.15`.
+- `DeadbandDegrees`: (Optional) Ignores tiny SIN/COS target changes smaller than this value in degrees. Default is `0.05`.
+- `CosSerial`: (Optional) Serial number for the COS output device. If omitted it uses the same serial as the main output.
+- `CosHubPort`: (Optional) Hub port for the COS output device. If omitted it uses the same hub port as the main output.
+- `SinChannel`: (Optional) Channel used for the SIN output on multi-channel devices. Default is `0`.
+- `CosChannel`: (Optional) Channel used for the COS output on multi-channel devices. Default is `0`.
 
 ## [Phidgets Voltage Input](#phidgetsvoltageinputinst)
 

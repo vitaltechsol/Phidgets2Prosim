@@ -976,7 +976,7 @@ PhidgetsOutputInstances:
     HubPort: 4
     Channel: 15
     ProsimDataRef: I_OH_LEDEVICES_FULLEXT_SLAT8
-    
+
 PhidgetsGateInstances:
   - Serial: 668066
     HubPort: 4
@@ -1928,6 +1928,50 @@ PhidgetsVoltageOutputInstances:
     HubPort: 3
     ScaleFactor: 26
     ProsimDataRef: G_OH_OUTFLOW_VALVE
+
+  - Serial: 745138
+    HubPort: 0
+    ProsimDataRef: G_MIP_STDBY_ATT_PITCH
+    UseSinCos: true
+    CosSerial: 745138
+    CosHubPort: 1
+    WrapDegrees360: false
+    AmplitudeVolts: 10.0
+    ScaleFactor: 0.6667
+    SmoothFactor: 0.1
+    Interval: 10
+    SmoothAngleStep: 0.25
+    TargetUpdateIntervalMs: 60
+    TargetFilterAlpha: 0.18
+    DeadbandDegrees: 0.03
+
+  - Serial: 745138
+    HubPort: 4
+    ProsimDataRef: G_MIP_STDBY_ATT_BANK
+    UseSinCos: true
+    CosSerial: 745138
+    CosHubPort: 5
+    WrapDegrees360: false
+    AmplitudeVolts: 10.0
+    ScaleFactor: 1
+    SmoothFactor: 0.1
+    Interval: 10
+    SmoothAngleStep: 0.50
+    TargetUpdateIntervalMs: 20
+    TargetFilterAlpha: 0.12
+    DeadbandDegrees: 0.03
+
+  # - Serial: 618177
+  #   HubPort: 4
+  #   ProsimDataRef: G_MIP_WET_COMPASS
+  #   UseSinCos: true
+  #   CosSerial: 618177
+  #   CosHubPort: 5
+  #   WrapDegrees360: true
+  #   AmplitudeVolts: 10.0
+  #   ScaleFactor: 1.0
+  #   Offset: 0.0
+  #   SmoothAngleStep: 2.0
 
 PhidgetsVoltageInputInstances: 
 

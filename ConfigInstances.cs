@@ -163,10 +163,46 @@ namespace Phidgets2Prosim
     public class PhidgetsVoltageOutputInst : PhidgetDevice
     {
         // Scale the prosim input value into the output value
-        public double ScaleFactor { get; set; }
+        public double ScaleFactor { get; set; } = 1.0;
 
         // Offset the value
         public double Offset { get; set; } = 0;
+
+        // Timer interval in milliseconds
+        public int Interval { get; set; } = 10;
+
+        // Smoothing step in volts per tick, or fallback angle step in SIN/COS mode
+        public double SmoothFactor { get; set; } = 0.1;
+
+        // Enable SIN/COS output mode instead of single voltage output
+        public bool UseSinCos { get; set; } = false;
+
+        // Output amplitude for SIN/COS mode
+        public double AmplitudeVolts { get; set; } = 10.0;
+
+        // Wrap angle 0..360 for heading-style gauges
+        public bool WrapDegrees360 { get; set; } = false;
+
+        // Optional output wiring helpers
+        public bool SwapSinCos { get; set; } = false;
+        public bool InvertSin { get; set; } = false;
+        public bool InvertCos { get; set; } = false;
+
+        // Angle step in degrees per timer tick for SIN/COS mode
+        public double SmoothAngleStep { get; set; } = 0.0;
+
+        // Target filtering options for SIN/COS mode
+        public int TargetUpdateIntervalMs { get; set; } = 50;
+        public double TargetFilterAlpha { get; set; } = 0.15;
+        public double DeadbandDegrees { get; set; } = 0.05;
+
+        // Optional second output identity for COS
+        public int? CosSerial { get; set; } = null;
+        public int? CosHubPort { get; set; } = null;
+
+        // Output channels for multi-channel devices
+        public int SinChannel { get; set; } = 0;
+        public int CosChannel { get; set; } = 0;
 
     }
 

@@ -18,7 +18,17 @@ namespace Phidgets2Prosim
         public double ScaleFactor { get; set; } = 1.0;
         public double Offset { get; set; } = 0.0;
 
-        public int Interval { get; set; } = 10;  // Timer interval in milliseconds
+        private int interval = 10;
+        public int Interval
+        {
+            get => interval;
+            set
+            {
+                interval = value > 0 ? value : 10;
+                if (timer != null)
+                    timer.Interval = interval;
+            }
+        }
 
         // In single-channel mode this is "volts per tick".
         public double SmoothFactor { get; set; } = 0.1;
