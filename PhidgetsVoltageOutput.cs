@@ -124,8 +124,6 @@ namespace Phidgets2Prosim
 
             try
             {
-                _ = Open();
-
                 // Set ProSim dataref
                 DataRef dataRef = new DataRef(prosimDataRef, 5, connection);
                 dataRef.onDataChange += DataRef_onDataChange;

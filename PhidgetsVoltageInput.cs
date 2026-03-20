@@ -147,7 +147,7 @@ namespace Phidgets2Prosim
                 try
                 {
                     SendInfoLog($"~~> [{HubPort}] Ch {Channel}: {value} | scaled: {valueScaled} | Ref: {ProsimDataRef} " +
-                        $"| Use Range: {UseRange}"); 
+                        $"| Use Range: {UseRange}");
                     _dataRef.value = Convert.ToInt32(valueScaled);
                 }
                 catch (Exception ex)
@@ -225,7 +225,7 @@ namespace Phidgets2Prosim
         }
 
 
-    private double CurveInterpolate(double x)
+        private double CurveInterpolate(double x)
         {
             for (int i = 0; i < InputPoints.Length - 1; i++)
             {
@@ -335,7 +335,7 @@ namespace Phidgets2Prosim
                     }
                     voltageRatioInput.Channel = Channel;
                     voltageRatioInput.VoltageRatioChange += StateChange;
-                        
+
                     voltageRatioInput.DeviceSerialNumber = Serial;
                     SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
 
