@@ -10,14 +10,14 @@ namespace Phidgets2Prosim
     internal class PhidgetsButton : PhidgetDevice
     {
         public string Name { get; set; }
-        public int InputValue { get; set; }
-        public int OffInputValue { get; set; } = 0;
+        public object InputValue { get; set; }
+        public object OffInputValue { get; set; } = 0;
 
-        public PhidgetsButton(int index, string name, ProSimConnect connection, string prosimDataRef, int inputValue, int offInputValue = 0)
+        public PhidgetsButton(int index, string name, ProSimConnect connection, string prosimDataRef, object inputValue, object offInputValue)
         {
             ProsimDataRef = prosimDataRef;
             Connection = connection;
-            OffInputValue = offInputValue;
+            OffInputValue = offInputValue ?? 0;
             InputValue = inputValue;
             Name = name;
 

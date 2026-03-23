@@ -9,10 +9,17 @@ using System.Windows.Forms.VisualStyles;
 namespace Phidgets2Prosim
 {
 
+    public class PhidgetsHubInst
+    {
+        public string Name { get; set; }
+        public int Serial { get; set; }
+        public bool Enabled { get; set; } = true;
+    }
+
     public class Config
     {
         public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig(); //added this
-        public List<string> PhidgetsHubsInstances { get; set; }
+        public List<PhidgetsHubInst> PhidgetsHubsInstances { get; set; }
         public List<PhidgetsOutputInst> PhidgetsOutputInstances { get; set; }
         public List<PhidgetsAudioInst> PhidgetsAudioInstances { get; set; }
         public List<PhidgetsGateInst> PhidgetsGateInstances { get; set; }

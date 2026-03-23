@@ -74,12 +74,18 @@ namespace Phidgets2Prosim
 
         async void connectToProSim(string prosimIP)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => connectToProSim(prosimIP)));
+                return;
+            }
+
             connectionStatusLabel.Text = "CONNECTING....";
 
             try
             {
                 DisplayInfoLog("Prosim connecting");
-                connection.Connect(prosimIP);
+                await Task.Run(() => connection.Connect(prosimIP));
             }
             catch (Exception ex)
             {
@@ -89,18 +95,18 @@ namespace Phidgets2Prosim
 
         void connection_onDisconnect()
         {
-            Invoke(new MethodInvoker(updateStatusLabel));
+            BeginInvoke(new MethodInvoker(updateStatusLabel));
             if (configsInsLoaded)
             {
-                Invoke(new MethodInvoker(UnloadConfigIns));
+                BeginInvoke(new MethodInvoker(UnloadConfigIns));
             }
         }
 
         // When we connect to ProSim737 system, update the status label and start filling the table
         void connection_onConnect()
         {
-            Invoke(new MethodInvoker(updateStatusLabel));
-            Invoke(new MethodInvoker(LoadConfigIns));
+            BeginInvoke(new MethodInvoker(updateStatusLabel));
+            Task.Run(() => { try { LoadConfigIns(); } catch (Exception ex) { DisplayErrorLog("Error loading inputs: " + ex.Message); } });
         }
 
         private async Task LoadConfigOuts()
@@ -137,13 +143,14 @@ namespace Phidgets2Prosim
                     {
                         try
                         {
-                            Net.AddServer(hub, hub, 5661, "", 0);
-                            Net.EnableServer(hub);
-                            DisplayInfoLog("Hub Added: " + hub);
+                            if (!hub.Enabled) continue;
+                            Net.AddServer(hub.Name, hub.Name, 5661, "", 0);
+                            Net.EnableServer(hub.Name);
+                            DisplayInfoLog("Hub Added: " + hub.Name + " (Serial: " + hub.Serial + ")");
                         }
                         catch (Exception ex)
                         {
-                            DisplayErrorLog("Cannot find Hub. " + hub + " :" + ex);
+                            DisplayErrorLog("Cannot find Hub. " + hub.Name + " :" + ex);
                         }
                     }
 
@@ -184,9 +191,11 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsGateInstances != null)
                 {
 
-                    phidgetsGateInstances = new BindingList<PhidgetsGateInst>(config.PhidgetsGateInstances);
-                    dataGridViewGates.DataSource = phidgetsGateInstances;
-                    dataGridViewGates.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    BeginInvoke(new Action(() => {
+                        phidgetsGateInstances = new BindingList<PhidgetsGateInst>(config.PhidgetsGateInstances);
+                        dataGridViewGates.DataSource = phidgetsGateInstances;
+                        dataGridViewGates.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsGateInstances)
@@ -230,9 +239,11 @@ namespace Phidgets2Prosim
                 // OUTPUTS
                 if (config.PhidgetsOutputInstances != null)
                 {
-                    phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
-                    dataGridViewOutputs.DataSource = phidgetsOutputInstances;
-                    dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    BeginInvoke(new Action(() => {
+                        phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
+                        dataGridViewOutputs.DataSource = phidgetsOutputInstances;
+                        dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsOutputInstances)
@@ -304,9 +315,11 @@ namespace Phidgets2Prosim
                 // Audio OUTPUTS
                 if (config.PhidgetsAudioInstances != null)
                 {
-                    phidgetsAudioInstances = new BindingList<PhidgetsAudioInst>(config.PhidgetsAudioInstances);
-                    dataGridViewOutputs.DataSource = phidgetsOutputInstances;
-                    dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    BeginInvoke(new Action(() => {
+                        phidgetsAudioInstances = new BindingList<PhidgetsAudioInst>(config.PhidgetsAudioInstances);
+                        dataGridViewOutputs.DataSource = phidgetsOutputInstances;
+                        dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsAudioInstances)
@@ -342,9 +355,11 @@ namespace Phidgets2Prosim
                 // Voltage Output
                 if (config.PhidgetsVoltageOutputInstances != null)
                 {
-                    phidgetsVoltageOutputInstances = new BindingList<PhidgetsVoltageOutputInst>(config.PhidgetsVoltageOutputInstances);
-                    dataGridViewVoltageOut.DataSource = phidgetsVoltageOutputInstances;
-                    dataGridViewVoltageOut.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    BeginInvoke(new Action(() => {
+                        phidgetsVoltageOutputInstances = new BindingList<PhidgetsVoltageOutputInst>(config.PhidgetsVoltageOutputInstances);
+                        dataGridViewVoltageOut.DataSource = phidgetsVoltageOutputInstances;
+                        dataGridViewVoltageOut.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsVoltageOutputInstances)
@@ -444,10 +459,11 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsDCMotorInstances != null)
                 {
 
-                    phidgetsDCMotorInstances = new BindingList<PhidgetsDCMotorInst>(config.PhidgetsDCMotorInstances);
-                    dataGridDCMotors.DataSource = phidgetsDCMotorInstances;
-                    dataGridDCMotors.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-                    
+                    BeginInvoke(new Action(() => {
+                        phidgetsDCMotorInstances = new BindingList<PhidgetsDCMotorInst>(config.PhidgetsDCMotorInstances);
+                        dataGridDCMotors.DataSource = phidgetsDCMotorInstances;
+                        dataGridDCMotors.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsDCMotorInstances)
@@ -575,7 +591,7 @@ namespace Phidgets2Prosim
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
-                lblPsIP.Text = config.GeneralConfig.ProSimIP;
+                BeginInvoke(new Action(() => { lblPsIP.Text = config.GeneralConfig.ProSimIP; }));
                 // Wait for outs to finish
                 var taskDelay2 = Task.Delay((totalOuts + 10) * 40);
                 await taskDelay2;
@@ -630,9 +646,11 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsInputInstances != null)
                 {
                     DisplayInfoLog("Loading Inputs ... ");
-                    phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
-                    dataGridViewInputs.DataSource = phidgetsInputInstances;
-                    dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    Invoke(new Action(() => {
+                        phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+                        dataGridViewInputs.DataSource = phidgetsInputInstances;
+                        dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
                     {
@@ -688,9 +706,11 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsMultiInputInstances != null)
                 {
                     DisplayInfoLog("Loading MultiInputs ... ");
-                    phidgetsMultiInputInstances = config.PhidgetsMultiInputInstances != null ? new BindingList<PhidgetsMultiInputInst>(config.PhidgetsMultiInputInstances) : null;
-                    dataGridViewMultiInputs.DataSource = phidgetsMultiInputInstances;
-                    dataGridViewMultiInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    Invoke(new Action(() => {
+                        phidgetsMultiInputInstances = config.PhidgetsMultiInputInstances != null ? new BindingList<PhidgetsMultiInputInst>(config.PhidgetsMultiInputInstances) : null;
+                        dataGridViewMultiInputs.DataSource = phidgetsMultiInputInstances;
+                        dataGridViewMultiInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsMultiInputInstances)
                     {
@@ -727,9 +747,11 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsVoltageInputInstances != null)
                 {
                     DisplayInfoLog("Loading Voltage Inputs ... ");
-                    PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
-                    dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
-                    dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    Invoke(new Action(() => {
+                        PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
+                        dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
+                        dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsVoltageInputInstances)
                     {
@@ -802,22 +824,34 @@ namespace Phidgets2Prosim
                         idx++;
                     }
 
+                    // Add Puase
+                    PhidgetsButtonList.Add(new PhidgetsButton(
+                                idx,
+                                "Pause",
+                                connection,
+                                "simulator.pause",
+                                true,
+                                false)
+                            );
+
                     // Clear the FlowLayoutPanel before adding buttons
-                    buttonsFlowLayoutPanel.Controls.Clear();
+                    Invoke(new Action(() => {
+                        buttonsFlowLayoutPanel.Controls.Clear();
 
-                    foreach (var app in PhidgetsButtonList)
-                    {
-                        Button appButton = new Button();
-                        appButton.Width = 142;
-                        appButton.Height = 45;
-                        appButton.Text = app.Name;
-                        appButton.MouseDown += new MouseEventHandler(app.StateChangeOn);
-                        appButton.MouseUp += new MouseEventHandler(app.StateChangeOff);
-                        app.ErrorLog += DisplayErrorLog;
-                        app.InfoLog += DisplayInfoLog;
+                        foreach (var app in PhidgetsButtonList)
+                        {
+                            Button appButton = new Button();
+                            appButton.Width = 142;
+                            appButton.Height = 45;
+                            appButton.Text = app.Name;
+                            appButton.MouseDown += new MouseEventHandler(app.StateChangeOn);
+                            appButton.MouseUp += new MouseEventHandler(app.StateChangeOff);
+                            app.ErrorLog += DisplayErrorLog;
+                            app.InfoLog += DisplayInfoLog;
 
-                        buttonsFlowLayoutPanel.Controls.Add(appButton);
-                    }
+                            buttonsFlowLayoutPanel.Controls.Add(appButton);
+                        }
+                    }));
 
                     DisplayInfoLog("Loading Buttons done ");
                 }
@@ -1103,7 +1137,7 @@ namespace Phidgets2Prosim
         {
 
            //  LoadConfigOuts();
-           this.BeginInvoke(new Action(async () => await LoadConfigOuts()));
+           Task.Run(async () => { try { await LoadConfigOuts(); } catch (Exception ex) { DisplayErrorLog("Error loading config: " + ex.Message); } });
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
@@ -1132,6 +1166,99 @@ namespace Phidgets2Prosim
             tabLog.BackColor = Color.White;
             tabColors[logTabIndex] = Color.Black;
             txtLog.Text = string.Empty;
+        }
+
+        private void btnManageHubs_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string yamlContent = File.ReadAllText("config.yaml");
+                var deserializer = new DeserializerBuilder().Build();
+                var config = deserializer.Deserialize<Config>(yamlContent);
+
+                var currentHubs = config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>();
+
+                using (var form = new ManageHubsForm(currentHubs))
+                {
+                    if (form.ShowDialog(this) == DialogResult.OK)
+                    {
+                        SaveHubsToConfig(form.Hubs);
+                        DisplayInfoLog("Hubs configuration saved. Restart to apply changes.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error opening Manage Hubs: " + ex.Message);
+            }
+        }
+
+        private void SaveHubsToConfig(List<PhidgetsHubInst> hubs)
+        {
+            try
+            {
+                string content = File.ReadAllText("config.yaml");
+
+                // Build the new hubs YAML section
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("PhidgetsHubsInstances:");
+                foreach (var hub in hubs)
+                {
+                    sb.AppendLine("   - Name: " + hub.Name);
+                    sb.AppendLine("     Serial: " + hub.Serial);
+                    sb.AppendLine("     Enabled: " + hub.Enabled.ToString().ToLower());
+                }
+
+                // Find and replace the PhidgetsHubsInstances section
+                var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var result = new System.Text.StringBuilder();
+                bool inHubsSection = false;
+                bool hubsSectionWritten = false;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    string trimmed = line.TrimStart();
+
+                    if (trimmed.StartsWith("PhidgetsHubsInstances:"))
+                    {
+                        inHubsSection = true;
+                        result.Append(sb.ToString());
+                        hubsSectionWritten = true;
+                        continue;
+                    }
+
+                    if (inHubsSection)
+                    {
+                        // Still in the hubs section if the line is indented or empty
+                        if (string.IsNullOrWhiteSpace(line) || line.StartsWith(" ") || line.StartsWith("\t"))
+                        {
+                            continue; // skip old hub lines
+                        }
+                        else
+                        {
+                            inHubsSection = false;
+                        }
+                    }
+
+                    if (!inHubsSection)
+                    {
+                        result.AppendLine(line);
+                    }
+                }
+
+                if (!hubsSectionWritten)
+                {
+                    result.Append(sb.ToString());
+                }
+
+                File.WriteAllText("config.yaml", result.ToString().TrimEnd() + Environment.NewLine);
+                DisplayInfoLog("Hubs config saved to config.yaml");
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error saving hubs config: " + ex.Message);
+            }
         }
 
         private void btnDCMotor1Go_Click(object sender, EventArgs e)

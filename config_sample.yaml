@@ -3,16 +3,7 @@ GeneralConfig:
   Schema: 1.0    
   ProSimIP: 192.168.1.142
 PhidgetsHubsInstances:
-   - hub5000-PED-1
-   - hub5000-PED-2
-   - hub5000-MIP-1
-   - hub5000-MIP-2 
-   - hub5000-MIP-3
-   - hub5000-motors
-   - hub5000-OH-1
-   - hub5000-OH-2
-   - hub5000-OH-3
-   - hub5000-OH-4
+
 
 PhidgetsOutputInstances:
   - Serial: 741087

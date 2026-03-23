@@ -31,6 +31,7 @@ namespace Phidgets2Prosim
         /// </summary>
         private void InitializeComponent()
         {
+            this.btnManageHubs = new System.Windows.Forms.Button();
             this.tabGroups = new System.Windows.Forms.TabControl();
             this.tabLog = new System.Windows.Forms.TabPage();
             this.btnLogClear = new System.Windows.Forms.Button();
@@ -376,11 +377,22 @@ namespace Phidgets2Prosim
             this.dataGridDCMotors.Size = new System.Drawing.Size(618, 149);
             this.dataGridDCMotors.TabIndex = 7;
             // 
+            // btnManageHubs
+            // 
+            this.btnManageHubs.Location = new System.Drawing.Point(460, 10);
+            this.btnManageHubs.Name = "btnManageHubs";
+            this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
+            this.btnManageHubs.TabIndex = 10;
+            this.btnManageHubs.Text = "Manage Hubs";
+            this.btnManageHubs.UseVisualStyleBackColor = true;
+            this.btnManageHubs.Click += new System.EventHandler(this.btnManageHubs_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.btnManageHubs);
             this.Controls.Add(this.lblPsIP);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.connectionStatusLabel);
@@ -447,5 +459,6 @@ namespace Phidgets2Prosim
         private Label label2;
         private Label label4;
         private DataGridView dataGridDCMotors;
+        private Button btnManageHubs;
     }
 }
