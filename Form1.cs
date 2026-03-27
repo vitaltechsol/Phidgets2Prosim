@@ -56,7 +56,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
         private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
-        private BindingList<PhidgetsInputInst> phidgetsInputInstances;
+        private InputsUI inputsUI;
         private BindingList<PhidgetsMultiInputInst> phidgetsMultiInputInstances;
         private BindingList<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
@@ -70,6 +70,20 @@ namespace Phidgets2Prosim
             this.Icon = Properties.Resources.ph2pr;
             this.Shown += new System.EventHandler(Form1_Shown);
             this.FormClosed += new FormClosedEventHandler(Form1_Closed);
+            // Initialize InputsUI abstraction
+            inputsUI = new InputsUI(
+                cboInputHub,
+                cboInputHubPort,
+                cboInputChannel,
+                txtInputProsimRef,
+                cboInputOnValue,
+                cboInputOffValue,
+                btnAddInput,
+                dataGridViewInputs,
+                DisplayInfoLog,
+                DisplayErrorLog,
+                () => GetCurrentHubs()
+            );
         }
 
         async void connectToProSim(string prosimIP)
@@ -80,7 +94,7 @@ namespace Phidgets2Prosim
                 return;
             }
 
-            connectionStatusLabel.Text = "CONNECTING....";
+            connectionStatusLabel.Text = "CONNECTING TO " + prosimIP;
 
             try
             {
@@ -155,6 +169,8 @@ namespace Phidgets2Prosim
                     }
 
                 }
+
+                inputsUI.PopulateInputHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
 
                 //// Code to test all lights on
                 //var t = 0;
@@ -609,59 +625,29 @@ namespace Phidgets2Prosim
         private async void LoadConfigIns()
         {
             DisplayInfoLog("Loading Inputs configs ... ");
-
             try
             {
-                // Read YAML from file
+                // Use InputsUI to load and bind the grid from config.yaml
+                Invoke(new Action(() => inputsUI.LoadInputsFromConfig("config.yaml")));
+                // Restore config variable for other sections
                 string yamlContent = File.ReadAllText("config.yaml");
-
-                // Deserialize YAML to objects
-                var deserializer = new DeserializerBuilder()
-					.Build();
-
-                // Wait before starting
-                //var taskDelay = Task.Delay(2000);
-                //await taskDelay;
-
+                var deserializer = new DeserializerBuilder().Build();
                 var config = deserializer.Deserialize<Config>(yamlContent);
-                // Create instances based on the configuration
 
-                ////Possible code to display inputs
-                //var hub = 668522;
-
-                //// Load for test
-                //var ip_idx = 0;
-                //for (var hubIdx = 4; hubIdx < 5; hubIdx++)
-                //{
-                //    for (var chIdx = 0; chIdx < 16; chIdx++)
-                //    {
-                //        phidgetsInputPreview[ip_idx] = new PhidgetsInput(hub, hubIdx, chIdx, connection, "test", 1);
-                //        phidgetsInputPreview[ip_idx].ErrorLog += DisplayErrorLog;
-                //        phidgetsInputPreview[ip_idx].InfoLog += DisplayInfoLog;
-                //        ip_idx++;
-                //    }
-                //}
-
-                // INPUTS
+                // --- Restore original instantiation of PhidgetsInput[] for runtime logic ---
                 if (config.PhidgetsInputInstances != null)
                 {
                     DisplayInfoLog("Loading Inputs ... ");
-                    Invoke(new Action(() => {
-                        phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
-                        dataGridViewInputs.DataSource = phidgetsInputInstances;
-                        dataGridViewInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
                     {
                         try
                         {
+                            var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
+                                ? "test"                                  // skip ProSim write, use Variable only
+                                : "system.switches." + instance.ProsimDataRef;
 
-							var inRef = string.IsNullOrWhiteSpace(instance.ProsimDataRef)
-	                        ? "test"                                  // skip ProSim write, use Variable only
-	                        : "system.switches." + instance.ProsimDataRef;
-
-							phidgetsInput[idx] = new PhidgetsInput(
+                            phidgetsInput[idx] = new PhidgetsInput(
                                 instance.Serial,
                                 instance.HubPort,
                                 instance.Channel,
@@ -679,18 +665,16 @@ namespace Phidgets2Prosim
                             {
                                 phidgetsInput[idx].ProsimDataRef3 = instance.ProsimDataRef3;
                             }
-							if (!string.IsNullOrEmpty(instance.UserVariable))
-							{
-								phidgetsInput[idx].UserVariable = instance.UserVariable;
-								DisplayInfoLog($"[WIRING] Input Hub:{instance.HubPort} Ch:{instance.Channel} UserVariable='{instance.UserVariable}'");
-							}
-
-							if (instance.UserVariable != null)
+                            if (!string.IsNullOrEmpty(instance.UserVariable))
                             {
-								phidgetsInput[idx].UserVariable = instance.UserVariable;
-							}
-
-						}
+                                phidgetsInput[idx].UserVariable = instance.UserVariable;
+                                DisplayInfoLog($"[WIRING] Input Hub:{instance.HubPort} Ch:{instance.Channel} UserVariable='{instance.UserVariable}'");
+                            }
+                            if (instance.UserVariable != null)
+                            {
+                                phidgetsInput[idx].UserVariable = instance.UserVariable;
+                            }
+                        }
                         catch (Exception ex)
                         {
                             DisplayErrorLog("Error reloading config line");
@@ -698,9 +682,9 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
-
                     DisplayInfoLog("Loading Inputs done");
                 }
+
 
                 // MULTI INPUTS
                 if (config.PhidgetsMultiInputInstances != null)
@@ -914,7 +898,7 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsMultiInputInstances != null)
                 {
                     DisplayInfoLog("Unloading multi-inputs...");
-                    //phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null;
+                    //phidgetsInputInstances = config.PhidgetsInputInstances != null ? new BindingList<PhidgetsInputInst>(config.PhidgetsInputInstances) : null
 
                     var idx = 0;
                     foreach (var instance in config.PhidgetsMultiInputInstances)
@@ -1265,6 +1249,23 @@ namespace Phidgets2Prosim
         {
             double target = Convert.ToDouble(txtDCMotor1Target.Text);
             phidgetsDCMotors[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
+        }
+
+        // Inputs UI logic is now handled by InputsUI.cs
+        // Helper to get current hubs for dropdown
+        private List<PhidgetsHubInst> GetCurrentHubs()
+        {
+            try
+            {
+                string yamlContent = File.ReadAllText("config.yaml");
+                var deserializer = new YamlDotNet.Serialization.DeserializerBuilder().Build();
+                var config = deserializer.Deserialize<Config>(yamlContent);
+                return config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>();
+            }
+            catch
+            {
+                return new List<PhidgetsHubInst>();
+            }
         }
     }
 }

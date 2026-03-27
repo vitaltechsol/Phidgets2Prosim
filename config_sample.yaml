@@ -1,9 +1,7 @@
 ﻿
 GeneralConfig:
   Schema: 1.0    
-  ProSimIP: 192.168.1.142
-PhidgetsHubsInstances:
-
+  ProSimIP: 192.168.1.150
 
 PhidgetsOutputInstances:
   - Serial: 741087
@@ -1964,93 +1962,92 @@ PhidgetsVoltageOutputInstances:
   #   Offset: 0.0
   #   SmoothAngleStep: 2.0
 
-PhidgetsVoltageInputInstances: 
+# PhidgetsVoltageInputInstances: 
 
-  - Serial: 745566
-    HubPort: 3
-    Channel: 0
-    ProsimDataRef: A_ASP_VHF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 1
-    ProsimDataRef: A_ASP_VHF_2_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_2_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 2
-    ProsimDataRef: A_ASP_HF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_HF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 3
-    ProsimDataRef: A_ASP_SPKR_VOLUME
-    ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 4
-    ProsimDataRef: A_ASP_PA_VOLUME
-    ProsimDataRefOnOff: S_ASP_PA_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 5
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 0
+#     ProsimDataRef: A_ASP_VHF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP_VHF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 1
+#     ProsimDataRef: A_ASP_VHF_2_VOLUME
+#     ProsimDataRefOnOff: S_ASP_VHF_2_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 2
+#     ProsimDataRef: A_ASP_HF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP_HF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 3
+#     ProsimDataRef: A_ASP_SPKR_VOLUME
+#     ProsimDataRefOnOff: S_ASP_SPKR_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 4
+#     ProsimDataRef: A_ASP_PA_VOLUME
+#     ProsimDataRefOnOff: S_ASP_PA_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 5
+#     ProsimDataRef: A_ASP_FLT_VOLUME
+#     ProsimDataRefOnOff: S_ASP_FLT_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 6
+#     ProsimDataRef: A_ASP_ADF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP_ADF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 3
+#     Channel: 7
+#     ProsimDataRef: A_ASP_NAV_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP_NAV_1_REC_LATCH
 
-    ProsimDataRef: A_ASP_FLT_VOLUME
-    ProsimDataRefOnOff: S_ASP_FLT_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 6
-    ProsimDataRef: A_ASP_ADF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_ADF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 3
-    Channel: 7
-    ProsimDataRef: A_ASP_NAV_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_NAV_1_REC_LATCH
-
-  - Serial: 745566
-    HubPort: 2
-    Channel: 0
-    ProsimDataRef: A_ASP2_VHF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP2_VHF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 1
-    ProsimDataRef: A_ASP2_VHF_2_VOLUME
-    ProsimDataRefOnOff: S_ASP2_VHF_2_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 2
-    ProsimDataRef: A_ASP2_HF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP2_HF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 3
-    ProsimDataRef: A_ASP2_FLT_VOLUME
-    ProsimDataRefOnOff: S_ASP2_FLT_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 4
-    ProsimDataRef: A_ASP2_NAV_1_VOLUME
-    ProsimDataRefOnOff: S_ASP2_NAV_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 5
-    ProsimDataRef: A_ASP2_ADF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP2_ADF_1_REC_LATCH
-  - Serial: 745566
-    HubPort: 2
-    Channel: 6
-    ProsimDataRef: A_ASP2_SPKR_VOLUME
-    ProsimDataRefOnOff: S_ASP2_SPKR_REC_LATCH
-  - Serial: 668522
-    HubPort: 5
-    Channel: 0
-    UseRange: true
-    InputPoints: [0,15]
-    OutputPoints: [1, 255]
-    MinChangeTriggerValue: 0.3
-    ProsimDataRef: A_HUD_BRIGHTNESS
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 0
+#     ProsimDataRef: A_ASP2_VHF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_VHF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 1
+#     ProsimDataRef: A_ASP2_VHF_2_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_VHF_2_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 2
+#     ProsimDataRef: A_ASP2_HF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_HF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 3
+#     ProsimDataRef: A_ASP2_FLT_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_FLT_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 4
+#     ProsimDataRef: A_ASP2_NAV_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_NAV_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 5
+#     ProsimDataRef: A_ASP2_ADF_1_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_ADF_1_REC_LATCH
+#   - Serial: 745566
+#     HubPort: 2
+#     Channel: 6
+#     ProsimDataRef: A_ASP2_SPKR_VOLUME
+#     ProsimDataRefOnOff: S_ASP2_SPKR_REC_LATCH
+#   - Serial: 668522
+#     HubPort: 5
+#     Channel: 0
+#     UseRange: true
+#     InputPoints: [0,15]
+#     OutputPoints: [1, 255]
+#     MinChangeTriggerValue: 0.3
+#     ProsimDataRef: A_HUD_BRIGHTNESS
 
 PhidgetsBLDCMotorInstances:
   - Serial: 668066
@@ -2144,3 +2141,37 @@ PhidgetsDCMotorInstances:
       TickMs: 15 
       SetpointSlewPerTick: 0.012 
         
+PhidgetsHubsInstances:
+   - Name: hub5000
+     Serial: 618177
+     Enabled: true
+   - Name: hub5000-MIP-1
+     Serial: 668522
+     Enabled: true
+   - Name: hub5000-MIP-2
+     Serial: 664861
+     Enabled: true
+   - Name: hub5000-motors
+     Serial: 668066
+     Enabled: true
+   - Name: hub5000-OH-1
+     Serial: 668659
+     Enabled: true
+   - Name: hub5000-OH-3
+     Serial: 741087
+     Enabled: true
+   - Name: hub5000-OH-4
+     Serial: 742112
+     Enabled: true
+   - Name: hub5000-PED-1
+     Serial: 618534
+     Enabled: true
+   - Name: hub5000-PED-2
+     Serial: 745566
+     Enabled: true
+   - Name: hub5000-MIP-3
+     Serial: 745138
+     Enabled: true
+   - Name: hub5000-OH-2
+     Serial: 668015
+     Enabled: true

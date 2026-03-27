@@ -62,11 +62,26 @@ namespace Phidgets2Prosim
             this.label1 = new System.Windows.Forms.Label();
             this.lblPsIP = new System.Windows.Forms.Label();
             this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
+            this.panelAddInput = new System.Windows.Forms.Panel();
+            this.lblInputHub = new System.Windows.Forms.Label();
+            this.cboInputHub = new System.Windows.Forms.ComboBox();
+            this.lblInputHubPort = new System.Windows.Forms.Label();
+            this.cboInputHubPort = new System.Windows.Forms.ComboBox();
+            this.lblInputChannel = new System.Windows.Forms.Label();
+            this.cboInputChannel = new System.Windows.Forms.ComboBox();
+            this.lblInputProsimRef = new System.Windows.Forms.Label();
+            this.txtInputProsimRef = new System.Windows.Forms.TextBox();
+            this.lblInputOnValue = new System.Windows.Forms.Label();
+            this.cboInputOnValue = new System.Windows.Forms.ComboBox();
+            this.lblInputOffValue = new System.Windows.Forms.Label();
+            this.cboInputOffValue = new System.Windows.Forms.ComboBox();
+            this.btnAddInput = new System.Windows.Forms.Button();
             this.tabGroups.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
             this.tabInputs.SuspendLayout();
+            this.panelAddInput.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).BeginInit();
             this.tabMultiInputs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).BeginInit();
@@ -161,6 +176,7 @@ namespace Phidgets2Prosim
             // 
             // tabInputs
             // 
+            this.tabInputs.Controls.Add(this.panelAddInput);
             this.tabInputs.Controls.Add(this.dataGridViewInputs);
             this.tabInputs.Location = new System.Drawing.Point(4, 22);
             this.tabInputs.Name = "tabInputs";
@@ -173,10 +189,140 @@ namespace Phidgets2Prosim
             // dataGridViewInputs
             // 
             this.dataGridViewInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewInputs.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewInputs.Location = new System.Drawing.Point(6, 68);
             this.dataGridViewInputs.Name = "dataGridViewInputs";
-            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 205);
             this.dataGridViewInputs.TabIndex = 1;
+            // 
+            // panelAddInput
+            // 
+            this.panelAddInput.Controls.Add(this.lblInputHub);
+            this.panelAddInput.Controls.Add(this.cboInputHub);
+            this.panelAddInput.Controls.Add(this.lblInputHubPort);
+            this.panelAddInput.Controls.Add(this.cboInputHubPort);
+            this.panelAddInput.Controls.Add(this.lblInputChannel);
+            this.panelAddInput.Controls.Add(this.cboInputChannel);
+            this.panelAddInput.Controls.Add(this.lblInputProsimRef);
+            this.panelAddInput.Controls.Add(this.txtInputProsimRef);
+            this.panelAddInput.Controls.Add(this.lblInputOnValue);
+            this.panelAddInput.Controls.Add(this.cboInputOnValue);
+            this.panelAddInput.Controls.Add(this.lblInputOffValue);
+            this.panelAddInput.Controls.Add(this.cboInputOffValue);
+            this.panelAddInput.Controls.Add(this.btnAddInput);
+            this.panelAddInput.Location = new System.Drawing.Point(6, 6);
+            this.panelAddInput.Name = "panelAddInput";
+            this.panelAddInput.Size = new System.Drawing.Size(618, 58);
+            this.panelAddInput.TabIndex = 2;
+            // 
+            // lblInputHub
+            // 
+            this.lblInputHub.AutoSize = true;
+            this.lblInputHub.Location = new System.Drawing.Point(3, 7);
+            this.lblInputHub.Name = "lblInputHub";
+            this.lblInputHub.Size = new System.Drawing.Size(29, 13);
+            this.lblInputHub.TabIndex = 0;
+            this.lblInputHub.Text = "Hub:";
+            // 
+            // cboInputHub
+            // 
+            this.cboInputHub.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboInputHub.Location = new System.Drawing.Point(33, 3);
+            this.cboInputHub.Name = "cboInputHub";
+            this.cboInputHub.Size = new System.Drawing.Size(130, 21);
+            this.cboInputHub.TabIndex = 1;
+            // 
+            // lblInputHubPort
+            // 
+            this.lblInputHubPort.AutoSize = true;
+            this.lblInputHubPort.Location = new System.Drawing.Point(168, 7);
+            this.lblInputHubPort.Name = "lblInputHubPort";
+            this.lblInputHubPort.Size = new System.Drawing.Size(29, 13);
+            this.lblInputHubPort.TabIndex = 2;
+            this.lblInputHubPort.Text = "Port:";
+            // 
+            // cboInputHubPort
+            // 
+            this.cboInputHubPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboInputHubPort.Location = new System.Drawing.Point(198, 3);
+            this.cboInputHubPort.Name = "cboInputHubPort";
+            this.cboInputHubPort.Size = new System.Drawing.Size(65, 21);
+            this.cboInputHubPort.TabIndex = 3;
+            // 
+            // lblInputChannel
+            // 
+            this.lblInputChannel.AutoSize = true;
+            this.lblInputChannel.Location = new System.Drawing.Point(268, 7);
+            this.lblInputChannel.Name = "lblInputChannel";
+            this.lblInputChannel.Size = new System.Drawing.Size(22, 13);
+            this.lblInputChannel.TabIndex = 4;
+            this.lblInputChannel.Text = "Ch:";
+            // 
+            // cboInputChannel
+            // 
+            this.cboInputChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboInputChannel.Location = new System.Drawing.Point(292, 3);
+            this.cboInputChannel.Name = "cboInputChannel";
+            this.cboInputChannel.Size = new System.Drawing.Size(75, 21);
+            this.cboInputChannel.TabIndex = 5;
+            // 
+            // lblInputProsimRef
+            // 
+            this.lblInputProsimRef.AutoSize = true;
+            this.lblInputProsimRef.Location = new System.Drawing.Point(372, 7);
+            this.lblInputProsimRef.Name = "lblInputProsimRef";
+            this.lblInputProsimRef.Size = new System.Drawing.Size(62, 13);
+            this.lblInputProsimRef.TabIndex = 6;
+            this.lblInputProsimRef.Text = "Prosim Ref:";
+            // 
+            // txtInputProsimRef
+            // 
+            this.txtInputProsimRef.Location = new System.Drawing.Point(438, 4);
+            this.txtInputProsimRef.Name = "txtInputProsimRef";
+            this.txtInputProsimRef.Size = new System.Drawing.Size(175, 20);
+            this.txtInputProsimRef.TabIndex = 7;
+            // 
+            // lblInputOnValue
+            // 
+            this.lblInputOnValue.AutoSize = true;
+            this.lblInputOnValue.Location = new System.Drawing.Point(3, 34);
+            this.lblInputOnValue.Name = "lblInputOnValue";
+            this.lblInputOnValue.Size = new System.Drawing.Size(45, 13);
+            this.lblInputOnValue.TabIndex = 8;
+            this.lblInputOnValue.Text = "On Val:";
+            // 
+            // cboInputOnValue
+            // 
+            this.cboInputOnValue.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboInputOnValue.Location = new System.Drawing.Point(52, 30);
+            this.cboInputOnValue.Name = "cboInputOnValue";
+            this.cboInputOnValue.Size = new System.Drawing.Size(45, 21);
+            this.cboInputOnValue.TabIndex = 9;
+            // 
+            // lblInputOffValue
+            // 
+            this.lblInputOffValue.AutoSize = true;
+            this.lblInputOffValue.Location = new System.Drawing.Point(102, 34);
+            this.lblInputOffValue.Name = "lblInputOffValue";
+            this.lblInputOffValue.Size = new System.Drawing.Size(45, 13);
+            this.lblInputOffValue.TabIndex = 10;
+            this.lblInputOffValue.Text = "Off Val:";
+            // 
+            // cboInputOffValue
+            // 
+            this.cboInputOffValue.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboInputOffValue.Location = new System.Drawing.Point(152, 30);
+            this.cboInputOffValue.Name = "cboInputOffValue";
+            this.cboInputOffValue.Size = new System.Drawing.Size(45, 21);
+            this.cboInputOffValue.TabIndex = 11;
+            // 
+            // btnAddInput
+            // 
+            this.btnAddInput.Location = new System.Drawing.Point(210, 29);
+            this.btnAddInput.Name = "btnAddInput";
+            this.btnAddInput.Size = new System.Drawing.Size(60, 23);
+            this.btnAddInput.TabIndex = 12;
+            this.btnAddInput.Text = "Add";
+            this.btnAddInput.UseVisualStyleBackColor = true;
             // 
             // tabMultiInputs
             // 
@@ -406,6 +552,8 @@ namespace Phidgets2Prosim
             this.tabOut.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).EndInit();
             this.tabInputs.ResumeLayout(false);
+            this.panelAddInput.ResumeLayout(false);
+            this.panelAddInput.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInputs)).EndInit();
             this.tabMultiInputs.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMultiInputs)).EndInit();
@@ -460,5 +608,19 @@ namespace Phidgets2Prosim
         private Label label4;
         private DataGridView dataGridDCMotors;
         private Button btnManageHubs;
+        private Panel panelAddInput;
+        private Label lblInputHub;
+        private ComboBox cboInputHub;
+        private Label lblInputHubPort;
+        private ComboBox cboInputHubPort;
+        private Label lblInputChannel;
+        private ComboBox cboInputChannel;
+        private Label lblInputProsimRef;
+        private TextBox txtInputProsimRef;
+        private Label lblInputOnValue;
+        private ComboBox cboInputOnValue;
+        private Label lblInputOffValue;
+        private ComboBox cboInputOffValue;
+        private Button btnAddInput;
     }
 }
