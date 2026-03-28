@@ -1,7 +1,7 @@
 ﻿
 GeneralConfig:
   Schema: 1.0    
-  ProSimIP: 192.168.1.150
+  ProSimIP: 192.168.1.142
 
 PhidgetsOutputInstances:
   - Serial: 741087
@@ -1375,6 +1375,147 @@ PhidgetsInputInstances:
     Channel: 9
     ProsimDataRef: S_OH_TAT_TEST
     InputValue: 1
+
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 3
+    ProsimDataRef: S_OH_RECIRC_L
+    InputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 2
+    ProsimDataRef: S_OH_RECIRC_R
+    InputValue: 1
+
+  - Serial: 668659
+    HubPort: 0
+    Channel: 8
+    ProsimDataRef: S_OH_BLEED_L
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 0
+    Channel: 9
+    ProsimDataRef: S_OH_BLEED_R
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 5
+    ProsimDataRef: S_OH_PACK_L
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 6
+    ProsimDataRef: S_OH_PACK_R
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 0
+    Channel: 10
+    ProsimDataRef: S_OH_BLEED_APU
+    InputValue: 2
+
+  - Serial: 668659
+    HubPort: 5
+    Channel: 10
+    ProsimDataRef: S_OH_BUS_TRANSFER
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 12
+    ProsimDataRef: S_OH_ELEC_HYD_PUMP_1
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 13
+    ProsimDataRef: S_OH_ELEC_HYD_PUMP_2
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 15
+    ProsimDataRef: S_OH_ENG_HYD_PUMP_L
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 1
+    Channel: 14
+    ProsimDataRef: S_OH_ENG_HYD_PUMP_R
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 15
+    ProsimDataRef: S_OH_ATTEND
+    InputValue: 1
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 14
+    ProsimDataRef: S_OH_GROUND_CALL
+    InputValue: 1
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 10
+    ProsimDataRef: S_OH_LIGHT_ANTI_COLLISION
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 13
+    ProsimDataRef: S_OH_LIGHT_LOGO
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 8
+    ProsimDataRef: S_OH_LIGHT_WHEEL_WELL
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 9
+    ProsimDataRef: S_OH_LIGHT_WING
+
+  - Serial: 668659
+    HubPort: 2
+    Channel: 7
+    ProsimDataRef: S_OH_ALT_HORN_CUTOUT
+    InputValue: 1
+
+  - Serial: 668659
+    HubPort: 5
+    Channel: 15
+    ProsimDataRef: S_OH_BATTERY
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 5
+    Channel: 11
+    ProsimDataRef: S_OH_DISCONNECT1
+    InputValue: 0
+    OffInputValue: 1
+
+  - Serial: 668659
+    HubPort: 5
+    Channel: 12
+    ProsimDataRef: S_OH_DISCONNECT2
+    InputValue: 0
+    OffInputValue: 1
      
   - Serial: 618534
     HubPort: 1
@@ -1889,6 +2030,70 @@ PhidgetsMultiInputInstances:
       "00": 0
       "01": 1
       "10": 2
+
+  - Serial: 668659
+    HubPort: 0
+    Channels: [11, 12]
+    ProsimDataRef: S_OH_PNEUMATIC_ISOLATION
+    Mappings:
+      "00": 2
+      "01": 1
+      "10": 0
+
+  - Serial: 668659
+    HubPort: 5
+    Channels: [9, 8]
+    ProsimDataRef: S_OH_GROUND_POWER
+    Mappings:
+      "00": 1
+      "01": 2
+      "10": 0
+
+  - Serial: 668659
+    HubPort: 2
+    Channels: [4, 5]
+    ProsimDataRef: S_OH_EMERG_EXIT_LIGHTS
+    Mappings:
+      "10": 0
+      "00": 1
+      "01": 2
+
+  - Serial: 668659
+    HubPort: 2
+    Channels: [2, 3]
+    ProsimDataRef: S_OH_SEATBELT
+    Mappings:
+      "00": 2
+      "01": 1
+      "10": 0
+
+  - Serial: 668659
+    HubPort: 2
+    Channels: [6]
+    ProsimDataRef: S_OH_NO_SMOKING
+    Mappings:
+      "0": 0
+      "1": 1
+      "2": 2
+
+  - Serial: 668659
+    HubPort: 2
+    Channels: [12, 11]
+    ProsimDataRef: S_OH_LIGHT_STROBE_STEADY
+    Mappings:
+      "00": 1
+      "01": 0
+      "10": 2
+
+  - Serial: 668659
+    HubPort: 5
+    Channels: [13, 14]
+    ProsimDataRef: S_OH_STANDBY_POWER
+    Mappings:
+      "00": 0
+      "01": 1
+      "10": 2
+      
 
 PhidgetsVoltageOutputInstances:
   - Serial: 668522
