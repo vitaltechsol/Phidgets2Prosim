@@ -87,7 +87,7 @@ namespace Phidgets2Prosim
     public class PhidgetsInputInst : PhidgetDevice
     {
         // The desired value to send to prosim when input is on
-        public int InputValue { get; set; }
+        public int InputValue { get; set; } = 1;
 
         // (Optional)The desired value to send to prosim when input is off, by default is 0
         public int OffInputValue { get; set; } = 0;
@@ -281,5 +281,24 @@ namespace Phidgets2Prosim
         public string SwitchVariable { get; set; }
         public string RelayVariable { get; set; }
         public int ToeBrakeThreshold { get; set; } = 1000;
+    }
+
+    /// <summary>
+    /// Used only to safely read the GeneralConfig (schema version) without
+    /// touching the PhidgetsHubsInstances list, which has a different YAML
+    /// shape in schema 1.0 (strings) vs 2.0 (objects).
+    /// </summary>
+    public class ConfigSchemaCheck
+    {
+        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig();
+    }
+
+    /// <summary>
+    /// Represents the schema 1.0 layout where hubs were simple string names.
+    /// </summary>
+    public class ConfigV1
+    {
+        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig();
+        public List<string> PhidgetsHubsInstances { get; set; }
     }
 }

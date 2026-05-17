@@ -1119,9 +1119,19 @@ namespace Phidgets2Prosim
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
+            // Check schema version and migrate if needed before loading config.
+            // Only proceed with loading if the config is on schema 2.0.
+            bool configReady = CheckAndMigrateConfig();
 
-           //  LoadConfigOuts();
-           Task.Run(async () => { try { await LoadConfigOuts(); } catch (Exception ex) { DisplayErrorLog("Error loading config: " + ex.Message); } });
+            if (configReady)
+            {
+                //  LoadConfigOuts();
+                Task.Run(async () => { try { await LoadConfigOuts(); } catch (Exception ex) { DisplayErrorLog("Error loading config: " + ex.Message); } });
+            }
+            else
+            {
+                DisplayErrorLog("Config is still schema 1.0 – migration was not completed. Please restart and complete the hub migration before connecting.");
+            }
 
             // Register Prosim to receive connect and disconnect events
             connection.onConnect += connection_onConnect;
@@ -1129,6 +1139,141 @@ namespace Phidgets2Prosim
 
             DataRef dataRef = new DataRef("simulator.pause", 100, connection);
             dataRef.onDataChange += DataRef_onDataChange;
+        }
+
+        /// <summary>
+        /// Reads config.yaml, detects schema 1.0 and if found opens ManageHubsForm
+        /// so the user can confirm/discover hub serials, then rewrites as schema 2.0.
+        /// Returns true if the config is at schema 2.0 and safe to load, false otherwise.
+        /// </summary>
+        private bool CheckAndMigrateConfig()
+        {
+            try
+            {
+                if (!File.Exists("config.yaml")) return true; // nothing to migrate
+
+                string yamlContent = File.ReadAllText("config.yaml");
+
+                // Use IgnoreUnmatchedProperties so unknown YAML keys (outputs, inputs, etc.)
+                // don't throw during the schema-check-only deserialization.
+                var migrationDeserializer = new DeserializerBuilder()
+                    .IgnoreUnmatchedProperties()
+                    .Build();
+
+                // Read only GeneralConfig to check the schema version safely
+                var schemaCheck = migrationDeserializer.Deserialize<ConfigSchemaCheck>(yamlContent);
+                string schema = schemaCheck?.GeneralConfig?.Schema ?? "1.0";
+
+                if (schema != "1.0") return true; // Already on 2.0 or later
+
+                DisplayInfoLog("Config schema 1.0 detected – starting migration to schema 2.0...");
+
+                // Read V1 config (hubs are plain strings); other keys are ignored safely
+                var configV1 = migrationDeserializer.Deserialize<ConfigV1>(yamlContent);
+
+                // Convert the old string hub names to PhidgetsHubInst stubs (no serial yet)
+                var stubHubs = new List<PhidgetsHubInst>();
+                if (configV1.PhidgetsHubsInstances != null)
+                {
+                    foreach (var name in configV1.PhidgetsHubsInstances)
+                    {
+                        if (!string.IsNullOrWhiteSpace(name))
+                            stubHubs.Add(new PhidgetsHubInst { Name = name, Serial = 0, Enabled = true });
+                    }
+                }
+
+                // Open ManageHubsForm so the user can scan the network and confirm serials
+                using (var form = new ManageHubsForm(stubHubs))
+                {
+                    form.Text = "Migrate Hubs to Schema 2.0 – Confirm / Scan for Hubs";
+                    if (form.ShowDialog(this) == DialogResult.OK)
+                    {
+                        UpgradeConfigToV2(yamlContent, configV1, form.Hubs);
+                        DisplayInfoLog("Config successfully migrated to schema 2.0.");
+                        return true;
+                    }
+                    else
+                    {
+                        DisplayInfoLog("Hub migration cancelled by user. Config not upgraded.");
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error checking config schema: " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Rewrites config.yaml in schema 2.0 format, replacing the GeneralConfig Schema
+        /// value and the PhidgetsHubsInstances section with structured hub objects.
+        /// </summary>
+        private void UpgradeConfigToV2(string originalYaml, ConfigV1 configV1, List<PhidgetsHubInst> hubs)
+        {
+            try
+            {
+                // Back up the original
+                File.WriteAllText("config.yaml.v1.bak", originalYaml);
+
+                var lines = originalYaml.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var result = new System.Text.StringBuilder();
+                bool inHubsSection = false;
+                bool hubsSectionWritten = false;
+
+                // Build the new hubs block
+                var hubsBlock = new System.Text.StringBuilder();
+                hubsBlock.AppendLine("PhidgetsHubsInstances:");
+                foreach (var hub in hubs)
+                {
+                    hubsBlock.AppendLine("   - Name: " + hub.Name);
+                    hubsBlock.AppendLine("     Serial: " + hub.Serial);
+                    hubsBlock.AppendLine("     Enabled: " + hub.Enabled.ToString().ToLower());
+                }
+
+                foreach (string line in lines)
+                {
+                    string trimmed = line.TrimStart();
+
+                    // Update schema version in place
+                    if (trimmed.StartsWith("Schema:"))
+                    {
+                        result.AppendLine(line.Substring(0, line.IndexOf("Schema:")) + "Schema: 2.0");
+                        continue;
+                    }
+
+                    if (trimmed.StartsWith("PhidgetsHubsInstances:"))
+                    {
+                        inHubsSection = true;
+                        result.Append(hubsBlock.ToString());
+                        hubsSectionWritten = true;
+                        continue;
+                    }
+
+                    if (inHubsSection)
+                    {
+                        // Skip old (string) hub lines
+                        if (string.IsNullOrWhiteSpace(line) || line.StartsWith(" ") || line.StartsWith("\t"))
+                            continue;
+                        else
+                            inHubsSection = false;
+                    }
+
+                    if (!inHubsSection)
+                        result.AppendLine(line);
+                }
+
+                if (!hubsSectionWritten)
+                    result.Append(hubsBlock.ToString());
+
+                File.WriteAllText("config.yaml", result.ToString().TrimEnd() + Environment.NewLine);
+                DisplayInfoLog("config.yaml upgraded to schema 2.0. Backup saved as config.yaml.v1.bak");
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error upgrading config to schema 2.0: " + ex.Message);
+            }
         }
 
         private void Form1_Closed(object sender, EventArgs e)

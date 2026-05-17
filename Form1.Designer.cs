@@ -40,28 +40,6 @@ namespace Phidgets2Prosim
             this.tabOut = new System.Windows.Forms.TabPage();
             this.dataGridViewOutputs = new System.Windows.Forms.DataGridView();
             this.tabInputs = new System.Windows.Forms.TabPage();
-            this.dataGridViewInputs = new System.Windows.Forms.DataGridView();
-            this.tabMultiInputs = new System.Windows.Forms.TabPage();
-            this.dataGridViewMultiInputs = new System.Windows.Forms.DataGridView();
-            this.tabGates = new System.Windows.Forms.TabPage();
-            this.dataGridViewGates = new System.Windows.Forms.DataGridView();
-            this.tabVoltageOut = new System.Windows.Forms.TabPage();
-            this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
-            this.tabVoltageIn = new System.Windows.Forms.TabPage();
-            this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
-            this.tabDCMotors = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtDCMotorIdx = new System.Windows.Forms.TextBox();
-            this.btnDCMotor1Go = new System.Windows.Forms.Button();
-            this.txtDCMotor1Target = new System.Windows.Forms.TextBox();
-            this.tabButtons = new System.Windows.Forms.TabPage();
-            this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.connectionStatusLabel = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblPsIP = new System.Windows.Forms.Label();
-            this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
             this.panelAddInput = new System.Windows.Forms.Panel();
             this.lblInputHub = new System.Windows.Forms.Label();
             this.cboInputHub = new System.Windows.Forms.ComboBox();
@@ -76,6 +54,28 @@ namespace Phidgets2Prosim
             this.lblInputOffValue = new System.Windows.Forms.Label();
             this.cboInputOffValue = new System.Windows.Forms.ComboBox();
             this.btnAddInput = new System.Windows.Forms.Button();
+            this.dataGridViewInputs = new System.Windows.Forms.DataGridView();
+            this.tabMultiInputs = new System.Windows.Forms.TabPage();
+            this.dataGridViewMultiInputs = new System.Windows.Forms.DataGridView();
+            this.tabGates = new System.Windows.Forms.TabPage();
+            this.dataGridViewGates = new System.Windows.Forms.DataGridView();
+            this.tabVoltageOut = new System.Windows.Forms.TabPage();
+            this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
+            this.tabVoltageIn = new System.Windows.Forms.TabPage();
+            this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
+            this.tabDCMotors = new System.Windows.Forms.TabPage();
+            this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtDCMotorIdx = new System.Windows.Forms.TextBox();
+            this.btnDCMotor1Go = new System.Windows.Forms.Button();
+            this.txtDCMotor1Target = new System.Windows.Forms.TextBox();
+            this.tabButtons = new System.Windows.Forms.TabPage();
+            this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.connectionStatusLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblPsIP = new System.Windows.Forms.Label();
             this.tabGroups.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabOut.SuspendLayout();
@@ -92,9 +92,19 @@ namespace Phidgets2Prosim
             this.tabVoltageIn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).BeginInit();
             this.tabDCMotors.SuspendLayout();
-            this.tabButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).BeginInit();
+            this.tabButtons.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // btnManageHubs
+            // 
+            this.btnManageHubs.Location = new System.Drawing.Point(460, 10);
+            this.btnManageHubs.Name = "btnManageHubs";
+            this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
+            this.btnManageHubs.TabIndex = 10;
+            this.btnManageHubs.Text = "Manage Hubs";
+            this.btnManageHubs.UseVisualStyleBackColor = true;
+            this.btnManageHubs.Click += new System.EventHandler(this.btnManageHubs_Click);
             // 
             // tabGroups
             // 
@@ -186,14 +196,6 @@ namespace Phidgets2Prosim
             this.tabInputs.Text = "Inputs";
             this.tabInputs.UseVisualStyleBackColor = true;
             // 
-            // dataGridViewInputs
-            // 
-            this.dataGridViewInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewInputs.Location = new System.Drawing.Point(6, 68);
-            this.dataGridViewInputs.Name = "dataGridViewInputs";
-            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 205);
-            this.dataGridViewInputs.TabIndex = 1;
-            // 
             // panelAddInput
             // 
             this.panelAddInput.Controls.Add(this.lblInputHub);
@@ -219,7 +221,7 @@ namespace Phidgets2Prosim
             this.lblInputHub.AutoSize = true;
             this.lblInputHub.Location = new System.Drawing.Point(3, 7);
             this.lblInputHub.Name = "lblInputHub";
-            this.lblInputHub.Size = new System.Drawing.Size(29, 13);
+            this.lblInputHub.Size = new System.Drawing.Size(30, 13);
             this.lblInputHub.TabIndex = 0;
             this.lblInputHub.Text = "Hub:";
             // 
@@ -253,7 +255,7 @@ namespace Phidgets2Prosim
             this.lblInputChannel.AutoSize = true;
             this.lblInputChannel.Location = new System.Drawing.Point(268, 7);
             this.lblInputChannel.Name = "lblInputChannel";
-            this.lblInputChannel.Size = new System.Drawing.Size(22, 13);
+            this.lblInputChannel.Size = new System.Drawing.Size(23, 13);
             this.lblInputChannel.TabIndex = 4;
             this.lblInputChannel.Text = "Ch:";
             // 
@@ -270,7 +272,7 @@ namespace Phidgets2Prosim
             this.lblInputProsimRef.AutoSize = true;
             this.lblInputProsimRef.Location = new System.Drawing.Point(372, 7);
             this.lblInputProsimRef.Name = "lblInputProsimRef";
-            this.lblInputProsimRef.Size = new System.Drawing.Size(62, 13);
+            this.lblInputProsimRef.Size = new System.Drawing.Size(61, 13);
             this.lblInputProsimRef.TabIndex = 6;
             this.lblInputProsimRef.Text = "Prosim Ref:";
             // 
@@ -286,7 +288,7 @@ namespace Phidgets2Prosim
             this.lblInputOnValue.AutoSize = true;
             this.lblInputOnValue.Location = new System.Drawing.Point(3, 34);
             this.lblInputOnValue.Name = "lblInputOnValue";
-            this.lblInputOnValue.Size = new System.Drawing.Size(45, 13);
+            this.lblInputOnValue.Size = new System.Drawing.Size(42, 13);
             this.lblInputOnValue.TabIndex = 8;
             this.lblInputOnValue.Text = "On Val:";
             // 
@@ -303,7 +305,7 @@ namespace Phidgets2Prosim
             this.lblInputOffValue.AutoSize = true;
             this.lblInputOffValue.Location = new System.Drawing.Point(102, 34);
             this.lblInputOffValue.Name = "lblInputOffValue";
-            this.lblInputOffValue.Size = new System.Drawing.Size(45, 13);
+            this.lblInputOffValue.Size = new System.Drawing.Size(42, 13);
             this.lblInputOffValue.TabIndex = 10;
             this.lblInputOffValue.Text = "Off Val:";
             // 
@@ -323,6 +325,14 @@ namespace Phidgets2Prosim
             this.btnAddInput.TabIndex = 12;
             this.btnAddInput.Text = "Add";
             this.btnAddInput.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewInputs
+            // 
+            this.dataGridViewInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewInputs.Location = new System.Drawing.Point(6, 68);
+            this.dataGridViewInputs.Name = "dataGridViewInputs";
+            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 205);
+            this.dataGridViewInputs.TabIndex = 1;
             // 
             // tabMultiInputs
             // 
@@ -417,6 +427,14 @@ namespace Phidgets2Prosim
             this.tabDCMotors.Text = "DCMotor";
             this.tabDCMotors.UseVisualStyleBackColor = true;
             // 
+            // dataGridDCMotors
+            // 
+            this.dataGridDCMotors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridDCMotors.Location = new System.Drawing.Point(6, 124);
+            this.dataGridDCMotors.Name = "dataGridDCMotors";
+            this.dataGridDCMotors.Size = new System.Drawing.Size(618, 149);
+            this.dataGridDCMotors.TabIndex = 7;
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -504,7 +522,7 @@ namespace Phidgets2Prosim
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v1.2.0";
+            this.label1.Text = "v1.3.0";
             // 
             // lblPsIP
             // 
@@ -514,24 +532,6 @@ namespace Phidgets2Prosim
             this.lblPsIP.Size = new System.Drawing.Size(51, 13);
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
-            // 
-            // dataGridDCMotors
-            // 
-            this.dataGridDCMotors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridDCMotors.Location = new System.Drawing.Point(6, 124);
-            this.dataGridDCMotors.Name = "dataGridDCMotors";
-            this.dataGridDCMotors.Size = new System.Drawing.Size(618, 149);
-            this.dataGridDCMotors.TabIndex = 7;
-            // 
-            // btnManageHubs
-            // 
-            this.btnManageHubs.Location = new System.Drawing.Point(460, 10);
-            this.btnManageHubs.Name = "btnManageHubs";
-            this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
-            this.btnManageHubs.TabIndex = 10;
-            this.btnManageHubs.Text = "Manage Hubs";
-            this.btnManageHubs.UseVisualStyleBackColor = true;
-            this.btnManageHubs.Click += new System.EventHandler(this.btnManageHubs_Click);
             // 
             // Form1
             // 
@@ -565,8 +565,8 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).EndInit();
             this.tabDCMotors.ResumeLayout(false);
             this.tabDCMotors.PerformLayout();
-            this.tabButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).EndInit();
+            this.tabButtons.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
