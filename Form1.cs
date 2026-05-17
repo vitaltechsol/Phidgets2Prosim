@@ -622,13 +622,44 @@ namespace Phidgets2Prosim
             }
         }
 
+        private async Task LoadConfigInsUI()
+        {
+            try
+            {
+                // Use InputsUI to load and bind the grid from config.yaml
+                inputsUI.LoadInputsFromConfig("config.yaml");
+
+                string yamlContent = File.ReadAllText("config.yaml");
+                var deserializer = new DeserializerBuilder().Build();
+                var config = deserializer.Deserialize<Config>(yamlContent);
+
+                if (config.PhidgetsMultiInputInstances != null)
+                {
+                    phidgetsMultiInputInstances = new BindingList<PhidgetsMultiInputInst>(config.PhidgetsMultiInputInstances);
+                    dataGridViewMultiInputs.DataSource = phidgetsMultiInputInstances;
+                    dataGridViewMultiInputs.CellEndEdit -= dataGridViewOutputs_CellEndEdit;
+                    dataGridViewMultiInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                }
+
+                if (config.PhidgetsVoltageInputInstances != null)
+                {
+                    PhidgetsVoltageInputInstances = new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances);
+                    dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
+                    dataGridViewVoltageIn.CellEndEdit -= dataGridViewOutputs_CellEndEdit;
+                    dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error loading input UI configs: " + ex.Message);
+            }
+        }
+
         private async void LoadConfigIns()
         {
             DisplayInfoLog("Loading Inputs configs ... ");
             try
             {
-                // Use InputsUI to load and bind the grid from config.yaml
-                Invoke(new Action(() => inputsUI.LoadInputsFromConfig("config.yaml")));
                 // Restore config variable for other sections
                 string yamlContent = File.ReadAllText("config.yaml");
                 var deserializer = new DeserializerBuilder().Build();
@@ -690,11 +721,6 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsMultiInputInstances != null)
                 {
                     DisplayInfoLog("Loading MultiInputs ... ");
-                    Invoke(new Action(() => {
-                        phidgetsMultiInputInstances = config.PhidgetsMultiInputInstances != null ? new BindingList<PhidgetsMultiInputInst>(config.PhidgetsMultiInputInstances) : null;
-                        dataGridViewMultiInputs.DataSource = phidgetsMultiInputInstances;
-                        dataGridViewMultiInputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsMultiInputInstances)
                     {
@@ -731,11 +757,6 @@ namespace Phidgets2Prosim
                 if (config.PhidgetsVoltageInputInstances != null)
                 {
                     DisplayInfoLog("Loading Voltage Inputs ... ");
-                    Invoke(new Action(() => {
-                        PhidgetsVoltageInputInstances = config.PhidgetsVoltageInputInstances != null ? new BindingList<PhidgetsVoltageInputInst>(config.PhidgetsVoltageInputInstances) : null;
-                        dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
-                        dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-                    }));
                     var idx = 0;
                     foreach (var instance in config.PhidgetsVoltageInputInstances)
                     {
@@ -1127,6 +1148,8 @@ namespace Phidgets2Prosim
             {
                 //  LoadConfigOuts();
                 Task.Run(async () => { try { await LoadConfigOuts(); } catch (Exception ex) { DisplayErrorLog("Error loading config: " + ex.Message); } });
+                Task.Run(async () => { try { await LoadConfigInsUI(); } catch (Exception ex) { DisplayErrorLog("Error loading input configs: " + ex.Message); } });
+
             }
             else
             {
