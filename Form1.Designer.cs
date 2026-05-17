@@ -63,6 +63,8 @@ namespace Phidgets2Prosim
             this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
             this.tabVoltageIn = new System.Windows.Forms.TabPage();
             this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
+            this.tabEncoders = new System.Windows.Forms.TabPage();
+            this.dataGridViewEncoders = new System.Windows.Forms.DataGridView();
             this.tabDCMotors = new System.Windows.Forms.TabPage();
             this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
@@ -93,6 +95,8 @@ namespace Phidgets2Prosim
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewVoltageIn)).BeginInit();
             this.tabDCMotors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).BeginInit();
+            this.tabEncoders.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEncoders)).BeginInit();
             this.tabButtons.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -116,6 +120,7 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabVoltageOut);
             this.tabGroups.Controls.Add(this.tabVoltageIn);
             this.tabGroups.Controls.Add(this.tabDCMotors);
+            this.tabGroups.Controls.Add(this.tabEncoders);
             this.tabGroups.Controls.Add(this.tabButtons);
             this.tabGroups.Location = new System.Drawing.Point(16, 73);
             this.tabGroups.Name = "tabGroups";
@@ -427,6 +432,25 @@ namespace Phidgets2Prosim
             this.tabDCMotors.Text = "DCMotor";
             this.tabDCMotors.UseVisualStyleBackColor = true;
             // 
+            // tabEncoders
+            // 
+            this.tabEncoders.Controls.Add(this.dataGridViewEncoders);
+            this.tabEncoders.Location = new System.Drawing.Point(4, 22);
+            this.tabEncoders.Name = "tabEncoders";
+            this.tabEncoders.Padding = new System.Windows.Forms.Padding(3);
+            this.tabEncoders.Size = new System.Drawing.Size(630, 279);
+            this.tabEncoders.TabIndex = 9;
+            this.tabEncoders.Text = "Encoders";
+            this.tabEncoders.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewEncoders
+            // 
+            this.dataGridViewEncoders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewEncoders.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewEncoders.Name = "dataGridViewEncoders";
+            this.dataGridViewEncoders.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewEncoders.TabIndex = 8;
+            // 
             // dataGridDCMotors
             // 
             this.dataGridDCMotors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -566,6 +590,8 @@ namespace Phidgets2Prosim
             this.tabDCMotors.ResumeLayout(false);
             this.tabDCMotors.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).EndInit();
+            this.tabEncoders.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEncoders)).EndInit();
             this.tabButtons.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -600,6 +626,8 @@ namespace Phidgets2Prosim
         private TabPage tabVoltageIn;
         private DataGridView dataGridViewVoltageIn;
         private TabPage tabDCMotors;
+        private TabPage tabEncoders;
+        private DataGridView dataGridViewEncoders;
         private Button btnDCMotor1Go;
         private TextBox txtDCMotor1Target;
         private TextBox txtDCMotorIdx;

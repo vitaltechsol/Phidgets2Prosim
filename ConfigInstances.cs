@@ -29,11 +29,11 @@ namespace Phidgets2Prosim
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsDCMotorInst> PhidgetsDCMotorInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
+        public List<PhidgetsEncoderInst> PhidgetsEncoderInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
         public List<UserVariableInst> UserVariableInstances { get; set; }
         public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
         public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
-
     }
 
     public class UserVariableInst

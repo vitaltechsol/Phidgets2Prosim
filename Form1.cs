@@ -40,6 +40,7 @@ namespace Phidgets2Prosim
         PhidgetsVoltageOutput[] phidgetsVoltageOutput = new PhidgetsVoltageOutput[100];
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
         PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
+        PhidgetsEncoder[] phidgetsEncoders = new PhidgetsEncoder[20];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -63,6 +64,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsButtonInst> phidgetsButtonInstances;
         private BindingList<PhidgetsBLDCMotorInst> phidgetsBLDCMotorInstances;
         private BindingList<PhidgetsDCMotorInst> phidgetsDCMotorInstances;
+        private BindingList<PhidgetsEncoderInst> phidgetsEncoderInstances;
 
         public Form1()
         {
@@ -604,6 +606,34 @@ namespace Phidgets2Prosim
 					}
 				}
 
+				// Encoders
+				if (config.PhidgetsEncoderInstances != null)
+				{
+					var idx = 0;
+					foreach (var instance in config.PhidgetsEncoderInstances)
+					{
+						try
+						{
+							phidgetsEncoders[idx] = new PhidgetsEncoder(
+								instance.Serial,
+								instance.HubPort,
+								instance.Channel,
+								instance.ProsimDataRef,
+								connection
+							);
+							phidgetsEncoders[idx].ScaleFactor = instance.ScaleFactor;
+							phidgetsEncoders[idx].ErrorLog += DisplayErrorLog;
+							phidgetsEncoders[idx].InfoLog += DisplayInfoLog;
+						}
+						catch (Exception ex)
+						{
+							DisplayErrorLog("Error loading config line for Encoder");
+							DisplayErrorLog(ex.ToString());
+						}
+						idx++;
+					}
+				}
+
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
           
@@ -647,6 +677,14 @@ namespace Phidgets2Prosim
                     dataGridViewVoltageIn.DataSource = PhidgetsVoltageInputInstances;
                     dataGridViewVoltageIn.CellEndEdit -= dataGridViewOutputs_CellEndEdit;
                     dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
+                }
+
+                if (config.PhidgetsEncoderInstances != null)
+                {
+                    phidgetsEncoderInstances = new BindingList<PhidgetsEncoderInst>(config.PhidgetsEncoderInstances);
+                    dataGridViewEncoders.DataSource = phidgetsEncoderInstances;
+                    dataGridViewEncoders.CellEndEdit -= dataGridViewOutputs_CellEndEdit;
+                    dataGridViewEncoders.CellEndEdit += dataGridViewOutputs_CellEndEdit;
                 }
             }
             catch (Exception ex)
