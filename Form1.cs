@@ -58,6 +58,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private InputsUI inputsUI;
+        private EncodersUI encodersUI;
         private BindingList<PhidgetsMultiInputInst> phidgetsMultiInputInstances;
         private BindingList<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
@@ -82,6 +83,19 @@ namespace Phidgets2Prosim
                 cboInputOffValue,
                 btnAddInput,
                 dataGridViewInputs,
+                DisplayInfoLog,
+                DisplayErrorLog,
+                () => GetCurrentHubs()
+            );
+            // Initialize EncodersUI abstraction
+            encodersUI = new EncodersUI(
+                cboEncoderHub,
+                cboEncoderHubPort,
+                cboEncoderChannel,
+                txtEncoderProsimRef,
+                txtEncoderScaleFactor,
+                btnAddEncoder,
+                dataGridViewEncoders,
                 DisplayInfoLog,
                 DisplayErrorLog,
                 () => GetCurrentHubs()
@@ -173,6 +187,7 @@ namespace Phidgets2Prosim
                 }
 
                 inputsUI.PopulateInputHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
+                encodersUI.PopulateEncoderHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
 
                 //// Code to test all lights on
                 //var t = 0;
@@ -659,6 +674,9 @@ namespace Phidgets2Prosim
                 // Use InputsUI to load and bind the grid from config.yaml
                 inputsUI.LoadInputsFromConfig("config.yaml");
 
+                // Use EncodersUI to load and bind the grid from config.yaml
+                encodersUI.LoadEncodersFromConfig("config.yaml");
+
                 string yamlContent = File.ReadAllText("config.yaml");
                 var deserializer = new DeserializerBuilder().Build();
                 var config = deserializer.Deserialize<Config>(yamlContent);
@@ -679,13 +697,7 @@ namespace Phidgets2Prosim
                     dataGridViewVoltageIn.CellEndEdit += dataGridViewOutputs_CellEndEdit;
                 }
 
-                if (config.PhidgetsEncoderInstances != null)
-                {
-                    phidgetsEncoderInstances = new BindingList<PhidgetsEncoderInst>(config.PhidgetsEncoderInstances);
-                    dataGridViewEncoders.DataSource = phidgetsEncoderInstances;
-                    dataGridViewEncoders.CellEndEdit -= dataGridViewOutputs_CellEndEdit;
-                    dataGridViewEncoders.CellEndEdit += dataGridViewOutputs_CellEndEdit;
-                }
+                // Remove the manual encoder loading since encodersUI handles it now
             }
             catch (Exception ex)
             {

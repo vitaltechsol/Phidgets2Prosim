@@ -64,6 +64,18 @@ namespace Phidgets2Prosim
             this.tabVoltageIn = new System.Windows.Forms.TabPage();
             this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
             this.tabEncoders = new System.Windows.Forms.TabPage();
+            this.panelAddEncoder = new System.Windows.Forms.Panel();
+            this.lblEncoderHub = new System.Windows.Forms.Label();
+            this.cboEncoderHub = new System.Windows.Forms.ComboBox();
+            this.lblEncoderHubPort = new System.Windows.Forms.Label();
+            this.cboEncoderHubPort = new System.Windows.Forms.ComboBox();
+            this.lblEncoderChannel = new System.Windows.Forms.Label();
+            this.cboEncoderChannel = new System.Windows.Forms.ComboBox();
+            this.lblEncoderProsimRef = new System.Windows.Forms.Label();
+            this.txtEncoderProsimRef = new System.Windows.Forms.TextBox();
+            this.lblEncoderScaleFactor = new System.Windows.Forms.Label();
+            this.txtEncoderScaleFactor = new System.Windows.Forms.TextBox();
+            this.btnAddEncoder = new System.Windows.Forms.Button();
             this.dataGridViewEncoders = new System.Windows.Forms.DataGridView();
             this.tabDCMotors = new System.Windows.Forms.TabPage();
             this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
@@ -96,6 +108,7 @@ namespace Phidgets2Prosim
             this.tabDCMotors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).BeginInit();
             this.tabEncoders.SuspendLayout();
+            this.panelAddEncoder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEncoders)).BeginInit();
             this.tabButtons.SuspendLayout();
             this.SuspendLayout();
@@ -434,6 +447,7 @@ namespace Phidgets2Prosim
             // 
             // tabEncoders
             // 
+            this.tabEncoders.Controls.Add(this.panelAddEncoder);
             this.tabEncoders.Controls.Add(this.dataGridViewEncoders);
             this.tabEncoders.Location = new System.Drawing.Point(4, 22);
             this.tabEncoders.Name = "tabEncoders";
@@ -443,13 +457,124 @@ namespace Phidgets2Prosim
             this.tabEncoders.Text = "Encoders";
             this.tabEncoders.UseVisualStyleBackColor = true;
             // 
+            // panelAddEncoder
+            // 
+            this.panelAddEncoder.Controls.Add(this.lblEncoderHub);
+            this.panelAddEncoder.Controls.Add(this.cboEncoderHub);
+            this.panelAddEncoder.Controls.Add(this.lblEncoderHubPort);
+            this.panelAddEncoder.Controls.Add(this.cboEncoderHubPort);
+            this.panelAddEncoder.Controls.Add(this.lblEncoderChannel);
+            this.panelAddEncoder.Controls.Add(this.cboEncoderChannel);
+            this.panelAddEncoder.Controls.Add(this.lblEncoderProsimRef);
+            this.panelAddEncoder.Controls.Add(this.txtEncoderProsimRef);
+            this.panelAddEncoder.Controls.Add(this.lblEncoderScaleFactor);
+            this.panelAddEncoder.Controls.Add(this.txtEncoderScaleFactor);
+            this.panelAddEncoder.Controls.Add(this.btnAddEncoder);
+            this.panelAddEncoder.Location = new System.Drawing.Point(6, 6);
+            this.panelAddEncoder.Name = "panelAddEncoder";
+            this.panelAddEncoder.Size = new System.Drawing.Size(618, 58);
+            this.panelAddEncoder.TabIndex = 2;
+            // 
+            // lblEncoderHub
+            // 
+            this.lblEncoderHub.AutoSize = true;
+            this.lblEncoderHub.Location = new System.Drawing.Point(3, 7);
+            this.lblEncoderHub.Name = "lblEncoderHub";
+            this.lblEncoderHub.Size = new System.Drawing.Size(30, 13);
+            this.lblEncoderHub.TabIndex = 0;
+            this.lblEncoderHub.Text = "Hub:";
+            // 
+            // cboEncoderHub
+            // 
+            this.cboEncoderHub.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEncoderHub.Location = new System.Drawing.Point(33, 3);
+            this.cboEncoderHub.Name = "cboEncoderHub";
+            this.cboEncoderHub.Size = new System.Drawing.Size(130, 21);
+            this.cboEncoderHub.TabIndex = 1;
+            // 
+            // lblEncoderHubPort
+            // 
+            this.lblEncoderHubPort.AutoSize = true;
+            this.lblEncoderHubPort.Location = new System.Drawing.Point(168, 7);
+            this.lblEncoderHubPort.Name = "lblEncoderHubPort";
+            this.lblEncoderHubPort.Size = new System.Drawing.Size(29, 13);
+            this.lblEncoderHubPort.TabIndex = 2;
+            this.lblEncoderHubPort.Text = "Port:";
+            // 
+            // cboEncoderHubPort
+            // 
+            this.cboEncoderHubPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEncoderHubPort.Location = new System.Drawing.Point(198, 3);
+            this.cboEncoderHubPort.Name = "cboEncoderHubPort";
+            this.cboEncoderHubPort.Size = new System.Drawing.Size(65, 21);
+            this.cboEncoderHubPort.TabIndex = 3;
+            // 
+            // lblEncoderChannel
+            // 
+            this.lblEncoderChannel.AutoSize = true;
+            this.lblEncoderChannel.Location = new System.Drawing.Point(268, 7);
+            this.lblEncoderChannel.Name = "lblEncoderChannel";
+            this.lblEncoderChannel.Size = new System.Drawing.Size(23, 13);
+            this.lblEncoderChannel.TabIndex = 4;
+            this.lblEncoderChannel.Text = "Ch:";
+            // 
+            // cboEncoderChannel
+            // 
+            this.cboEncoderChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEncoderChannel.Location = new System.Drawing.Point(292, 3);
+            this.cboEncoderChannel.Name = "cboEncoderChannel";
+            this.cboEncoderChannel.Size = new System.Drawing.Size(75, 21);
+            this.cboEncoderChannel.TabIndex = 5;
+            // 
+            // lblEncoderProsimRef
+            // 
+            this.lblEncoderProsimRef.AutoSize = true;
+            this.lblEncoderProsimRef.Location = new System.Drawing.Point(372, 7);
+            this.lblEncoderProsimRef.Name = "lblEncoderProsimRef";
+            this.lblEncoderProsimRef.Size = new System.Drawing.Size(61, 13);
+            this.lblEncoderProsimRef.TabIndex = 6;
+            this.lblEncoderProsimRef.Text = "Prosim Ref:";
+            // 
+            // txtEncoderProsimRef
+            // 
+            this.txtEncoderProsimRef.Location = new System.Drawing.Point(438, 4);
+            this.txtEncoderProsimRef.Name = "txtEncoderProsimRef";
+            this.txtEncoderProsimRef.Size = new System.Drawing.Size(175, 20);
+            this.txtEncoderProsimRef.TabIndex = 7;
+            // 
+            // lblEncoderScaleFactor
+            // 
+            this.lblEncoderScaleFactor.AutoSize = true;
+            this.lblEncoderScaleFactor.Location = new System.Drawing.Point(3, 34);
+            this.lblEncoderScaleFactor.Name = "lblEncoderScaleFactor";
+            this.lblEncoderScaleFactor.Size = new System.Drawing.Size(70, 13);
+            this.lblEncoderScaleFactor.TabIndex = 8;
+            this.lblEncoderScaleFactor.Text = "Scale Factor:";
+            // 
+            // txtEncoderScaleFactor
+            // 
+            this.txtEncoderScaleFactor.Location = new System.Drawing.Point(78, 30);
+            this.txtEncoderScaleFactor.Name = "txtEncoderScaleFactor";
+            this.txtEncoderScaleFactor.Size = new System.Drawing.Size(60, 20);
+            this.txtEncoderScaleFactor.TabIndex = 9;
+            this.txtEncoderScaleFactor.Text = "1";
+            // 
+            // btnAddEncoder
+            // 
+            this.btnAddEncoder.Location = new System.Drawing.Point(152, 29);
+            this.btnAddEncoder.Name = "btnAddEncoder";
+            this.btnAddEncoder.Size = new System.Drawing.Size(60, 23);
+            this.btnAddEncoder.TabIndex = 10;
+            this.btnAddEncoder.Text = "Add";
+            this.btnAddEncoder.UseVisualStyleBackColor = true;
+            // 
             // dataGridViewEncoders
             // 
             this.dataGridViewEncoders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewEncoders.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewEncoders.Location = new System.Drawing.Point(6, 68);
             this.dataGridViewEncoders.Name = "dataGridViewEncoders";
-            this.dataGridViewEncoders.Size = new System.Drawing.Size(618, 267);
-            this.dataGridViewEncoders.TabIndex = 8;
+            this.dataGridViewEncoders.Size = new System.Drawing.Size(618, 205);
+            this.dataGridViewEncoders.TabIndex = 1;
             // 
             // dataGridDCMotors
             // 
@@ -591,6 +716,8 @@ namespace Phidgets2Prosim
             this.tabDCMotors.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDCMotors)).EndInit();
             this.tabEncoders.ResumeLayout(false);
+            this.panelAddEncoder.ResumeLayout(false);
+            this.panelAddEncoder.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEncoders)).EndInit();
             this.tabButtons.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -650,5 +777,17 @@ namespace Phidgets2Prosim
         private Label lblInputOffValue;
         private ComboBox cboInputOffValue;
         private Button btnAddInput;
+        private Panel panelAddEncoder;
+        private Label lblEncoderHub;
+        private ComboBox cboEncoderHub;
+        private Label lblEncoderHubPort;
+        private ComboBox cboEncoderHubPort;
+        private Label lblEncoderChannel;
+        private ComboBox cboEncoderChannel;
+        private Label lblEncoderProsimRef;
+        private TextBox txtEncoderProsimRef;
+        private Label lblEncoderScaleFactor;
+        private TextBox txtEncoderScaleFactor;
+        private Button btnAddEncoder;
     }
 }

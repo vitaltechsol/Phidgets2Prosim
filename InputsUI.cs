@@ -9,10 +9,7 @@ namespace Phidgets2Prosim
 {
     public class InputsUI
     {
-        private readonly ComboBox cboInputHub;
-        private readonly ComboBox cboInputHubPort;
-        private readonly ComboBox cboInputChannel;
-        private readonly TextBox txtInputProsimRef;
+        private readonly DeviceFormControls deviceControls;
         private readonly ComboBox cboInputOnValue;
         private readonly ComboBox cboInputOffValue;
         private readonly Button btnAddInput;
@@ -36,10 +33,11 @@ namespace Phidgets2Prosim
             Action<string> displayErrorLog,
             Func<List<PhidgetsHubInst>> getHubs)
         {
-            this.cboInputHub = cboInputHub;
-            this.cboInputHubPort = cboInputHubPort;
-            this.cboInputChannel = cboInputChannel;
-            this.txtInputProsimRef = txtInputProsimRef;
+            this.deviceControls = new DeviceFormControls(
+                cboInputHub,
+                cboInputHubPort,
+                cboInputChannel,
+                txtInputProsimRef);
             this.cboInputOnValue = cboInputOnValue;
             this.cboInputOffValue = cboInputOffValue;
             this.btnAddInput = btnAddInput;
@@ -77,29 +75,13 @@ namespace Phidgets2Prosim
 
         public void PopulateInputHubDropdown(List<PhidgetsHubInst> hubs)
         {
-            cboInputHub.DataSource = null;
-            cboInputHub.Items.Clear();
-            foreach (var hub in hubs)
-            {
-                cboInputHub.Items.Add(new ComboBoxItem($"{hub.Name} ({hub.Serial})", hub));
-            }
-            if (cboInputHub.Items.Count > 0)
-                cboInputHub.SelectedIndex = 0;
+            deviceControls.PopulateHubDropdown(hubs);
         }
 
         private void PopulateInputFormDropdowns()
         {
-            cboInputHubPort.Items.Clear();
-            cboInputHubPort.Items.Add("No hub");
-            for (int i = 0; i <= 8; i++)
-                cboInputHubPort.Items.Add(i.ToString());
-            cboInputHubPort.SelectedIndex = 0;
-
-            cboInputChannel.Items.Clear();
-            cboInputChannel.Items.Add("Use Port");
-            for (int i = 0; i <= 15; i++)
-                cboInputChannel.Items.Add(i.ToString());
-            cboInputChannel.SelectedIndex = 0;
+            deviceControls.PopulateHubPortDropdown();
+            deviceControls.PopulateChannelDropdown();
 
             cboInputOnValue.Items.Clear();
             for (int i = 0; i <= 10; i++)
@@ -116,17 +98,16 @@ namespace Phidgets2Prosim
         {
             try
             {
-                var hubItem = cboInputHub.SelectedItem as ComboBoxItem;
-                if (hubItem == null)
+                var hub = deviceControls.GetSelectedHub();
+                if (hub == null)
                 {
                     MessageBox.Show("Please select a hub.", "Missing Hub", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                var hub = hubItem.Hub;
 
-                int hubPort = cboInputHubPort.SelectedItem.ToString() == "No hub" ? -1 : int.Parse(cboInputHubPort.SelectedItem.ToString());
-                int channel = cboInputChannel.SelectedItem.ToString() == "Use Port" ? -1 : int.Parse(cboInputChannel.SelectedItem.ToString());
-                string prosimRef = txtInputProsimRef.Text.Trim();
+                int hubPort = deviceControls.GetHubPort();
+                int channel = deviceControls.GetChannel();
+                string prosimRef = deviceControls.GetProsimRef();
                 int onValue = int.Parse(cboInputOnValue.SelectedItem.ToString());
                 int offValue = int.Parse(cboInputOffValue.SelectedItem.ToString());
 
@@ -149,7 +130,7 @@ namespace Phidgets2Prosim
                 PhidgetsInputInstances.Add(newInput);
                 SaveInputsToConfig();
 
-                txtInputProsimRef.Text = "";
+                deviceControls.ClearProsimRef();
                 cboInputOnValue.SelectedIndex = 1;
                 cboInputOffValue.SelectedIndex = 0;
             }
@@ -236,18 +217,6 @@ namespace Phidgets2Prosim
             {
                 displayErrorLog("Error saving inputs config: " + ex.Message);
             }
-        }
-
-        private class ComboBoxItem
-        {
-            public string Display { get; }
-            public PhidgetsHubInst Hub { get; }
-            public ComboBoxItem(string display, PhidgetsHubInst hub)
-            {
-                Display = display;
-                Hub = hub;
-            }
-            public override string ToString() => Display;
         }
     }
 }

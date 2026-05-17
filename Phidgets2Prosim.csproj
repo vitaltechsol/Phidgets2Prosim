@@ -82,6 +82,8 @@
   <ItemGroup>
     <Compile Include="Custom_TrimWheel.cs" />
     <Compile Include="Custom_ParkingBrake.cs" />
+    <Compile Include="DeviceFormControls.cs" />
+    <Compile Include="EncodersUI.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
