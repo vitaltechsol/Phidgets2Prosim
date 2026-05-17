@@ -59,6 +59,7 @@ namespace Phidgets2Prosim
         private BindingList<PhidgetsGateInst> phidgetsGateInstances;
         private InputsUI inputsUI;
         private EncodersUI encodersUI;
+        private ProsimConnectionUI prosimConnectionUI;
         private BindingList<PhidgetsMultiInputInst> phidgetsMultiInputInstances;
         private BindingList<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances;
         private BindingList<PhidgetsVoltageOutputInst> phidgetsVoltageOutputInstances;
@@ -100,6 +101,18 @@ namespace Phidgets2Prosim
                 DisplayErrorLog,
                 () => GetCurrentHubs()
             );
+            // Initialize ProsimConnectionUI
+            prosimConnectionUI = new ProsimConnectionUI(
+                txtProsimIP,
+                btnSaveProsimIP,
+                btnConnectProsim,
+                btnDisconnectProsim,
+                connectionStatusLabel,
+                connection,
+                DisplayInfoLog,
+                DisplayErrorLog,
+                updateStatusLabel
+            );
         }
 
         async void connectToProSim(string prosimIP)
@@ -126,6 +139,7 @@ namespace Phidgets2Prosim
         void connection_onDisconnect()
         {
             BeginInvoke(new MethodInvoker(updateStatusLabel));
+            prosimConnectionUI?.OnConnectionStateChanged();
             if (configsInsLoaded)
             {
                 BeginInvoke(new MethodInvoker(UnloadConfigIns));
@@ -136,6 +150,7 @@ namespace Phidgets2Prosim
         void connection_onConnect()
         {
             BeginInvoke(new MethodInvoker(updateStatusLabel));
+            prosimConnectionUI?.OnConnectionStateChanged();
             Task.Run(() => { try { LoadConfigIns(); } catch (Exception ex) { DisplayErrorLog("Error loading inputs: " + ex.Message); } });
         }
 
@@ -651,8 +666,12 @@ namespace Phidgets2Prosim
 
                 DisplayInfoLog("Prosim IP:" + config.GeneralConfig.ProSimIP);
                 DisplayInfoLog("Opening outputs:" + totalOuts);
-          
-                BeginInvoke(new Action(() => { lblPsIP.Text = config.GeneralConfig.ProSimIP; }));
+
+                // Use ProsimConnectionUI to display and manage the IP
+                BeginInvoke(new Action(() => { 
+                    lblPsIP.Text = config.GeneralConfig.ProSimIP; 
+                }));
+
                 // Wait for outs to finish
                 var taskDelay2 = Task.Delay((totalOuts + 10) * 40);
                 await taskDelay2;
@@ -1190,6 +1209,9 @@ namespace Phidgets2Prosim
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
+            // Load Prosim IP from config
+            prosimConnectionUI.LoadProsimIPFromConfig();
+
             // Check schema version and migrate if needed before loading config.
             // Only proceed with loading if the config is on schema 2.0.
             bool configReady = CheckAndMigrateConfig();

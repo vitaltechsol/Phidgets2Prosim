@@ -48,6 +48,11 @@ namespace Phidgets2Prosim
             this.lblInputChannel = new System.Windows.Forms.Label();
             this.cboInputChannel = new System.Windows.Forms.ComboBox();
             this.lblInputProsimRef = new System.Windows.Forms.Label();
+            this.txtProsimIP = new System.Windows.Forms.TextBox();
+            this.btnSaveProsimIP = new System.Windows.Forms.Button();
+            this.btnConnectProsim = new System.Windows.Forms.Button();
+            this.btnDisconnectProsim = new System.Windows.Forms.Button();
+            this.lblProsimIPLabel = new System.Windows.Forms.Label();
             this.txtInputProsimRef = new System.Windows.Forms.TextBox();
             this.lblInputOnValue = new System.Windows.Forms.Label();
             this.cboInputOnValue = new System.Windows.Forms.ComboBox();
@@ -115,7 +120,7 @@ namespace Phidgets2Prosim
             // 
             // btnManageHubs
             // 
-            this.btnManageHubs.Location = new System.Drawing.Point(460, 10);
+            this.btnManageHubs.Location = new System.Drawing.Point(460, 37);
             this.btnManageHubs.Name = "btnManageHubs";
             this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
             this.btnManageHubs.TabIndex = 10;
@@ -135,7 +140,7 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabDCMotors);
             this.tabGroups.Controls.Add(this.tabEncoders);
             this.tabGroups.Controls.Add(this.tabButtons);
-            this.tabGroups.Location = new System.Drawing.Point(16, 73);
+            this.tabGroups.Location = new System.Drawing.Point(16, 100);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.SelectedIndex = 0;
             this.tabGroups.Size = new System.Drawing.Size(638, 305);
@@ -658,7 +663,7 @@ namespace Phidgets2Prosim
             // connectionStatusLabel
             // 
             this.connectionStatusLabel.AutoSize = true;
-            this.connectionStatusLabel.Location = new System.Drawing.Point(12, 46);
+            this.connectionStatusLabel.Location = new System.Drawing.Point(12, 73);
             this.connectionStatusLabel.Name = "connectionStatusLabel";
             this.connectionStatusLabel.Size = new System.Drawing.Size(95, 13);
             this.connectionStatusLabel.TabIndex = 4;
@@ -667,7 +672,7 @@ namespace Phidgets2Prosim
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(603, 13);
+            this.label1.Location = new System.Drawing.Point(603, 40);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
@@ -676,17 +681,67 @@ namespace Phidgets2Prosim
             // lblPsIP
             // 
             this.lblPsIP.AutoSize = true;
-            this.lblPsIP.Location = new System.Drawing.Point(13, 30);
+            this.lblPsIP.Location = new System.Drawing.Point(13, 57);
             this.lblPsIP.Name = "lblPsIP";
             this.lblPsIP.Size = new System.Drawing.Size(51, 13);
             this.lblPsIP.TabIndex = 6;
             this.lblPsIP.Text = "Prosim IP";
             // 
+            // lblProsimIPLabel
+            // 
+            this.lblProsimIPLabel.AutoSize = true;
+            this.lblProsimIPLabel.Location = new System.Drawing.Point(13, 13);
+            this.lblProsimIPLabel.Name = "lblProsimIPLabel";
+            this.lblProsimIPLabel.Size = new System.Drawing.Size(61, 13);
+            this.lblProsimIPLabel.TabIndex = 11;
+            this.lblProsimIPLabel.Text = "Prosim IP:";
+            // 
+            // txtProsimIP
+            // 
+            this.txtProsimIP.Location = new System.Drawing.Point(75, 10);
+            this.txtProsimIP.Name = "txtProsimIP";
+            this.txtProsimIP.Size = new System.Drawing.Size(100, 20);
+            this.txtProsimIP.TabIndex = 12;
+            this.txtProsimIP.Text = "127.0.0.1";
+            // 
+            // btnSaveProsimIP
+            // 
+            this.btnSaveProsimIP.Location = new System.Drawing.Point(181, 8);
+            this.btnSaveProsimIP.Name = "btnSaveProsimIP";
+            this.btnSaveProsimIP.Size = new System.Drawing.Size(50, 23);
+            this.btnSaveProsimIP.TabIndex = 13;
+            this.btnSaveProsimIP.Text = "Save";
+            this.btnSaveProsimIP.UseVisualStyleBackColor = true;
+            // 
+            // btnConnectProsim
+            // 
+            this.btnConnectProsim.Location = new System.Drawing.Point(237, 8);
+            this.btnConnectProsim.Name = "btnConnectProsim";
+            this.btnConnectProsim.Size = new System.Drawing.Size(70, 23);
+            this.btnConnectProsim.TabIndex = 14;
+            this.btnConnectProsim.Text = "Connect";
+            this.btnConnectProsim.UseVisualStyleBackColor = true;
+            // 
+            // btnDisconnectProsim
+            // 
+            this.btnDisconnectProsim.Location = new System.Drawing.Point(313, 8);
+            this.btnDisconnectProsim.Name = "btnDisconnectProsim";
+            this.btnDisconnectProsim.Size = new System.Drawing.Size(80, 23);
+            this.btnDisconnectProsim.TabIndex = 15;
+            this.btnDisconnectProsim.Text = "Disconnect";
+            this.btnDisconnectProsim.UseVisualStyleBackColor = true;
+            this.btnDisconnectProsim.Enabled = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(686, 390);
+            this.ClientSize = new System.Drawing.Size(686, 420);
+            this.Controls.Add(this.btnDisconnectProsim);
+            this.Controls.Add(this.btnConnectProsim);
+            this.Controls.Add(this.btnSaveProsimIP);
+            this.Controls.Add(this.txtProsimIP);
+            this.Controls.Add(this.lblProsimIPLabel);
             this.Controls.Add(this.btnManageHubs);
             this.Controls.Add(this.lblPsIP);
             this.Controls.Add(this.label1);
@@ -789,5 +844,10 @@ namespace Phidgets2Prosim
         private Label lblEncoderScaleFactor;
         private TextBox txtEncoderScaleFactor;
         private Button btnAddEncoder;
+        private TextBox txtProsimIP;
+        private Button btnSaveProsimIP;
+        private Button btnConnectProsim;
+        private Button btnDisconnectProsim;
+        private Label lblProsimIPLabel;
     }
 }
