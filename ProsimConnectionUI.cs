@@ -140,7 +140,16 @@ namespace Phidgets2Prosim
                 }
 
                 displayInfoLog($"Connecting to Prosim at {ipToConnect}...");
-                lblConnectionStatus.Text = $"CONNECTING TO {ipToConnect}";
+
+                // Update label on UI thread
+                if (lblConnectionStatus.InvokeRequired)
+                {
+                    lblConnectionStatus.Invoke(new Action(() => lblConnectionStatus.Text = $"CONNECTING TO {ipToConnect}"));
+                }
+                else
+                {
+                    lblConnectionStatus.Text = $"CONNECTING TO {ipToConnect}";
+                }
 
                 UpdateButtonStates(connecting: true);
 
@@ -187,6 +196,13 @@ namespace Phidgets2Prosim
         /// </summary>
         private void UpdateButtonStates(bool connecting = false)
         {
+            // Check if we need to invoke on the UI thread
+            if (btnConnectProsim.InvokeRequired)
+            {
+                btnConnectProsim.Invoke(new Action(() => UpdateButtonStates(connecting)));
+                return;
+            }
+
             if (connecting)
             {
                 btnConnectProsim.Enabled = false;
@@ -282,6 +298,7 @@ namespace Phidgets2Prosim
         /// </summary>
         public void OnConnectionStateChanged()
         {
+            // UpdateButtonStates already handles cross-thread marshalling
             UpdateButtonStates();
         }
     }

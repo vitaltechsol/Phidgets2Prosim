@@ -642,13 +642,15 @@ namespace Phidgets2Prosim
 					var idx = 0;
 					foreach (var instance in config.PhidgetsEncoderInstances)
 					{
-						try
+                        var psRef = "system.encoders." + instance.ProsimDataRef;  
+
+                        try
 						{
 							phidgetsEncoders[idx] = new PhidgetsEncoder(
 								instance.Serial,
 								instance.HubPort,
 								instance.Channel,
-								instance.ProsimDataRef,
+                                psRef,
 								connection
 							);
 							phidgetsEncoders[idx].ScaleFactor = instance.ScaleFactor;
@@ -668,13 +670,10 @@ namespace Phidgets2Prosim
                 DisplayInfoLog("Opening outputs:" + totalOuts);
 
                 // Use ProsimConnectionUI to display and manage the IP
-                BeginInvoke(new Action(() => { 
-                    lblPsIP.Text = config.GeneralConfig.ProSimIP; 
-                }));
-
                 // Wait for outs to finish
                 var taskDelay2 = Task.Delay((totalOuts + 10) * 40);
                 await taskDelay2;
+                DisplayInfoLog("Outputs loaded successfully");
                 DisplayInfoLog("Connecting to Prosim");
                 connectToProSim(config.GeneralConfig.ProSimIP);
 
@@ -688,13 +687,11 @@ namespace Phidgets2Prosim
 
         private async Task LoadConfigInsUI()
         {
+            DisplayInfoLog("Loading Inputs...");
             try
             {
                 // Use InputsUI to load and bind the grid from config.yaml
                 inputsUI.LoadInputsFromConfig("config.yaml");
-
-                // Use EncodersUI to load and bind the grid from config.yaml
-                encodersUI.LoadEncodersFromConfig("config.yaml");
 
                 string yamlContent = File.ReadAllText("config.yaml");
                 var deserializer = new DeserializerBuilder().Build();
@@ -722,11 +719,11 @@ namespace Phidgets2Prosim
             {
                 DisplayErrorLog("Error loading input UI configs: " + ex.Message);
             }
+            DisplayInfoLog("Loading Inputs Done");
         }
 
         private async void LoadConfigIns()
         {
-            DisplayInfoLog("Loading Inputs configs ... ");
             try
             {
                 // Restore config variable for other sections
@@ -737,7 +734,7 @@ namespace Phidgets2Prosim
                 // --- Restore original instantiation of PhidgetsInput[] for runtime logic ---
                 if (config.PhidgetsInputInstances != null)
                 {
-                    DisplayInfoLog("Loading Inputs ... ");
+                    DisplayInfoLog("Starting Inputs ... ");
                     var idx = 0;
                     foreach (var instance in config.PhidgetsInputInstances)
                     {
@@ -782,14 +779,14 @@ namespace Phidgets2Prosim
                         }
                         idx++;
                     }
-                    DisplayInfoLog("Loading Inputs done");
+                    DisplayInfoLog("Starting Inputs done");
                 }
 
 
                 // MULTI INPUTS
                 if (config.PhidgetsMultiInputInstances != null)
                 {
-                    DisplayInfoLog("Loading MultiInputs ... ");
+                    DisplayInfoLog("Starting MultiInputs ... ");
                     var idx = 0;
                     foreach (var instance in config.PhidgetsMultiInputInstances)
                     {
@@ -818,14 +815,14 @@ namespace Phidgets2Prosim
                         idx++;
                     }
 
-                    DisplayInfoLog("Loading MultiInputs done");
+                    DisplayInfoLog("Starting MultiInputs done");
                 }
 
 
                 // VOLTAGE INPUTS
                 if (config.PhidgetsVoltageInputInstances != null)
                 {
-                    DisplayInfoLog("Loading Voltage Inputs ... ");
+                    DisplayInfoLog("Starting Voltage Inputs ... ");
                     var idx = 0;
                     foreach (var instance in config.PhidgetsVoltageInputInstances)
                     {
@@ -863,13 +860,13 @@ namespace Phidgets2Prosim
                         idx++;
                     }
 
-                    DisplayInfoLog("Loading Voltage Inputs done");
+                    DisplayInfoLog("Starting Voltage Inputs done");
                 }
 
                 // Buttons
                 if (config.PhidgetsButtonInstances != null)
                 {
-                    DisplayInfoLog("Loading Buttons ... ");
+                    DisplayInfoLog("Starting Buttons ... ");
                     phidgetsButtonInstances = config.PhidgetsButtonInstances != null ? new BindingList<PhidgetsButtonInst>(config.PhidgetsButtonInstances) : null;
 
                     var idx = 0;
@@ -927,9 +924,10 @@ namespace Phidgets2Prosim
                         }
                     }));
 
-                    DisplayInfoLog("Loading Buttons done ");
+                    DisplayInfoLog("Starting Buttons done ");
                 }
                 configsInsLoaded = true;
+                DisplayInfoLog("Loading Inputs configs completed successfully");
             }
             catch (Exception ex)
             {

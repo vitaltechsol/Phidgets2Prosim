@@ -48,11 +48,6 @@ namespace Phidgets2Prosim
             this.lblInputChannel = new System.Windows.Forms.Label();
             this.cboInputChannel = new System.Windows.Forms.ComboBox();
             this.lblInputProsimRef = new System.Windows.Forms.Label();
-            this.txtProsimIP = new System.Windows.Forms.TextBox();
-            this.btnSaveProsimIP = new System.Windows.Forms.Button();
-            this.btnConnectProsim = new System.Windows.Forms.Button();
-            this.btnDisconnectProsim = new System.Windows.Forms.Button();
-            this.lblProsimIPLabel = new System.Windows.Forms.Label();
             this.txtInputProsimRef = new System.Windows.Forms.TextBox();
             this.lblInputOnValue = new System.Windows.Forms.Label();
             this.cboInputOnValue = new System.Windows.Forms.ComboBox();
@@ -68,6 +63,14 @@ namespace Phidgets2Prosim
             this.dataGridViewVoltageOut = new System.Windows.Forms.DataGridView();
             this.tabVoltageIn = new System.Windows.Forms.TabPage();
             this.dataGridViewVoltageIn = new System.Windows.Forms.DataGridView();
+            this.tabDCMotors = new System.Windows.Forms.TabPage();
+            this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtDCMotorIdx = new System.Windows.Forms.TextBox();
+            this.btnDCMotor1Go = new System.Windows.Forms.Button();
+            this.txtDCMotor1Target = new System.Windows.Forms.TextBox();
             this.tabEncoders = new System.Windows.Forms.TabPage();
             this.panelAddEncoder = new System.Windows.Forms.Panel();
             this.lblEncoderHub = new System.Windows.Forms.Label();
@@ -82,19 +85,15 @@ namespace Phidgets2Prosim
             this.txtEncoderScaleFactor = new System.Windows.Forms.TextBox();
             this.btnAddEncoder = new System.Windows.Forms.Button();
             this.dataGridViewEncoders = new System.Windows.Forms.DataGridView();
-            this.tabDCMotors = new System.Windows.Forms.TabPage();
-            this.dataGridDCMotors = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtDCMotorIdx = new System.Windows.Forms.TextBox();
-            this.btnDCMotor1Go = new System.Windows.Forms.Button();
-            this.txtDCMotor1Target = new System.Windows.Forms.TextBox();
             this.tabButtons = new System.Windows.Forms.TabPage();
             this.buttonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.txtProsimIP = new System.Windows.Forms.TextBox();
+            this.btnSaveProsimIP = new System.Windows.Forms.Button();
+            this.btnConnectProsim = new System.Windows.Forms.Button();
+            this.btnDisconnectProsim = new System.Windows.Forms.Button();
+            this.lblProsimIPLabel = new System.Windows.Forms.Label();
             this.connectionStatusLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblPsIP = new System.Windows.Forms.Label();
             this.tabGroups.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabOut.SuspendLayout();
@@ -120,7 +119,7 @@ namespace Phidgets2Prosim
             // 
             // btnManageHubs
             // 
-            this.btnManageHubs.Location = new System.Drawing.Point(460, 37);
+            this.btnManageHubs.Location = new System.Drawing.Point(475, 5);
             this.btnManageHubs.Name = "btnManageHubs";
             this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
             this.btnManageHubs.TabIndex = 10;
@@ -140,10 +139,10 @@ namespace Phidgets2Prosim
             this.tabGroups.Controls.Add(this.tabDCMotors);
             this.tabGroups.Controls.Add(this.tabEncoders);
             this.tabGroups.Controls.Add(this.tabButtons);
-            this.tabGroups.Location = new System.Drawing.Point(16, 100);
+            this.tabGroups.Location = new System.Drawing.Point(16, 49);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.SelectedIndex = 0;
-            this.tabGroups.Size = new System.Drawing.Size(638, 305);
+            this.tabGroups.Size = new System.Drawing.Size(638, 356);
             this.tabGroups.TabIndex = 0;
             // 
             // tabLog
@@ -154,14 +153,14 @@ namespace Phidgets2Prosim
             this.tabLog.Location = new System.Drawing.Point(4, 22);
             this.tabLog.Name = "tabLog";
             this.tabLog.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLog.Size = new System.Drawing.Size(630, 279);
+            this.tabLog.Size = new System.Drawing.Size(630, 330);
             this.tabLog.TabIndex = 2;
             this.tabLog.Text = "Log";
             this.tabLog.UseVisualStyleBackColor = true;
             // 
             // btnLogClear
             // 
-            this.btnLogClear.Location = new System.Drawing.Point(87, 250);
+            this.btnLogClear.Location = new System.Drawing.Point(80, 301);
             this.btnLogClear.Name = "btnLogClear";
             this.btnLogClear.Size = new System.Drawing.Size(75, 23);
             this.btnLogClear.TabIndex = 2;
@@ -171,7 +170,7 @@ namespace Phidgets2Prosim
             // 
             // btnLogOk
             // 
-            this.btnLogOk.Location = new System.Drawing.Point(6, 250);
+            this.btnLogOk.Location = new System.Drawing.Point(-1, 301);
             this.btnLogOk.Name = "btnLogOk";
             this.btnLogOk.Size = new System.Drawing.Size(75, 23);
             this.btnLogOk.TabIndex = 1;
@@ -185,7 +184,7 @@ namespace Phidgets2Prosim
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(618, 237);
+            this.txtLog.Size = new System.Drawing.Size(618, 289);
             this.txtLog.TabIndex = 0;
             // 
             // tabOut
@@ -194,7 +193,7 @@ namespace Phidgets2Prosim
             this.tabOut.Location = new System.Drawing.Point(4, 22);
             this.tabOut.Name = "tabOut";
             this.tabOut.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOut.Size = new System.Drawing.Size(630, 279);
+            this.tabOut.Size = new System.Drawing.Size(630, 330);
             this.tabOut.TabIndex = 0;
             this.tabOut.Text = "Outputs";
             this.tabOut.UseVisualStyleBackColor = true;
@@ -204,7 +203,7 @@ namespace Phidgets2Prosim
             this.dataGridViewOutputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewOutputs.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewOutputs.Name = "dataGridViewOutputs";
-            this.dataGridViewOutputs.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewOutputs.Size = new System.Drawing.Size(618, 318);
             this.dataGridViewOutputs.TabIndex = 0;
             // 
             // tabInputs
@@ -214,7 +213,7 @@ namespace Phidgets2Prosim
             this.tabInputs.Location = new System.Drawing.Point(4, 22);
             this.tabInputs.Name = "tabInputs";
             this.tabInputs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInputs.Size = new System.Drawing.Size(630, 279);
+            this.tabInputs.Size = new System.Drawing.Size(630, 330);
             this.tabInputs.TabIndex = 1;
             this.tabInputs.Text = "Inputs";
             this.tabInputs.UseVisualStyleBackColor = true;
@@ -354,7 +353,7 @@ namespace Phidgets2Prosim
             this.dataGridViewInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewInputs.Location = new System.Drawing.Point(6, 68);
             this.dataGridViewInputs.Name = "dataGridViewInputs";
-            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 205);
+            this.dataGridViewInputs.Size = new System.Drawing.Size(618, 256);
             this.dataGridViewInputs.TabIndex = 1;
             // 
             // tabMultiInputs
@@ -363,7 +362,7 @@ namespace Phidgets2Prosim
             this.tabMultiInputs.Location = new System.Drawing.Point(4, 22);
             this.tabMultiInputs.Name = "tabMultiInputs";
             this.tabMultiInputs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMultiInputs.Size = new System.Drawing.Size(630, 279);
+            this.tabMultiInputs.Size = new System.Drawing.Size(630, 330);
             this.tabMultiInputs.TabIndex = 6;
             this.tabMultiInputs.Text = "Inputs (Multi)";
             this.tabMultiInputs.UseVisualStyleBackColor = true;
@@ -373,7 +372,7 @@ namespace Phidgets2Prosim
             this.dataGridViewMultiInputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewMultiInputs.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewMultiInputs.Name = "dataGridViewMultiInputs";
-            this.dataGridViewMultiInputs.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewMultiInputs.Size = new System.Drawing.Size(618, 318);
             this.dataGridViewMultiInputs.TabIndex = 3;
             // 
             // tabGates
@@ -382,7 +381,7 @@ namespace Phidgets2Prosim
             this.tabGates.Location = new System.Drawing.Point(4, 22);
             this.tabGates.Name = "tabGates";
             this.tabGates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGates.Size = new System.Drawing.Size(630, 279);
+            this.tabGates.Size = new System.Drawing.Size(630, 330);
             this.tabGates.TabIndex = 3;
             this.tabGates.Text = "Gates";
             this.tabGates.UseVisualStyleBackColor = true;
@@ -392,7 +391,7 @@ namespace Phidgets2Prosim
             this.dataGridViewGates.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewGates.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewGates.Name = "dataGridViewGates";
-            this.dataGridViewGates.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewGates.Size = new System.Drawing.Size(618, 318);
             this.dataGridViewGates.TabIndex = 2;
             // 
             // tabVoltageOut
@@ -401,7 +400,7 @@ namespace Phidgets2Prosim
             this.tabVoltageOut.Location = new System.Drawing.Point(4, 22);
             this.tabVoltageOut.Name = "tabVoltageOut";
             this.tabVoltageOut.Padding = new System.Windows.Forms.Padding(3);
-            this.tabVoltageOut.Size = new System.Drawing.Size(630, 279);
+            this.tabVoltageOut.Size = new System.Drawing.Size(630, 330);
             this.tabVoltageOut.TabIndex = 4;
             this.tabVoltageOut.Text = "Voltage Out";
             this.tabVoltageOut.UseVisualStyleBackColor = true;
@@ -411,7 +410,7 @@ namespace Phidgets2Prosim
             this.dataGridViewVoltageOut.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewVoltageOut.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewVoltageOut.Name = "dataGridViewVoltageOut";
-            this.dataGridViewVoltageOut.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewVoltageOut.Size = new System.Drawing.Size(618, 321);
             this.dataGridViewVoltageOut.TabIndex = 3;
             // 
             // tabVoltageIn
@@ -420,7 +419,7 @@ namespace Phidgets2Prosim
             this.tabVoltageIn.Location = new System.Drawing.Point(4, 22);
             this.tabVoltageIn.Name = "tabVoltageIn";
             this.tabVoltageIn.Padding = new System.Windows.Forms.Padding(3);
-            this.tabVoltageIn.Size = new System.Drawing.Size(630, 279);
+            this.tabVoltageIn.Size = new System.Drawing.Size(630, 330);
             this.tabVoltageIn.TabIndex = 7;
             this.tabVoltageIn.Text = "Voltage In";
             this.tabVoltageIn.UseVisualStyleBackColor = true;
@@ -430,7 +429,7 @@ namespace Phidgets2Prosim
             this.dataGridViewVoltageIn.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewVoltageIn.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewVoltageIn.Name = "dataGridViewVoltageIn";
-            this.dataGridViewVoltageIn.Size = new System.Drawing.Size(618, 267);
+            this.dataGridViewVoltageIn.Size = new System.Drawing.Size(618, 318);
             this.dataGridViewVoltageIn.TabIndex = 4;
             // 
             // tabDCMotors
@@ -445,10 +444,71 @@ namespace Phidgets2Prosim
             this.tabDCMotors.Location = new System.Drawing.Point(4, 22);
             this.tabDCMotors.Name = "tabDCMotors";
             this.tabDCMotors.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDCMotors.Size = new System.Drawing.Size(630, 279);
+            this.tabDCMotors.Size = new System.Drawing.Size(630, 330);
             this.tabDCMotors.TabIndex = 8;
             this.tabDCMotors.Text = "DCMotor";
             this.tabDCMotors.UseVisualStyleBackColor = true;
+            // 
+            // dataGridDCMotors
+            // 
+            this.dataGridDCMotors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridDCMotors.Location = new System.Drawing.Point(6, 124);
+            this.dataGridDCMotors.Name = "dataGridDCMotors";
+            this.dataGridDCMotors.Size = new System.Drawing.Size(618, 203);
+            this.dataGridDCMotors.TabIndex = 7;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(15, 12);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(92, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "TEST MOVING";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 68);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(156, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Go to  (Based on Voltage Input)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(53, 40);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Motor Index";
+            // 
+            // txtDCMotorIdx
+            // 
+            this.txtDCMotorIdx.Location = new System.Drawing.Point(22, 36);
+            this.txtDCMotorIdx.Name = "txtDCMotorIdx";
+            this.txtDCMotorIdx.Size = new System.Drawing.Size(26, 20);
+            this.txtDCMotorIdx.TabIndex = 1;
+            this.txtDCMotorIdx.Text = "0";
+            // 
+            // btnDCMotor1Go
+            // 
+            this.btnDCMotor1Go.Location = new System.Drawing.Point(90, 83);
+            this.btnDCMotor1Go.Name = "btnDCMotor1Go";
+            this.btnDCMotor1Go.Size = new System.Drawing.Size(52, 23);
+            this.btnDCMotor1Go.TabIndex = 3;
+            this.btnDCMotor1Go.Text = "Go";
+            this.btnDCMotor1Go.UseVisualStyleBackColor = true;
+            this.btnDCMotor1Go.Click += new System.EventHandler(this.btnDCMotor1Go_Click);
+            // 
+            // txtDCMotor1Target
+            // 
+            this.txtDCMotor1Target.Location = new System.Drawing.Point(22, 84);
+            this.txtDCMotor1Target.Name = "txtDCMotor1Target";
+            this.txtDCMotor1Target.Size = new System.Drawing.Size(62, 20);
+            this.txtDCMotor1Target.TabIndex = 2;
             // 
             // tabEncoders
             // 
@@ -457,7 +517,7 @@ namespace Phidgets2Prosim
             this.tabEncoders.Location = new System.Drawing.Point(4, 22);
             this.tabEncoders.Name = "tabEncoders";
             this.tabEncoders.Padding = new System.Windows.Forms.Padding(3);
-            this.tabEncoders.Size = new System.Drawing.Size(630, 279);
+            this.tabEncoders.Size = new System.Drawing.Size(630, 330);
             this.tabEncoders.TabIndex = 9;
             this.tabEncoders.Text = "Encoders";
             this.tabEncoders.UseVisualStyleBackColor = true;
@@ -578,69 +638,8 @@ namespace Phidgets2Prosim
             this.dataGridViewEncoders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewEncoders.Location = new System.Drawing.Point(6, 68);
             this.dataGridViewEncoders.Name = "dataGridViewEncoders";
-            this.dataGridViewEncoders.Size = new System.Drawing.Size(618, 205);
+            this.dataGridViewEncoders.Size = new System.Drawing.Size(618, 256);
             this.dataGridViewEncoders.TabIndex = 1;
-            // 
-            // dataGridDCMotors
-            // 
-            this.dataGridDCMotors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridDCMotors.Location = new System.Drawing.Point(6, 124);
-            this.dataGridDCMotors.Name = "dataGridDCMotors";
-            this.dataGridDCMotors.Size = new System.Drawing.Size(618, 149);
-            this.dataGridDCMotors.TabIndex = 7;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(15, 12);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(92, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "TEST MOVING";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 68);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(156, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Go to  (Based on Voltage Input)";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(53, 40);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Motor Index";
-            // 
-            // txtDCMotorIdx
-            // 
-            this.txtDCMotorIdx.Location = new System.Drawing.Point(22, 36);
-            this.txtDCMotorIdx.Name = "txtDCMotorIdx";
-            this.txtDCMotorIdx.Size = new System.Drawing.Size(26, 20);
-            this.txtDCMotorIdx.TabIndex = 1;
-            this.txtDCMotorIdx.Text = "0";
-            // 
-            // btnDCMotor1Go
-            // 
-            this.btnDCMotor1Go.Location = new System.Drawing.Point(90, 83);
-            this.btnDCMotor1Go.Name = "btnDCMotor1Go";
-            this.btnDCMotor1Go.Size = new System.Drawing.Size(52, 23);
-            this.btnDCMotor1Go.TabIndex = 3;
-            this.btnDCMotor1Go.Text = "Go";
-            this.btnDCMotor1Go.UseVisualStyleBackColor = true;
-            this.btnDCMotor1Go.Click += new System.EventHandler(this.btnDCMotor1Go_Click);
-            // 
-            // txtDCMotor1Target
-            // 
-            this.txtDCMotor1Target.Location = new System.Drawing.Point(22, 84);
-            this.txtDCMotor1Target.Name = "txtDCMotor1Target";
-            this.txtDCMotor1Target.Size = new System.Drawing.Size(62, 20);
-            this.txtDCMotor1Target.TabIndex = 2;
             // 
             // tabButtons
             // 
@@ -648,7 +647,7 @@ namespace Phidgets2Prosim
             this.tabButtons.Location = new System.Drawing.Point(4, 22);
             this.tabButtons.Name = "tabButtons";
             this.tabButtons.Padding = new System.Windows.Forms.Padding(3);
-            this.tabButtons.Size = new System.Drawing.Size(630, 279);
+            this.tabButtons.Size = new System.Drawing.Size(630, 330);
             this.tabButtons.TabIndex = 5;
             this.tabButtons.Text = "Buttons";
             this.tabButtons.UseVisualStyleBackColor = true;
@@ -657,44 +656,8 @@ namespace Phidgets2Prosim
             // 
             this.buttonsFlowLayoutPanel.Location = new System.Drawing.Point(6, 6);
             this.buttonsFlowLayoutPanel.Name = "buttonsFlowLayoutPanel";
-            this.buttonsFlowLayoutPanel.Size = new System.Drawing.Size(614, 267);
+            this.buttonsFlowLayoutPanel.Size = new System.Drawing.Size(614, 318);
             this.buttonsFlowLayoutPanel.TabIndex = 0;
-            // 
-            // connectionStatusLabel
-            // 
-            this.connectionStatusLabel.AutoSize = true;
-            this.connectionStatusLabel.Location = new System.Drawing.Point(12, 73);
-            this.connectionStatusLabel.Name = "connectionStatusLabel";
-            this.connectionStatusLabel.Size = new System.Drawing.Size(95, 13);
-            this.connectionStatusLabel.TabIndex = 4;
-            this.connectionStatusLabel.Text = "Prosim Connection";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(603, 40);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "v1.3.0";
-            // 
-            // lblPsIP
-            // 
-            this.lblPsIP.AutoSize = true;
-            this.lblPsIP.Location = new System.Drawing.Point(13, 57);
-            this.lblPsIP.Name = "lblPsIP";
-            this.lblPsIP.Size = new System.Drawing.Size(51, 13);
-            this.lblPsIP.TabIndex = 6;
-            this.lblPsIP.Text = "Prosim IP";
-            // 
-            // lblProsimIPLabel
-            // 
-            this.lblProsimIPLabel.AutoSize = true;
-            this.lblProsimIPLabel.Location = new System.Drawing.Point(13, 13);
-            this.lblProsimIPLabel.Name = "lblProsimIPLabel";
-            this.lblProsimIPLabel.Size = new System.Drawing.Size(61, 13);
-            this.lblProsimIPLabel.TabIndex = 11;
-            this.lblProsimIPLabel.Text = "Prosim IP:";
             // 
             // txtProsimIP
             // 
@@ -724,13 +687,40 @@ namespace Phidgets2Prosim
             // 
             // btnDisconnectProsim
             // 
+            this.btnDisconnectProsim.Enabled = false;
             this.btnDisconnectProsim.Location = new System.Drawing.Point(313, 8);
             this.btnDisconnectProsim.Name = "btnDisconnectProsim";
             this.btnDisconnectProsim.Size = new System.Drawing.Size(80, 23);
             this.btnDisconnectProsim.TabIndex = 15;
             this.btnDisconnectProsim.Text = "Disconnect";
             this.btnDisconnectProsim.UseVisualStyleBackColor = true;
-            this.btnDisconnectProsim.Enabled = false;
+            // 
+            // lblProsimIPLabel
+            // 
+            this.lblProsimIPLabel.AutoSize = true;
+            this.lblProsimIPLabel.Location = new System.Drawing.Point(13, 13);
+            this.lblProsimIPLabel.Name = "lblProsimIPLabel";
+            this.lblProsimIPLabel.Size = new System.Drawing.Size(54, 13);
+            this.lblProsimIPLabel.TabIndex = 11;
+            this.lblProsimIPLabel.Text = "Prosim IP:";
+            // 
+            // connectionStatusLabel
+            // 
+            this.connectionStatusLabel.AutoSize = true;
+            this.connectionStatusLabel.Location = new System.Drawing.Point(12, 33);
+            this.connectionStatusLabel.Name = "connectionStatusLabel";
+            this.connectionStatusLabel.Size = new System.Drawing.Size(95, 13);
+            this.connectionStatusLabel.TabIndex = 4;
+            this.connectionStatusLabel.Text = "Prosim Connection";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(596, 13);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "v1.3.0beta";
             // 
             // Form1
             // 
@@ -743,7 +733,6 @@ namespace Phidgets2Prosim
             this.Controls.Add(this.txtProsimIP);
             this.Controls.Add(this.lblProsimIPLabel);
             this.Controls.Add(this.btnManageHubs);
-            this.Controls.Add(this.lblPsIP);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.connectionStatusLabel);
             this.Controls.Add(this.tabGroups);
@@ -794,7 +783,6 @@ namespace Phidgets2Prosim
         private TabPage tabLog;
         private TextBox txtLog;
         private Label label1;
-        private Label lblPsIP;
         private TabPage tabGates;
         private DataGridView dataGridViewGates;
         private TabPage tabVoltageOut;
