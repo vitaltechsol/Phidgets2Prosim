@@ -20,7 +20,12 @@ namespace Phidgets2Prosim
         public bool Inverse { get; set; } = false;
         public bool IsGate { get; set; }
         public string ProsimDataRefOff { get; set; }
-        public int Delay { get; set; } = 0;
+		public string ProsimDataRef2 { get; set; }
+		public string Operator { get; set; } = "OR";
+        private bool _stateRef1 = false;
+        private bool _stateRef2 = false;
+
+		public int Delay { get; set; } = 0;
         public double ValueOn { get; set; } = 1;
         public double ValueOff { get; set; } = 0;
         public double ValueDim { get; set; } = 0.7;
@@ -137,15 +142,17 @@ namespace Phidgets2Prosim
 
 		private IDisposable _variableSubscription;
 
-		public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null)
-        {
+		public PhidgetsOutput(int serial, int hubPort, int channel, string prosimDataRef, ProSimConnect connection, bool isGate = false, string prosimDataRefOff = null, string prosimDataRef2 = null, string gateOperator = "OR")
+		{
             IsGate = isGate;
             Channel = channel;
             HubPort = hubPort;
             // Set ProSim dataref
             ProsimDataRef = prosimDataRef;
-            ProsimDataRefOff = prosimDataRefOff;
-            Serial = serial;
+			ProsimDataRefOff = prosimDataRefOff;
+			ProsimDataRef2 = prosimDataRef2;
+			Operator = string.IsNullOrWhiteSpace(gateOperator) ? "OR" : gateOperator;
+			Serial = serial;
       
             try
             {
@@ -173,7 +180,13 @@ namespace Phidgets2Prosim
                     dataRef2.onDataChange += DataRef_onDataChange;
                 }
 
-            }
+				if (prosimDataRef2 != null)
+				{
+					DataRef dataRef3 = new DataRef(prosimDataRef2, 150, connection);
+					dataRef3.onDataChange += DataRef_onDataChange;
+				}
+
+			}
             catch (Exception ex)
             {
                 SendErrorLog(ex.ToString());
@@ -280,47 +293,68 @@ namespace Phidgets2Prosim
 
             try
             {
-                if (IsGate)
-                {
-                    var value = Convert.ToBoolean(refValue);
-                    if (value == true && name == ProsimDataRef)
-                    {
-                        if (Inverse)
-                        {
-                            await TurnOff(ValueOff);
-                        }
-                        else
-                        {
-                            await TurnOn(ValueOn);
-                        }
-                    }
+				if (IsGate)
+				{
+					var value = Convert.ToBoolean(refValue);
 
-                    if (value == true && name == ProsimDataRefOff)
-                    {
-                        SendInfoLog("Turn Off from ProsimDataRefOff" + refValue + " " + name);
-                        if (Inverse)
-                        {
-                            await TurnOn(ValueOn);
-                        }
-                        else
-                        {
-                            await TurnOff(ValueOff);
-                        }
-                    }
+					bool isRef1 = name == ProsimDataRef;
+					bool isRef2 = ProsimDataRef2 != null && name == ProsimDataRef2;
+					bool isOffRef = ProsimDataRefOff != null && name == ProsimDataRefOff;
 
-                    if (ProsimDataRefOff == null && value == false)
-                    {
-                        if (Inverse)
-                        {
-                            await TurnOn(ValueOn);
-                        }
-                        else
-                        {
-                            await TurnOff(ValueOff);
-                        }
-                    }
-                }
-                else
+					// An explicit "off" dataref always takes priority when it fires true,
+					// regardless of what the ON-trigger refs are currently doing.
+					if (isOffRef && value == true)
+					{
+						SendInfoLog("Turn Off from ProsimDataRefOff" + refValue + " " + name);
+						if (Inverse)
+						{
+							await TurnOn(ValueOn);
+						}
+						else
+						{
+							await TurnOff(ValueOff);
+						}
+						return;
+					}
+
+					if (isRef1 || isRef2)
+					{
+						// Track each ON-trigger ref's last known state so that with two
+						// refs configured, we can combine them with AND/OR instead of
+						// only reacting to whichever one changed last.
+						if (isRef1) _stateRef1 = value;
+						if (isRef2) _stateRef2 = value;
+
+						bool useAnd = ProsimDataRef2 != null &&
+							string.Equals(Operator, "AND", StringComparison.OrdinalIgnoreCase);
+
+						bool anyOn = useAnd ? (_stateRef1 && _stateRef2) : (_stateRef1 || _stateRef2);
+
+						if (anyOn)
+						{
+							if (Inverse)
+							{
+								await TurnOff(ValueOff);
+							}
+							else
+							{
+								await TurnOn(ValueOn);
+							}
+						}
+						else if (ProsimDataRefOff == null)
+						{
+							if (Inverse)
+							{
+								await TurnOn(ValueOn);
+							}
+							else
+							{
+								await TurnOff(ValueOff);
+							}
+						}
+					}
+				}
+				else
                 {
                     var value = Convert.ToInt32(refValue);
                     if (value == 4) //blink fast
