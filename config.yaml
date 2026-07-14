@@ -5,9 +5,19 @@ GeneralConfig:
 
 
 PhidgetsHubsInstances:
-   - HUB-TQ1    #192.168.1.200   746062
-   - HUB-TQ2    #192.168.1.201   742347
-   - HUB-PED1   #192.168.1.202   668511
+
+   - Name: HUB-TQ1
+     Serial: 746062   #192.168.1.200
+     Enabled: true
+
+   - Name: HUB-TQ2
+     Serial: 742347   #192.168.1.201
+     Enabled: true
+
+   - Name: HUB-PED1
+     Serial: 668511   #192.168.1.202
+     Enabled: true
+
 
 #+++++++++++++++++++++++++++++++++++++
 PhidgetsInputInstances:
@@ -191,6 +201,8 @@ PhidgetsOutputInstances:
     UserVariable: BrakeLatchRelay
     DelayOn: 50
     MaxTimeOn: 2000
+
+
 
 
 ################################# PEDESTAL ############################################
@@ -478,13 +490,14 @@ PhidgetsGateInstances:
     Channel: 3
     ProsimDataRef: B_FIRE_HANDLE_APU_LOCK
 
-  #- Serial: 746062      #********This is linked to Trimwheel Motor Enable on TEKNIC*****
-  #  HubPort: 4
-  #  Channel: 0
-  #  ProsimDataRef: B_AC_POWER
-
-  
+  - Serial: 746062      #********This is linked to Trimwheel Motor Enable on TEKNIC*****
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: B_TRIM_MOTOR_DOWN
+    ProsimDataRef2: B_TRIM_MOTOR_UP
+    Operator: OR
     
+
 #+++++++++++++++++++++++++++++++++++++
 UserVariableInstances:
   - Name: BrakeLatchSwitch
@@ -496,7 +509,7 @@ UserVariableInstances:
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
-  ToeBrakeThreshold: 500
+  ToeBrakeThreshold: 700
 
 #+++++++++++++++++++++++++++++++++++++
 CustomTrimWheelInstance:
@@ -509,7 +522,7 @@ CustomTrimWheelInstance:
     CleanDown: 0.6
     APOnClean: 0.7
     APOnDirty: 0.5
-    Accelerate: false
+    Accelerate: true
     Range: [0.05,0.95]
 
 

@@ -255,9 +255,13 @@ namespace Phidgets2Prosim
 	                        : "system.gates." + instance.ProsimDataRef;
 
 							phidgetsGate[idx] = new PhidgetsOutput(
-	                        instance.Serial, instance.HubPort, instance.Channel,
-	                        outRef, connection, true,
-	                        instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null);
+							instance.Serial, instance.HubPort, instance.Channel,
+							outRef, connection, true,
+							instance.ProsimDataRefOff != null ? "system.gates." + instance.ProsimDataRefOff : null,
+							instance.ProsimDataRef2 != null ? "system.gates." + instance.ProsimDataRef2 : null,
+							instance.Operator);
+
+
 
 							phidgetsGate[idx].ErrorLog += DisplayErrorLog;
                             phidgetsGate[idx].InfoLog += DisplayInfoLog;

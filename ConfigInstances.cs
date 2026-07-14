@@ -77,8 +77,19 @@ namespace Phidgets2Prosim
 
         public bool Inverse { get; set; } = false;
 
-        // (Optional)Use a different prosim data ref to turn off 
-        public string ProsimDataRefOff { get; set; } = null;
+		// (Optional) A second ProSim dataref that can also drive this same output ON.
+		public string ProsimDataRef2 { get; set; } = null;
+
+		// (Optional) How ProsimDataRef and ProsimDataRef2 combine to decide ON state.
+		// "OR" (default): either being true turns the output on.
+		// "AND": both must be true to turn the output on.
+		// Ignored if ProsimDataRef2 is not set. ProsimDataRefOff, if set, still
+		// overrides and forces OFF regardless of this setting.
+		public string Operator { get; set; } = "OR";
+
+
+		// (Optional)Use a different prosim data ref to turn off 
+		public string ProsimDataRefOff { get; set; } = null;
 
         // (Optional)Wait specified amount of milliseconds and then turn off 
         public int? MaxTimeOn { get; set; } = null;
