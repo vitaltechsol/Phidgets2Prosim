@@ -64,7 +64,9 @@ namespace Phidgets2Prosim
         private readonly Timer _loop;
 
         private volatile bool _motorOn = false;
-        private double _targetPos = 0.0;
+		private bool _turnOnState1 = false;
+		private bool _turnOnState2 = false;
+		private double _targetPos = 0.0;
         private double _currentPos = 0.0;
 
         private double _currentPosFiltered = 0.0;
@@ -84,8 +86,9 @@ namespace Phidgets2Prosim
             string refCurrentPos,
             string refTargetPos,
             double acceleration,
-            MotorTuningOptions options = null
-        )
+			MotorTuningOptions options = null,
+			string refTurnOn2 = null
+		)
         {
             try
             {
@@ -129,7 +132,13 @@ namespace Phidgets2Prosim
                 drTurnOn.onDataChange += DataRef_onTurnOnChanged;
                 drTarget.onDataChange += DataRef_onTargetChanged;
 
-                _loop = new Timer(TickMs) { AutoReset = true, Enabled = true };
+				if (!string.IsNullOrWhiteSpace(refTurnOn2))
+				{
+					var drTurnOn2 = new DataRef(refTurnOn2, 100, connection);
+					drTurnOn2.onDataChange += DataRef_onTurnOn2Changed;
+				}
+
+				_loop = new Timer(TickMs) { AutoReset = true, Enabled = true };
                 _loop.Elapsed += ControlTick;
             }
             catch (Exception ex)
@@ -145,14 +154,26 @@ namespace Phidgets2Prosim
             lock (_lock) { _currentPos = v; }
         }
 
-        private void DataRef_onTurnOnChanged(DataRef dataRef)
-        {
-            var newOn = SafeToBool(dataRef.value);
-            if (_motorOn && !newOn) StopMotor();
-            _motorOn = newOn;
-        }
+		private void DataRef_onTurnOnChanged(DataRef dataRef)
+		{
+			_turnOnState1 = SafeToBool(dataRef.value);
+			ApplyTurnOnState();
+		}
 
-        private void DataRef_onTargetChanged(DataRef dataRef)
+		private void DataRef_onTurnOn2Changed(DataRef dataRef)
+		{
+			_turnOnState2 = SafeToBool(dataRef.value);
+			ApplyTurnOnState();
+		}
+
+		private void ApplyTurnOnState()
+		{
+			var newOn = _turnOnState1 || _turnOnState2;
+			if (_motorOn && !newOn) StopMotor();
+			_motorOn = newOn;
+		}
+
+		private void DataRef_onTargetChanged(DataRef dataRef)
         {
             if (!_motorOn) return;
             double t = SafeToDouble(dataRef.value) - Offset;
