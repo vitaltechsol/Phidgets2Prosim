@@ -417,6 +417,17 @@ PhidgetsBLDCMotorInstances:
       PositionFilterAlpha: 0.30
       TickMs: 20
 
+  - Serial: 746062
+    HubPort: 2
+    Reversed: false
+    Offset: 0
+    RefTurnOn: system.gates.B_SPEED_BRAKE_DEPLOY
+    RefTurnOn2: system.gates.B_SPEED_BRAKE_RESTOW
+    RefCurrentPos: system.analog.A_SPEEDBRAKE
+    RefTargetPos: system.gauge.G_SPEEDBRAKE
+    Acceleration: 1
+
+
 
 #+++++++++++++++++++++++++++++++++++++
 PhidgetsDCMotorInstances:

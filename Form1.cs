@@ -491,7 +491,8 @@ namespace Phidgets2Prosim
 								refCurrentPos: instance.RefCurrentPos,
 								refTargetPos: instance.RefTargetPos,
 								acceleration: instance.Acceleration,
-								options: opts
+								options: opts,
+								refTurnOn2: instance.RefTurnOn2
 							);
 
 							phidgetsBLDCMotors[idx].ErrorLog += DisplayErrorLog;

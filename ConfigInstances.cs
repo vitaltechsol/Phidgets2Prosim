@@ -148,8 +148,13 @@ namespace Phidgets2Prosim
         // Prosim ref to turn on the motor
         public string RefTurnOn { get; set; }
 
-        // Prosim ref to use for current position
-        public string RefCurrentPos { get; set; }
+		// (Optional) A second Prosim ref that can also enable the motor.
+		// The motor is enabled whenever EITHER RefTurnOn or RefTurnOn2 is true
+		// (e.g. a shared deploy/restow axis driven by two separate gates).
+		public string RefTurnOn2 { get; set; } = null;
+
+		// Prosim ref to use for current position
+		public string RefCurrentPos { get; set; }
 
         // Prosim ref to use for target position
         public string RefTargetPos { get; set; }
