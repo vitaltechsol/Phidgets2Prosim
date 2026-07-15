@@ -262,7 +262,16 @@ PhidgetsGateInstances:
     ProsimDataRef: B_STICKSHAKER_FO
 ```
 
-**Properties:** Same as `PhidgetsOutputInstances`. But used for ProSim Gate refs
+```
+- Serial: 746062 
+    HubPort: 4
+    Channel: 0
+    ProsimDataRef: B_TRIM_MOTOR_DOWN
+    ProsimDataRef2: B_TRIM_MOTOR_UP     (This is optional and only applies to Gates)
+    Operator: OR                        (This is optional and only applies to Gates, AND / OR will apply to the 2 datarefs and the final logic outcome will trigger the action for the channel)
+```
+
+**Properties:** Same as `PhidgetsOutputInstances`. But used for ProSim Gate refs.
 
 ## [Phidgets Audio Gates](#phidgetsaudioinst)
 
@@ -290,6 +299,17 @@ PhidgetsBLDCMotorInstances:
     RefCurrentPos: system.analog.A_THROTTLE_RIGHT
     RefTargetPos: system.gauge.G_THROTTLE_RIGHT
     Acceleration: 0.8
+```
+```
+- Serial: 746062
+    HubPort: 2
+    Reversed: false
+    Offset: 0
+    RefTurnOn: system.gates.B_SPEED_BRAKE_DEPLOY
+    RefTurnOn2: system.gates.B_SPEED_BRAKE_RESTOW       (This is Optional and the logic applied will be 'OR', eg: if RefTurnOn OR RefTurnOn2 are true the motor on this channel will move)
+    RefCurrentPos: system.analog.A_SPEEDBRAKE
+    RefTargetPos: system.gauge.G_SPEEDBRAKE
+    Acceleration: 1
 ```
 In aditon to the above basic parameters, you can use the following PID parameters(optional) to fine tune the motors motion profile, 
 detailed description of these parameters can be found at the end of this document.
