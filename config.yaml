@@ -1,4 +1,3 @@
-
 GeneralConfig:
   Schema: 2.0    
   ProSimIP: 192.168.1.10  
@@ -202,7 +201,12 @@ PhidgetsOutputInstances:
     DelayOn: 50
     MaxTimeOn: 2000
 
-
+  - Serial: 742347
+    HubPort: 4
+    Channel: 3
+    ValueOn: 1
+    ValueOff: 0
+    UserVariable: BrakeReleaseTrigger
 
 
 ################################# PEDESTAL ############################################
@@ -469,22 +473,15 @@ PhidgetsGateInstances:
     HubPort: 4
     Channel: 0
     ProsimDataRef: B_REVERSER_1_SYNC_LOCK
-    DelayOn: 1500
+    DelayOn: 1000
     MaxTimeOn: 3000
 
   - Serial: 742347
     HubPort: 4
     Channel: 1
     ProsimDataRef: B_REVERSER_2_SYNC_LOCK
-    DelayOn: 1500
+    DelayOn: 1000
     MaxTimeOn: 3000
-
-  - Serial: 742347
-    HubPort: 4
-    Channel: 3
-    ProsimDataRef: B_PARKING_BRAKE_RELEASE
-    DelayOn: 50
-    MaxTimeOn: 1000
 
   - Serial: 668511
     HubPort: 5
@@ -513,14 +510,18 @@ PhidgetsGateInstances:
 UserVariableInstances:
   - Name: BrakeLatchSwitch
   - Name: BrakeLatchRelay
-
+  - Name: BrakeReleaseTrigger
 
 
 #+++++++++++++++++++++++++++++++++++++  
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
-  ToeBrakeThreshold: 700
+  ToeBrakeThreshold: 700       # engage: both pedals must exceed this
+  ReleaseToeBrakeThreshold: 700   # release: both pedals must exceed this
+  ReleaseVariable: BrakeReleaseTrigger
+  ReleaseDelayOnMs: 50
+  ReleaseMaxTimeOnMs: 1000
 
 #+++++++++++++++++++++++++++++++++++++
 CustomTrimWheelInstance:
