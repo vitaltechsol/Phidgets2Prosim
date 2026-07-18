@@ -1167,10 +1167,16 @@ namespace Phidgets2Prosim
 		// Method to display error log
 		private void DisplayErrorLog(string errorMessage)
 		{
+			FileLogger.LogError(errorMessage);
+			UpdateErrorLogUI(errorMessage);
+		}
+
+		private void UpdateErrorLogUI(string errorMessage)
+		{
 			if (txtLog.InvokeRequired)
 			{
 				// If we're not on the UI thread, invoke this method on the UI thread
-				txtLog.Invoke(new Action(() => DisplayErrorLog(errorMessage)));
+				txtLog.Invoke(new Action(() => UpdateErrorLogUI(errorMessage)));
 			}
 			else
 			{
@@ -1201,13 +1207,18 @@ namespace Phidgets2Prosim
 								  e.Bounds, tabColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
 		}
 
-		private async void DisplayInfoLog(string infoMessage)
+		private void DisplayInfoLog(string infoMessage)
 		{
+			FileLogger.LogInfo(infoMessage);
+			UpdateInfoLogUI(infoMessage);
+		}
 
+		private void UpdateInfoLogUI(string infoMessage)
+		{
 			if (txtLog.InvokeRequired)
 			{
 				// If we're not on the UI thread, invoke this method on the UI thread
-				txtLog.Invoke(new Action(() => DisplayInfoLog(infoMessage)));
+				txtLog.Invoke(new Action(() => UpdateInfoLogUI(infoMessage)));
 			}
 			else
 			{
