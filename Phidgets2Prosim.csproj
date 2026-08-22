@@ -84,6 +84,7 @@
     <Compile Include="Custom_ParkingBrake.cs" />
     <Compile Include="DeviceFormControls.cs" />
     <Compile Include="EncodersUI.cs" />
+    <Compile Include="FileLogger.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,6 +137,7 @@
     <Content Include="manual\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="config_sample2.yaml" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
