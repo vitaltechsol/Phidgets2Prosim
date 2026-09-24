@@ -41,6 +41,7 @@ namespace Phidgets2Prosim
         PhidgetsBLDCMotor[] phidgetsBLDCMotors = new PhidgetsBLDCMotor[10];
         PhidgetsDCMotor[] phidgetsDCMotors = new PhidgetsDCMotor[10];
         PhidgetsEncoder[] phidgetsEncoders = new PhidgetsEncoder[20];
+        DefaultIntput[] defaultIntputs = new DefaultIntput[50];
         private List<PhidgetsButton> PhidgetsButtonList = new List<PhidgetsButton>();
         // Define a dictionary to store custom colors for tabs
         private Dictionary<int, Color> tabColors = new Dictionary<int, Color>();
@@ -928,6 +929,33 @@ namespace Phidgets2Prosim
                 }
                 configsInsLoaded = true;
                 DisplayInfoLog("Loading Inputs configs completed successfully");
+
+                // Load default inputs from config and instantiate runtime DefaultIntput objects
+                if (config.DefaultIntputInstances != null)
+                {
+                    DisplayInfoLog("Loading DefaultInputs ... ");
+                    var didx = 0;
+                    foreach (var instance in config.DefaultIntputInstances)
+                    {
+                        try
+                        {
+                            defaultIntputs[didx] = new DefaultIntput(
+                                "system.switches." + instance.ProsimDataRef,
+                                instance.DefaultInputValue,
+                                connection
+                            );
+                            defaultIntputs[didx].ErrorLog += DisplayErrorLog;
+                            defaultIntputs[didx].InfoLog += DisplayInfoLog;
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayErrorLog("Error loading default input");
+                            DisplayErrorLog(ex.ToString());
+                        }
+                        didx++;
+                    }
+                    DisplayInfoLog("Loading DefaultInputs done");
+                }
             }
             catch (Exception ex)
             {

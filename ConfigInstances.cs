@@ -34,11 +34,22 @@ namespace Phidgets2Prosim
         public List<UserVariableInst> UserVariableInstances { get; set; }
         public CustomParkingBrakeInst CustomParkingBrakeInstance { get; set; }
         public List<PhidgetsButtonInst> PhidgetsButtonInstances { get; set; }
+        public List<DefaultIntputInst> DefaultIntputInstances { get; set; }
     }
 
     public class UserVariableInst
     {
         public string Name { get; set; } // e.g., "ParkingBrakeSwitch", "ParkingBrakeRelay"
+    }
+
+    // Represents a default input that will be written to ProSim on startup
+    public class DefaultIntputInst
+    {
+        // The ProSim dataref to write, e.g. "some.dataref"
+        public string ProsimDataRef { get; set; }
+
+        // The integer value to write as the default
+        public int DefaultInputValue { get; set; } = 0;
     }
 
     public class PhidgetsOutputInst : PhidgetDevice
