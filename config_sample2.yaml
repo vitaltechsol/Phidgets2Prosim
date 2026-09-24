@@ -3,17 +3,13 @@ GeneralConfig:
   Schema: 2.0    
   ProSimIP: 192.168.1.10  
 
-
 PhidgetsHubsInstances:
-
    - Name: HUB-TQ1
      Serial: 746062   #192.168.1.200
      Enabled: true
-
    - Name: HUB-TQ2
      Serial: 742347   #192.168.1.201
      Enabled: true
-
    - Name: HUB-PED1
      Serial: 668511   #192.168.1.202
      Enabled: true
@@ -509,15 +505,13 @@ UserVariableInstances:
 CustomParkingBrakeInstance:
   SwitchVariable: BrakeLatchSwitch
   RelayVariable: BrakeLatchRelay
-<<<<<<< Updated upstream
   ToeBrakeThreshold: 700
-=======
   ToeBrakeThreshold: 700       # engage: both pedals must exceed this
   #ReleaseToeBrakeThreshold: 900   # release: both pedals must exceed this
   ReleaseVariable: BrakeReleaseTrigger
   ReleaseDelayOnMs: 50
   ReleaseMaxTimeOnMs: 1000
->>>>>>> Stashed changes
+
 
 #+++++++++++++++++++++++++++++++++++++
 CustomTrimWheelInstance:
