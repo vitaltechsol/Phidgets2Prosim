@@ -208,16 +208,23 @@ namespace Phidgets2Prosim
                     await taskDelay;
                 }
 
-                digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
-                {
-                    digitalOutput.EndSetDutyCycle(result);
+				digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
+				{
+					try
+					{
+						digitalOutput.EndSetDutyCycle(result);
+					}
+					catch (Exception ex)
+					{
+						SendErrorLog($">>> EndSetDutyCycle failed, Port [{HubPort}] | Ch [{Channel}] | DutyCycle [{dutyCycle}] | Ref: {ProsimDataRef}");
+						SendErrorLog(ex.ToString());
+					}
+				}, null);
 
-                }, null);
+				SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
 
-                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [ON ({dutyCycle})] | Ref: {ProsimDataRef}");
-
-                // Turn off after specified time(ms)
-                if (MaxTimeOn > 0)
+				// Turn off after specified time(ms)
+				if (MaxTimeOn > 0)
                 {
                     SendInfoLog("Start OFF Delay " + MaxTimeOn + " for " + ProsimDataRef + " - Channel " + Channel);
                     var taskDelay2 = Task.Delay(MaxTimeOn);
@@ -237,14 +244,23 @@ namespace Phidgets2Prosim
         {
             try
             {
-                digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
-                {
-                    digitalOutput.EndSetDutyCycle(result);
+				digitalOutput.BeginSetDutyCycle(dutyCycle, delegate (IAsyncResult result)
+				{
+					try
+					{
+						digitalOutput.EndSetDutyCycle(result);
+					}
+					catch (Exception ex)
+					{
+						// Same reasoning as in TurnOn: this callback runs outside this
+						// method's own try/catch, on Phidget22's callback thread.
+						SendErrorLog($">>> EndSetDutyCycle failed, Port [{HubPort}] | Ch [{Channel}] | DutyCycle [{dutyCycle}] | Ref: {ProsimDataRef}");
+						SendErrorLog(ex.ToString());
+					}
+				}, null);
+				SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
 
-                }, null);
-                SendInfoLog($"<-- [{HubPort}] Ch {Channel}: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
-
-            }
+			}
             catch (Exception ex)
             {
                 SendErrorLog($">>> Turn Off Output Failed, Port [{HubPort}] | Ch [{Channel}]: [OFF ({dutyCycle})] | Ref: {ProsimDataRef}");
