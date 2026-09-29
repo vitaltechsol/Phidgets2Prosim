@@ -219,4 +219,210 @@ namespace Phidgets2Prosim
             }
         }
     }
+
+    public class OutputsUI
+    {
+        private readonly DeviceFormControls deviceControls;
+        private readonly Button btnAddOutput;
+        private readonly DataGridView dataGridViewOutputs;
+        private readonly Action<string> displayInfoLog;
+        private readonly Action<string> displayErrorLog;
+
+        public BindingList<PhidgetsOutputInst> PhidgetsOutputInstances { get; private set; }
+
+        public OutputsUI(
+            ComboBox cboOutputHub,
+            ComboBox cboOutputHubPort,
+            ComboBox cboOutputChannel,
+            TextBox txtOutputProsimRef,
+            Button btnAddOutput,
+            DataGridView dataGridViewOutputs,
+            Action<string> displayInfoLog,
+            Action<string> displayErrorLog)
+        {
+            this.deviceControls = new DeviceFormControls(
+                cboOutputHub,
+                cboOutputHubPort,
+                cboOutputChannel,
+                txtOutputProsimRef);
+            this.btnAddOutput = btnAddOutput;
+            this.dataGridViewOutputs = dataGridViewOutputs;
+            this.displayInfoLog = displayInfoLog;
+            this.displayErrorLog = displayErrorLog;
+
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            PopulateOutputFormDropdowns();
+            btnAddOutput.Click += BtnAddOutput_Click;
+            dataGridViewOutputs.CellEndEdit += DataGridViewOutputs_CellEndEdit;
+        }
+
+        public void PopulateOutputHubDropdown(List<PhidgetsHubInst> hubs)
+        {
+            deviceControls.PopulateHubDropdown(hubs);
+        }
+
+        public void SetOutputInstances(BindingList<PhidgetsOutputInst> outputInstances)
+        {
+            PhidgetsOutputInstances = outputInstances;
+        }
+
+        private void PopulateOutputFormDropdowns()
+        {
+            deviceControls.PopulateHubPortDropdown();
+            deviceControls.PopulateChannelDropdown();
+        }
+
+        private void BtnAddOutput_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var hub = deviceControls.GetSelectedHub();
+                if (hub == null)
+                {
+                    MessageBox.Show("Please select a hub.", "Missing Hub", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string prosimRef = deviceControls.GetProsimRef();
+                if (string.IsNullOrWhiteSpace(prosimRef))
+                {
+                    MessageBox.Show("Please enter a Prosim DataRef.", "Missing DataRef", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int hubPort = deviceControls.GetHubPort();
+                int channel = deviceControls.GetChannel();
+
+                var newOutput = new PhidgetsOutputInst
+                {
+                    Serial = hub.Serial,
+                    HubPort = hubPort,
+                    Channel = channel,
+                    ProsimDataRef = prosimRef
+                };
+
+                EnsureOutputInstancesBinding();
+
+                PhidgetsOutputInstances.Add(newOutput);
+                SaveOutputsToConfig();
+
+                deviceControls.ClearProsimRef();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error adding output: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DataGridViewOutputs_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            EnsureOutputInstancesBinding();
+            SaveOutputsToConfig();
+        }
+
+        private void EnsureOutputInstancesBinding()
+        {
+            if (PhidgetsOutputInstances != null)
+            {
+                return;
+            }
+
+            var existingList = dataGridViewOutputs.DataSource as BindingList<PhidgetsOutputInst>;
+            if (existingList != null)
+            {
+                PhidgetsOutputInstances = existingList;
+                return;
+            }
+
+            PhidgetsOutputInstances = new BindingList<PhidgetsOutputInst>();
+            dataGridViewOutputs.DataSource = PhidgetsOutputInstances;
+        }
+
+        public void SaveOutputsToConfig()
+        {
+            try
+            {
+                EnsureOutputInstancesBinding();
+
+                string content = File.ReadAllText("config.yaml");
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("PhidgetsOutputInstances:");
+                foreach (var output in PhidgetsOutputInstances)
+                {
+                    sb.AppendLine("  - Serial: " + output.Serial);
+                    sb.AppendLine("    HubPort: " + output.HubPort);
+                    sb.AppendLine("    Channel: " + output.Channel);
+                    sb.AppendLine("    ProsimDataRef: " + output.ProsimDataRef);
+
+                    if (output.DelayOn.HasValue)
+                        sb.AppendLine("    DelayOn: " + output.DelayOn.Value);
+                    if (output.Inverse.GetValueOrDefault())
+                        sb.AppendLine("    Inverse: true");
+                    if (output.MaxTimeOn.HasValue)
+                        sb.AppendLine("    MaxTimeOn: " + output.MaxTimeOn.Value);
+                    if (!string.IsNullOrEmpty(output.ProsimDataRefOff))
+                        sb.AppendLine("    ProsimDataRefOff: " + output.ProsimDataRefOff);
+                    if (output.ValueOn != 1)
+                        sb.AppendLine("    ValueOn: " + output.ValueOn);
+                    if (output.ValueOff != 0)
+                        sb.AppendLine("    ValueOff: " + output.ValueOff);
+                    if (output.ValueDim != 0.7)
+                        sb.AppendLine("    ValueDim: " + output.ValueDim);
+                    if (!string.IsNullOrEmpty(output.UserVariable))
+                        sb.AppendLine("    UserVariable: " + output.UserVariable);
+                }
+
+                var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var result = new System.Text.StringBuilder();
+                bool inSection = false;
+                bool sectionWritten = false;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    string trimmed = line.TrimStart();
+
+                    if (trimmed.StartsWith("PhidgetsOutputInstances:"))
+                    {
+                        inSection = true;
+                        result.Append(sb.ToString());
+                        sectionWritten = true;
+                        continue;
+                    }
+
+                    if (inSection)
+                    {
+                        if (string.IsNullOrWhiteSpace(line) || line.StartsWith(" ") || line.StartsWith("\t"))
+                        {
+                            continue;
+                        }
+
+                        inSection = false;
+                    }
+
+                    if (!inSection)
+                    {
+                        result.AppendLine(line);
+                    }
+                }
+
+                if (!sectionWritten)
+                {
+                    result.Append(sb.ToString());
+                }
+
+                File.WriteAllText("config.yaml", result.ToString().TrimEnd() + Environment.NewLine);
+                displayInfoLog("Outputs config saved to config.yaml");
+            }
+            catch (Exception ex)
+            {
+                displayErrorLog("Error saving outputs config: " + ex.Message);
+            }
+        }
+    }
 }

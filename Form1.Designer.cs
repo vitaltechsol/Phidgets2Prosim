@@ -38,6 +38,16 @@ namespace Phidgets2Prosim
             this.btnLogOk = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabOut = new System.Windows.Forms.TabPage();
+            this.panelAddOutput = new System.Windows.Forms.Panel();
+            this.lblOutputHub = new System.Windows.Forms.Label();
+            this.cboOutputHub = new System.Windows.Forms.ComboBox();
+            this.lblOutputHubPort = new System.Windows.Forms.Label();
+            this.cboOutputHubPort = new System.Windows.Forms.ComboBox();
+            this.lblOutputChannel = new System.Windows.Forms.Label();
+            this.cboOutputChannel = new System.Windows.Forms.ComboBox();
+            this.lblOutputProsimRef = new System.Windows.Forms.Label();
+            this.txtOutputProsimRef = new System.Windows.Forms.TextBox();
+            this.btnAddOutput = new System.Windows.Forms.Button();
             this.dataGridViewOutputs = new System.Windows.Forms.DataGridView();
             this.tabInputs = new System.Windows.Forms.TabPage();
             this.panelAddInput = new System.Windows.Forms.Panel();
@@ -97,6 +107,7 @@ namespace Phidgets2Prosim
             this.tabGroups.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabOut.SuspendLayout();
+            this.panelAddOutput.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).BeginInit();
             this.tabInputs.SuspendLayout();
             this.panelAddInput.SuspendLayout();
@@ -119,9 +130,9 @@ namespace Phidgets2Prosim
             // 
             // btnManageHubs
             // 
-            this.btnManageHubs.Location = new System.Drawing.Point(475, 5);
+            this.btnManageHubs.Location = new System.Drawing.Point(476, 8);
             this.btnManageHubs.Name = "btnManageHubs";
-            this.btnManageHubs.Size = new System.Drawing.Size(100, 28);
+            this.btnManageHubs.Size = new System.Drawing.Size(103, 23);
             this.btnManageHubs.TabIndex = 10;
             this.btnManageHubs.Text = "Manage Hubs";
             this.btnManageHubs.UseVisualStyleBackColor = true;
@@ -189,6 +200,7 @@ namespace Phidgets2Prosim
             // 
             // tabOut
             // 
+            this.tabOut.Controls.Add(this.panelAddOutput);
             this.tabOut.Controls.Add(this.dataGridViewOutputs);
             this.tabOut.Location = new System.Drawing.Point(4, 22);
             this.tabOut.Name = "tabOut";
@@ -198,12 +210,104 @@ namespace Phidgets2Prosim
             this.tabOut.Text = "Outputs";
             this.tabOut.UseVisualStyleBackColor = true;
             // 
+            // panelAddOutput
+            // 
+            this.panelAddOutput.Controls.Add(this.lblOutputHub);
+            this.panelAddOutput.Controls.Add(this.cboOutputHub);
+            this.panelAddOutput.Controls.Add(this.lblOutputHubPort);
+            this.panelAddOutput.Controls.Add(this.cboOutputHubPort);
+            this.panelAddOutput.Controls.Add(this.lblOutputChannel);
+            this.panelAddOutput.Controls.Add(this.cboOutputChannel);
+            this.panelAddOutput.Controls.Add(this.lblOutputProsimRef);
+            this.panelAddOutput.Controls.Add(this.txtOutputProsimRef);
+            this.panelAddOutput.Controls.Add(this.btnAddOutput);
+            this.panelAddOutput.Location = new System.Drawing.Point(6, 6);
+            this.panelAddOutput.Name = "panelAddOutput";
+            this.panelAddOutput.Size = new System.Drawing.Size(618, 30);
+            this.panelAddOutput.TabIndex = 1;
+            // 
+            // lblOutputHub
+            // 
+            this.lblOutputHub.AutoSize = true;
+            this.lblOutputHub.Location = new System.Drawing.Point(3, 7);
+            this.lblOutputHub.Name = "lblOutputHub";
+            this.lblOutputHub.Size = new System.Drawing.Size(30, 13);
+            this.lblOutputHub.TabIndex = 0;
+            this.lblOutputHub.Text = "Hub:";
+            // 
+            // cboOutputHub
+            // 
+            this.cboOutputHub.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOutputHub.Location = new System.Drawing.Point(33, 3);
+            this.cboOutputHub.Name = "cboOutputHub";
+            this.cboOutputHub.Size = new System.Drawing.Size(130, 21);
+            this.cboOutputHub.TabIndex = 1;
+            // 
+            // lblOutputHubPort
+            // 
+            this.lblOutputHubPort.AutoSize = true;
+            this.lblOutputHubPort.Location = new System.Drawing.Point(168, 7);
+            this.lblOutputHubPort.Name = "lblOutputHubPort";
+            this.lblOutputHubPort.Size = new System.Drawing.Size(29, 13);
+            this.lblOutputHubPort.TabIndex = 2;
+            this.lblOutputHubPort.Text = "Port:";
+            // 
+            // cboOutputHubPort
+            // 
+            this.cboOutputHubPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOutputHubPort.Location = new System.Drawing.Point(198, 3);
+            this.cboOutputHubPort.Name = "cboOutputHubPort";
+            this.cboOutputHubPort.Size = new System.Drawing.Size(65, 21);
+            this.cboOutputHubPort.TabIndex = 3;
+            // 
+            // lblOutputChannel
+            // 
+            this.lblOutputChannel.AutoSize = true;
+            this.lblOutputChannel.Location = new System.Drawing.Point(268, 7);
+            this.lblOutputChannel.Name = "lblOutputChannel";
+            this.lblOutputChannel.Size = new System.Drawing.Size(23, 13);
+            this.lblOutputChannel.TabIndex = 4;
+            this.lblOutputChannel.Text = "Ch:";
+            // 
+            // cboOutputChannel
+            // 
+            this.cboOutputChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOutputChannel.Location = new System.Drawing.Point(292, 3);
+            this.cboOutputChannel.Name = "cboOutputChannel";
+            this.cboOutputChannel.Size = new System.Drawing.Size(75, 21);
+            this.cboOutputChannel.TabIndex = 5;
+            // 
+            // lblOutputProsimRef
+            // 
+            this.lblOutputProsimRef.AutoSize = true;
+            this.lblOutputProsimRef.Location = new System.Drawing.Point(372, 7);
+            this.lblOutputProsimRef.Name = "lblOutputProsimRef";
+            this.lblOutputProsimRef.Size = new System.Drawing.Size(61, 13);
+            this.lblOutputProsimRef.TabIndex = 6;
+            this.lblOutputProsimRef.Text = "Prosim Ref:";
+            // 
+            // txtOutputProsimRef
+            // 
+            this.txtOutputProsimRef.Location = new System.Drawing.Point(438, 4);
+            this.txtOutputProsimRef.Name = "txtOutputProsimRef";
+            this.txtOutputProsimRef.Size = new System.Drawing.Size(120, 20);
+            this.txtOutputProsimRef.TabIndex = 7;
+            // 
+            // btnAddOutput
+            // 
+            this.btnAddOutput.Location = new System.Drawing.Point(564, 2);
+            this.btnAddOutput.Name = "btnAddOutput";
+            this.btnAddOutput.Size = new System.Drawing.Size(49, 23);
+            this.btnAddOutput.TabIndex = 8;
+            this.btnAddOutput.Text = "Add";
+            this.btnAddOutput.UseVisualStyleBackColor = true;
+            // 
             // dataGridViewOutputs
             // 
             this.dataGridViewOutputs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewOutputs.Location = new System.Drawing.Point(6, 6);
+            this.dataGridViewOutputs.Location = new System.Drawing.Point(6, 42);
             this.dataGridViewOutputs.Name = "dataGridViewOutputs";
-            this.dataGridViewOutputs.Size = new System.Drawing.Size(618, 318);
+            this.dataGridViewOutputs.Size = new System.Drawing.Size(618, 282);
             this.dataGridViewOutputs.TabIndex = 0;
             // 
             // tabInputs
@@ -718,9 +822,9 @@ namespace Phidgets2Prosim
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(596, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "v1.3.0beta";
+            this.label1.Text = "v1.3.0";
             // 
             // Form1
             // 
@@ -743,6 +847,8 @@ namespace Phidgets2Prosim
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
             this.tabOut.ResumeLayout(false);
+            this.panelAddOutput.ResumeLayout(false);
+            this.panelAddOutput.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutputs)).EndInit();
             this.tabInputs.ResumeLayout(false);
             this.panelAddInput.ResumeLayout(false);
@@ -778,6 +884,16 @@ namespace Phidgets2Prosim
         private Button button2;
         private Button button3;
         private Label connectionStatusLabel;
+        private Panel panelAddOutput;
+        private Label lblOutputHub;
+        private ComboBox cboOutputHub;
+        private Label lblOutputHubPort;
+        private ComboBox cboOutputHubPort;
+        private Label lblOutputChannel;
+        private ComboBox cboOutputChannel;
+        private Label lblOutputProsimRef;
+        private TextBox txtOutputProsimRef;
+        private Button btnAddOutput;
         private DataGridView dataGridViewOutputs;
         private DataGridView dataGridViewInputs;
         private TabPage tabLog;

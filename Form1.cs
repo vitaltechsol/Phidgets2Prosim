@@ -57,6 +57,7 @@ namespace Phidgets2Prosim
 		private BindingList<PhidgetsOutputInst> phidgetsOutputInstances;
 		private BindingList<PhidgetsAudioInst> phidgetsAudioInstances;
 		private BindingList<PhidgetsGateInst> phidgetsGateInstances;
+		private OutputsUI outputsUI;
 		private InputsUI inputsUI;
 		private EncodersUI encodersUI;
 		private ProsimConnectionUI prosimConnectionUI;
@@ -74,6 +75,17 @@ namespace Phidgets2Prosim
 			this.Icon = Properties.Resources.ph2pr;
 			this.Shown += new System.EventHandler(Form1_Shown);
 			this.FormClosed += new FormClosedEventHandler(Form1_Closed);
+			// Initialize OutputsUI abstraction
+			outputsUI = new OutputsUI(
+				cboOutputHub,
+				cboOutputHubPort,
+				cboOutputChannel,
+				txtOutputProsimRef,
+				btnAddOutput,
+				dataGridViewOutputs,
+				DisplayInfoLog,
+				DisplayErrorLog
+			);
 			// Initialize InputsUI abstraction
 			inputsUI = new InputsUI(
 				cboInputHub,
@@ -202,6 +214,7 @@ namespace Phidgets2Prosim
 				}
 
 				inputsUI.PopulateInputHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
+				outputsUI.PopulateOutputHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
 				encodersUI.PopulateEncoderHubDropdown(config.PhidgetsHubsInstances ?? new List<PhidgetsHubInst>());
 
 				//// Code to test all lights on
@@ -293,6 +306,7 @@ namespace Phidgets2Prosim
 				{
 					BeginInvoke(new Action(() => {
 						phidgetsOutputInstances = new BindingList<PhidgetsOutputInst>(config.PhidgetsOutputInstances);
+						outputsUI.SetOutputInstances(phidgetsOutputInstances);
 						dataGridViewOutputs.DataSource = phidgetsOutputInstances;
 						dataGridViewOutputs.CellEndEdit += dataGridViewOutputs_CellEndEdit;
 					}));
@@ -1510,7 +1524,7 @@ namespace Phidgets2Prosim
 			phidgetsDCMotors[Convert.ToInt32(txtDCMotorIdx.Text)].OnTargetMoving(target);
 		}
 
-		// Inputs UI logic is now handled by InputsUI.cs
+		// Inputs/Outputs UI logic is handled by DeviceIOUI.cs
 		// Helper to get current hubs for dropdown
 		private List<PhidgetsHubInst> GetCurrentHubs()
 		{
