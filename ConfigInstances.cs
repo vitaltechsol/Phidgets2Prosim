@@ -171,9 +171,11 @@ namespace Phidgets2Prosim
 		public string prosimDataRefBwd { get; set; } = "";
 
 		public string prosimDataRefFwd { get; set; } = "";
+        // Prosim ref to use for target position
+        public string RefTargetPos { get; set; }
 
-		// Acceleration values between 1 and 100
-		public double Acceleration { get; set; }
+        // Acceleration values between 1 and 100
+        public double Acceleration { get; set; }
 		public bool Reversed { get; set; }
 		public double CurrentLimit { get; set; } = 4;
 

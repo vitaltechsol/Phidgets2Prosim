@@ -148,80 +148,92 @@ namespace Phidgets2Prosim
         {
             this.pnlPageDashboard.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageDashboard.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
-            this.pnlPageDashboard.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlPageDashboard.Padding = new System.Windows.Forms.Padding(0);
 
-            // Banner
-            Label lblDashHeader = new Label();
-            lblDashHeader.Text = "Dashboard";
-            lblDashHeader.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            lblDashHeader.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            lblDashHeader.Location = new System.Drawing.Point(20, 15);
-            lblDashHeader.Size = new System.Drawing.Size(300, 30);
-            this.pnlPageDashboard.Controls.Add(lblDashHeader);
-
-            // Card 1: Connection
+            // ── ROW 1 : Connection Bar ────────────────────────────────────────────
+            // Full-width dark strip that holds IP box + status + connect/disconnect
             this.cardProsimConn = new Panel();
-            this.cardProsimConn.BackColor = System.Drawing.Color.White;
-            this.cardProsimConn.Location = new System.Drawing.Point(20, 60);
-            this.cardProsimConn.Size = new System.Drawing.Size(340, 220);
-            StyleCard_Custom(this.cardProsimConn);
+            this.cardProsimConn.BackColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            this.cardProsimConn.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cardProsimConn.Height = 58;
+            this.cardProsimConn.Padding = new System.Windows.Forms.Padding(16, 0, 16, 0);
 
-            this.lblProsimTitle = new Label();
-            this.lblProsimTitle.Text = "ProSim Connection";
-            this.lblProsimTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblProsimTitle.Location = new System.Drawing.Point(15, 15);
-            this.lblProsimTitle.Size = new System.Drawing.Size(200, 20);
-            this.lblProsimTitle.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-
+            // "IP:" label
             this.lblProsimIPLabelOnDash = new Label();
-            this.lblProsimIPLabelOnDash.Text = "ProSim Server IP:";
-            this.lblProsimIPLabelOnDash.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblProsimIPLabelOnDash.Location = new System.Drawing.Point(15, 48);
-            this.lblProsimIPLabelOnDash.Size = new System.Drawing.Size(150, 15);
-            this.lblProsimIPLabelOnDash.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
+            this.lblProsimIPLabelOnDash.Text = "ProSim IP:";
+            this.lblProsimIPLabelOnDash.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            this.lblProsimIPLabelOnDash.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184);
+            this.lblProsimIPLabelOnDash.Location = new System.Drawing.Point(16, 20);
+            this.lblProsimIPLabelOnDash.Size = new System.Drawing.Size(65, 18);
+            this.lblProsimIPLabelOnDash.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
+            // IP text box
             this.txtProsimIP = new TextBox();
-            this.txtProsimIP.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtProsimIP.Location = new System.Drawing.Point(15, 68);
-            this.txtProsimIP.Size = new System.Drawing.Size(200, 25);
+            this.txtProsimIP.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.txtProsimIP.Text = "127.0.0.1";
+            this.txtProsimIP.Location = new System.Drawing.Point(82, 17);
+            this.txtProsimIP.Size = new System.Drawing.Size(145, 24);
+            this.txtProsimIP.BorderStyle = BorderStyle.FixedSingle;
 
+            // Save IP button (small, low-profile)
             this.btnSaveProsimIP = new Button();
-            this.btnSaveProsimIP.Text = "Save IP";
+            this.btnSaveProsimIP.Text = "Save";
             this.btnSaveProsimIP.FlatStyle = FlatStyle.Flat;
-            this.btnSaveProsimIP.FlatAppearance.BorderSize = 0;
-            this.btnSaveProsimIP.BackColor = System.Drawing.Color.FromArgb(203, 213, 225);
-            this.btnSaveProsimIP.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-            this.btnSaveProsimIP.Location = new System.Drawing.Point(225, 67);
-            this.btnSaveProsimIP.Size = new System.Drawing.Size(100, 27);
+            this.btnSaveProsimIP.FlatAppearance.BorderSize = 1;
+            this.btnSaveProsimIP.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            this.btnSaveProsimIP.BackColor = System.Drawing.Color.FromArgb(30, 41, 59);
+            this.btnSaveProsimIP.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184);
+            this.btnSaveProsimIP.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnSaveProsimIP.Location = new System.Drawing.Point(232, 17);
+            this.btnSaveProsimIP.Size = new System.Drawing.Size(52, 24);
 
+            // Status pill (grows to fill space between save and the action buttons)
             this.connectionStatusLabel = new Label();
             this.connectionStatusLabel.Text = "● DISCONNECTED";
             this.connectionStatusLabel.ForeColor = System.Drawing.Color.FromArgb(239, 68, 68);
             this.connectionStatusLabel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.connectionStatusLabel.Location = new System.Drawing.Point(15, 110);
-            this.connectionStatusLabel.Size = new System.Drawing.Size(310, 20);
+            this.connectionStatusLabel.Location = new System.Drawing.Point(298, 18);
+            this.connectionStatusLabel.Size = new System.Drawing.Size(220, 22);
+            this.connectionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // anchor to right side so it expands with the window
+            this.connectionStatusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 
+            // Connect button — right-aligned, green
             this.btnConnectProsim = new Button();
             this.btnConnectProsim.Text = "Connect";
             this.btnConnectProsim.FlatStyle = FlatStyle.Flat;
             this.btnConnectProsim.FlatAppearance.BorderSize = 0;
             this.btnConnectProsim.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
             this.btnConnectProsim.ForeColor = System.Drawing.Color.White;
-            this.btnConnectProsim.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.btnConnectProsim.Location = new System.Drawing.Point(15, 150);
-            this.btnConnectProsim.Size = new System.Drawing.Size(145, 40);
+            this.btnConnectProsim.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnConnectProsim.Size = new System.Drawing.Size(95, 30);
+            this.btnConnectProsim.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnConnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 210, 14);
 
+            // Disconnect button — right of connect, red
             this.btnDisconnectProsim = new Button();
             this.btnDisconnectProsim.Text = "Disconnect";
             this.btnDisconnectProsim.FlatStyle = FlatStyle.Flat;
             this.btnDisconnectProsim.FlatAppearance.BorderSize = 0;
             this.btnDisconnectProsim.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
             this.btnDisconnectProsim.ForeColor = System.Drawing.Color.White;
-            this.btnDisconnectProsim.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.btnDisconnectProsim.Location = new System.Drawing.Point(180, 150);
-            this.btnDisconnectProsim.Size = new System.Drawing.Size(145, 40);
+            this.btnDisconnectProsim.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnDisconnectProsim.Size = new System.Drawing.Size(100, 30);
+            this.btnDisconnectProsim.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnDisconnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
             this.btnDisconnectProsim.Enabled = false;
+
+            // Keep buttons stuck to the right edge when the window is resized
+            this.cardProsimConn.Resize += (s, e2) =>
+            {
+                this.btnConnectProsim.Location    = new System.Drawing.Point(this.cardProsimConn.Width - 210, 14);
+                this.btnDisconnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
+                this.connectionStatusLabel.Size   = new System.Drawing.Size(this.cardProsimConn.Width - 530, 22);
+            };
+
+            // unused but kept for designer field compatibility
+            this.lblProsimTitle = new Label();
+            this.lblProsimTitle.Visible = false;
 
             this.cardProsimConn.Controls.Add(this.lblProsimTitle);
             this.cardProsimConn.Controls.Add(this.lblProsimIPLabelOnDash);
@@ -232,52 +244,67 @@ namespace Phidgets2Prosim
             this.cardProsimConn.Controls.Add(this.btnDisconnectProsim);
             this.pnlPageDashboard.Controls.Add(this.cardProsimConn);
 
-            // Card 2: Telemetry/Stats
+            // ── ROW 2 : Stats / Telemetry ─────────────────────────────────────────
+            // A white card below the bar that contains a wrap-panel of stat chips.
+            // The card anchors left+right so chips fill the available width.
             this.cardTelemetry = new Panel();
             this.cardTelemetry.BackColor = System.Drawing.Color.White;
-            this.cardTelemetry.Location = new System.Drawing.Point(380, 60);
-            this.cardTelemetry.Size = new System.Drawing.Size(340, 220);
+            this.cardTelemetry.Location = new System.Drawing.Point(16, 70);
+            this.cardTelemetry.Size = new System.Drawing.Size(this.pnlPageDashboard.Width - 32, 100);
+            this.cardTelemetry.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             StyleCard_Custom(this.cardTelemetry);
 
             this.lblTelemetryTitle = new Label();
-            this.lblTelemetryTitle.Text = "Active Devices Overview";
-            this.lblTelemetryTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblTelemetryTitle.Location = new System.Drawing.Point(15, 15);
-            this.lblTelemetryTitle.Size = new System.Drawing.Size(250, 20);
-            this.lblTelemetryTitle.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            this.lblTelemetryTitle.Text = "Active Devices";
+            this.lblTelemetryTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblTelemetryTitle.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
+            this.lblTelemetryTitle.Location = new System.Drawing.Point(14, 10);
+            this.lblTelemetryTitle.Size = new System.Drawing.Size(160, 16);
+            this.lblTelemetryTitle.AutoSize = false;
 
+            // Wrap panel for stat chips — anchors all four edges so it grows with the card
             this.flowTelemetry = new FlowLayoutPanel();
-            this.flowTelemetry.Location = new System.Drawing.Point(15, 50);
-            this.flowTelemetry.Size = new System.Drawing.Size(310, 155);
+            this.flowTelemetry.Location = new System.Drawing.Point(14, 32);
+            this.flowTelemetry.Size = new System.Drawing.Size(this.cardTelemetry.Width - 28, 52);
+            this.flowTelemetry.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.flowTelemetry.FlowDirection = FlowDirection.LeftToRight;
+            this.flowTelemetry.WrapContents = false;
+            this.flowTelemetry.AutoSize = false;
+
+            // Resize the flow panel to match the card width
+            this.cardTelemetry.Resize += (s, e2) =>
+            {
+                this.flowTelemetry.Size = new System.Drawing.Size(this.cardTelemetry.Width - 28, this.flowTelemetry.Height);
+            };
 
             this.cardTelemetry.Controls.Add(this.lblTelemetryTitle);
             this.cardTelemetry.Controls.Add(this.flowTelemetry);
             this.pnlPageDashboard.Controls.Add(this.cardTelemetry);
 
-            // Card 3: Logs Terminal
+            // ── ROW 3 : Console Log ───────────────────────────────────────────────
             this.cardLogs = new Panel();
             this.cardLogs.BackColor = System.Drawing.Color.White;
-            this.cardLogs.Location = new System.Drawing.Point(20, 300);
-            this.cardLogs.Size = new System.Drawing.Size(700, 320);
+            this.cardLogs.Location = new System.Drawing.Point(16, 182);
+            this.cardLogs.Size = new System.Drawing.Size(this.pnlPageDashboard.Width - 32, 440);
             this.cardLogs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             StyleCard_Custom(this.cardLogs);
 
             this.lblLogsTitle = new Label();
             this.lblLogsTitle.Text = "Console Logs & Events";
             this.lblLogsTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblLogsTitle.Location = new System.Drawing.Point(15, 15);
+            this.lblLogsTitle.Location = new System.Drawing.Point(15, 13);
             this.lblLogsTitle.Size = new System.Drawing.Size(250, 20);
             this.lblLogsTitle.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
 
             this.btnLogClear = new Button();
-            this.btnLogClear.Text = "Clear Console";
+            this.btnLogClear.Text = "Clear";
             this.btnLogClear.FlatStyle = FlatStyle.Flat;
             this.btnLogClear.FlatAppearance.BorderSize = 0;
             this.btnLogClear.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
             this.btnLogClear.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.btnLogClear.Location = new System.Drawing.Point(465, 12);
-            this.btnLogClear.Size = new System.Drawing.Size(100, 26);
+            this.btnLogClear.Size = new System.Drawing.Size(75, 26);
+            this.btnLogClear.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnLogClear.Location = new System.Drawing.Point(this.cardLogs.Width - 192, 10);
 
             this.btnLogOk = new Button();
             this.btnLogOk.Text = "Acknowledge";
@@ -285,8 +312,15 @@ namespace Phidgets2Prosim
             this.btnLogOk.FlatAppearance.BorderSize = 0;
             this.btnLogOk.BackColor = System.Drawing.Color.FromArgb(219, 234, 254);
             this.btnLogOk.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.btnLogOk.Location = new System.Drawing.Point(575, 12);
-            this.btnLogOk.Size = new System.Drawing.Size(110, 26);
+            this.btnLogOk.Size = new System.Drawing.Size(105, 26);
+            this.btnLogOk.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnLogOk.Location = new System.Drawing.Point(this.cardLogs.Width - 110, 10);
+
+            this.cardLogs.Resize += (s, e2) =>
+            {
+                this.btnLogClear.Location = new System.Drawing.Point(this.cardLogs.Width - 192, 10);
+                this.btnLogOk.Location    = new System.Drawing.Point(this.cardLogs.Width - 110, 10);
+            };
 
             this.txtLog = new TextBox();
             this.txtLog.Multiline = true;
@@ -296,8 +330,8 @@ namespace Phidgets2Prosim
             this.txtLog.BackColor = System.Drawing.Color.FromArgb(15, 23, 42);
             this.txtLog.ForeColor = System.Drawing.Color.FromArgb(14, 165, 233);
             this.txtLog.BorderStyle = BorderStyle.None;
-            this.txtLog.Location = new System.Drawing.Point(15, 52);
-            this.txtLog.Size = new System.Drawing.Size(670, 250);
+            this.txtLog.Location = new System.Drawing.Point(15, 46);
+            this.txtLog.Size = new System.Drawing.Size(this.cardLogs.Width - 30, this.cardLogs.Height - 60);
             this.txtLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             this.cardLogs.Controls.Add(this.lblLogsTitle);

@@ -19,8 +19,8 @@
         private readonly PhidgetsDeviceService _devices;
 
         // ── Retained for special / custom devices ────────────────────────────────
-        Custom_TrimWheel    trimWheel;
-        Custom_ParkingBrake customParkingBrake;
+        private Custom_TrimWheel    trimWheel    => _devices?.TrimWheel;
+        private Custom_ParkingBrake customParkingBrake => _devices?.ParkingBrake;
 
         // ── UI state ──────────────────────────────────────────────────────────────
         private bool   _configsInsLoaded      = false;
@@ -238,24 +238,49 @@
 
         private void AddTelemetryChip(string label, int count)
         {
-            var p = new Panel { Size = new Size(130, 50), Margin = new Padding(3) };
-            p.BackColor = count > 0 ? Color.FromArgb(220, 252, 231) : Color.FromArgb(241, 245, 249);
+            // Compact horizontal chip: [COUNT  label] — fits in the single-row stats bar
+            bool active = count > 0;
+
+            var p = new Panel
+            {
+                Size      = new Size(118, 44),
+                Margin    = new Padding(0, 0, 8, 0),
+                BackColor = active ? Color.FromArgb(220, 252, 231) : Color.FromArgb(241, 245, 249)
+            };
+
+            // Rounded feel via border
+            p.Paint += (s, e) =>
+            {
+                using (var pen = new System.Drawing.Pen(active
+                    ? Color.FromArgb(167, 243, 208)
+                    : Color.FromArgb(226, 232, 240), 1))
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, p.Width - 1, p.Height - 1);
+                }
+            };
+
+            // Big count on the left
             p.Controls.Add(new Label
             {
                 Text      = count.ToString(),
-                Font      = new Font("Segoe UI", 16F, FontStyle.Bold),
-                ForeColor = count > 0 ? Color.FromArgb(22, 163, 74) : Color.FromArgb(100, 116, 139),
-                Location  = new Point(8, 4),
-                AutoSize  = true
+                Font      = new Font("Segoe UI", 15F, FontStyle.Bold),
+                ForeColor = active ? Color.FromArgb(22, 163, 74) : Color.FromArgb(148, 163, 184),
+                Location  = new Point(10, 6),
+                Size      = new Size(44, 28),
+                TextAlign = ContentAlignment.MiddleLeft
             });
+
+            // Label on the right, two lines
             p.Controls.Add(new Label
             {
                 Text      = label,
-                Font      = new Font("Segoe UI", 8.5F),
+                Font      = new Font("Segoe UI", 7.5F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(71, 85, 105),
-                Location  = new Point(8, 30),
-                AutoSize  = true
+                Location  = new Point(52, 14),
+                Size      = new Size(60, 16),
+                TextAlign = ContentAlignment.MiddleLeft
             });
+
             flowTelemetry.Controls.Add(p);
         }
 

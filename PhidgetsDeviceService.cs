@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ProSimSDK;
 
 namespace Phidgets2Prosim
@@ -23,6 +24,12 @@ namespace Phidgets2Prosim
         public PhidgetsDCMotor[]       DCMotors      { get; } = new PhidgetsDCMotor[10];
         public PhidgetsEncoder[]       Encoders      { get; } = new PhidgetsEncoder[20];
         public List<PhidgetsButton>    Buttons       { get; } = new List<PhidgetsButton>();
+
+        /// <summary>Custom trim-wheel instance — null until LoadOutputDevices is called.</summary>
+        public Custom_TrimWheel TrimWheel { get; private set; }
+
+        /// <summary>Custom parking-brake instance — null until LoadOutputDevices is called.</summary>
+        public Custom_ParkingBrake ParkingBrake { get; private set; }
 
         // ── Runtime blink / dim settings (populated during LoadOutputs) ──────────
 
@@ -68,6 +75,8 @@ namespace Phidgets2Prosim
             LoadDCMotors(config);
             LoadEncoders(config);
             LoadButtons(config);
+            LoadTrimWheel(config);
+            LoadParkingBrake(config);
         }
 
         // ── Load input-side devices (called after ProSim connect) ────────────────
@@ -258,15 +267,67 @@ namespace Phidgets2Prosim
             {
                 try
                 {
+                    var opts = new MotorTuningOptions
+                    {
+                        MaxVelocity         = inst.Options?.MaxVelocity,
+                        MinVelocity         = inst.Options?.MinVelocity,
+                        VelocityBand        = inst.Options?.VelocityBand,
+                        CurveGamma          = inst.Options?.CurveGamma,
+                        DeadbandEnter       = inst.Options?.DeadbandEnter,
+                        DeadbandExit        = inst.Options?.DeadbandExit,
+                        MaxVelStepPerTick   = inst.Options?.MaxVelStepPerTick,
+                        Kp                  = inst.Options?.Kp,
+                        Ki                  = inst.Options?.Ki,
+                        Kd                  = inst.Options?.Kd,
+                        IOnBand             = inst.Options?.IOnBand,
+                        IntegralLimit       = inst.Options?.IntegralLimit,
+                        PositionFilterAlpha = inst.Options?.PositionFilterAlpha,
+                        TickMs              = inst.Options?.TickMs,
+                        SetpointSlewPerTick = inst.Options?.SetpointSlewPerTick,
+                    };
+
                     DCMotors[idx] = new PhidgetsDCMotor(
-                        inst.Serial, inst.HubPort, _connection, inst.Options);
-                    DCMotors[idx].Acceleration = inst.Acceleration;
-                    DCMotors[idx].CurrentLimit = inst.CurrentLimit;
-                    DCMotors[idx].ErrorLog    += RaiseError;
-                    DCMotors[idx].InfoLog     += RaiseInfo;
+                        inst.Serial, inst.HubPort, _connection, options: opts)
+                    {
+                        Reversed              = inst.Reversed,
+                        CurrentLimit          = inst.CurrentLimit,
+                        Acceleration          = inst.Acceleration > 0 ? inst.Acceleration : 50,
+                        TargetBrakingStrength = 1,
+                    };
+                    DCMotors[idx].ErrorLog += RaiseError;
+                    DCMotors[idx].InfoLog  += RaiseInfo;
+
+                    // Optional voltage-input feedback (position sensor)
+                    if (inst.VoltageInput != null)
+                    {
+                        var voltageIn = new PhidgetsVoltageInput(
+                            inst.VoltageInput.Serial,
+                            inst.VoltageInput.HubPort,
+                            inst.VoltageInput.Channel,
+                            _connection,
+                            prosimDataRef:      "",
+                            prosimDataRefOnOff: "",
+                            inputPoints:        inst.VoltageInput.InputPoints.ToArray(),
+                            outputPoints:       inst.VoltageInput.OutputPoints.ToArray());
+                        voltageIn.MinChangeTriggerValue = inst.VoltageInput.MinChangeTriggerValue;
+                        voltageIn.ErrorLog += RaiseError;
+                        voltageIn.InfoLog  += RaiseInfo;
+                        DCMotors[idx].VoltageInput = voltageIn;
+                    }
+
+                    DCMotors[idx].InitializeAsync().Wait();
+
+                    // Subscribe to ProSim target ref if configured
+                    if (!string.IsNullOrWhiteSpace(inst.RefTargetPos))
+                        DCMotors[idx].UseRefTarget(inst.RefTargetPos);
+
+                    idx++;
                 }
-                catch (Exception ex) { RaiseError("Error loading DC motor config: " + ex.Message); }
-                idx++;
+                catch (Exception ex)
+                {
+                    RaiseError("Error loading DC motor config (index " + idx + "): " + ex.Message);
+                    idx++;
+                }
             }
         }
 
@@ -278,11 +339,13 @@ namespace Phidgets2Prosim
             {
                 try
                 {
+                    string encRef = "system.encoders." + inst.ProsimDataRef;
                     Encoders[idx] = new PhidgetsEncoder(
                         inst.Serial, inst.HubPort, inst.Channel,
-                        inst.ProsimDataRef, _connection);
-                    Encoders[idx].ErrorLog += RaiseError;
-                    Encoders[idx].InfoLog  += RaiseInfo;
+                        encRef, _connection);
+                    Encoders[idx].ScaleFactor  = inst.ScaleFactor;
+                    Encoders[idx].ErrorLog    += RaiseError;
+                    Encoders[idx].InfoLog     += RaiseInfo;
                 }
                 catch (Exception ex) { RaiseError("Error loading encoder config: " + ex.Message); }
                 idx++;
@@ -292,18 +355,87 @@ namespace Phidgets2Prosim
         private void LoadButtons(Config config)
         {
             if (config?.PhidgetsButtonInstances == null) return;
+            int idx = 0;
             foreach (var inst in config.PhidgetsButtonInstances)
             {
                 try
                 {
+                    string btnRef = string.IsNullOrWhiteSpace(inst.ProsimDataRef)
+                        ? "test"
+                        : "system.switches." + inst.ProsimDataRef;
                     var b = new PhidgetsButton(
-                        inst.Serial, inst.Name, _connection,
-                        inst.ProsimDataRef, inst.InputValue, inst.OffInputValue);
+                        idx, inst.Name, _connection,
+                        btnRef, inst.InputValue, inst.OffInputValue);
                     b.ErrorLog += RaiseError;
                     b.InfoLog  += RaiseInfo;
                     Buttons.Add(b);
+                    idx++;
                 }
                 catch (Exception ex) { RaiseError("Error loading button config: " + ex.Message); }
+            }
+            // Always add a Pause button so the user can toggle simulator pause
+            try
+            {
+                var pause = new PhidgetsButton(idx, "Pause", _connection, "simulator.pause", true, false);
+                pause.ErrorLog += RaiseError;
+                pause.InfoLog  += RaiseInfo;
+                Buttons.Add(pause);
+            }
+            catch (Exception ex) { RaiseError("Error adding Pause button: " + ex.Message); }
+        }
+
+        private void LoadTrimWheel(Config config)
+        {
+            var inst = config?.CustomTrimWheelInstance;
+            if (inst == null) return;
+            try
+            {
+                TrimWheel = new Custom_TrimWheel(
+                    inst.Serial,
+                    inst.HubPort,
+                    _connection,
+                    inst.Reversed,
+                    inst.DirtyUp,
+                    inst.DirtyDown,
+                    inst.CleanUp,
+                    inst.CleanDown,
+                    inst.APOnDirty,
+                    inst.APOnClean,
+                    inst.Accelerate,
+                    inst.Range != null ? inst.Range.ToArray() : new double[] { -1.0, 1.0 },
+                    inst.Encoder);
+                TrimWheel.ErrorLog += RaiseError;
+                TrimWheel.InfoLog  += RaiseInfo;
+                RaiseInfo("TrimWheel loaded (serial " + inst.Serial + ").");
+            }
+            catch (Exception ex)
+            {
+                RaiseError("Error loading TrimWheel config: " + ex.Message);
+            }
+        }
+
+        private void LoadParkingBrake(Config config)
+        {
+            var inst = config?.CustomParkingBrakeInstance;
+            if (inst == null) return;
+            try
+            {
+                ParkingBrake = new Custom_ParkingBrake(
+                    _connection,
+                    switchVariable:             inst.SwitchVariable,
+                    relayVariable:              inst.RelayVariable,
+                    toeBrakeThreshold:          inst.ToeBrakeThreshold,
+                    releaseToeBrakeThreshold:   inst.ReleaseToeBrakeThreshold,
+                    releaseVariable:            inst.ReleaseVariable,
+                    releaseDelayOnMs:           inst.ReleaseDelayOnMs,
+                    releaseMaxTimeOnMs:         inst.ReleaseMaxTimeOnMs);
+                ParkingBrake.ErrorLog += RaiseError;
+                ParkingBrake.InfoLog  += RaiseInfo;
+                RaiseInfo("Custom_ParkingBrake loaded (Variable-driven).");
+            }
+            catch (Exception ex)
+            {
+                RaiseError("Error loading Custom_ParkingBrake: " + ex.Message);
             }
         }
 
@@ -324,6 +456,15 @@ namespace Phidgets2Prosim
                         inst.InputValue, inst.OffInputValue);
                     Inputs[idx].ErrorLog += RaiseError;
                     Inputs[idx].InfoLog  += RaiseInfo;
+                    if (!string.IsNullOrEmpty(inst.ProsimDataRef2))
+                        Inputs[idx].ProsimDataRef2 = inst.ProsimDataRef2;
+                    if (!string.IsNullOrEmpty(inst.ProsimDataRef3))
+                        Inputs[idx].ProsimDataRef3 = inst.ProsimDataRef3;
+                    if (!string.IsNullOrEmpty(inst.UserVariable))
+                    {
+                        Inputs[idx].UserVariable = inst.UserVariable;
+                        RaiseInfo("[WIRING] Input Hub:" + inst.HubPort + " Ch:" + inst.Channel + " UserVariable='" + inst.UserVariable + "'");
+                    }
                 }
                 catch (Exception ex) { RaiseError("Error loading input config: " + ex.Message); }
                 idx++;
@@ -362,12 +503,19 @@ namespace Phidgets2Prosim
             {
                 try
                 {
+                    string viRef = string.IsNullOrWhiteSpace(inst.ProsimDataRef)
+                        ? "test"
+                        : "system.analog." + inst.ProsimDataRef;
+                    string viOnOffRef = !string.IsNullOrEmpty(inst.ProsimDataRefOnOff)
+                        ? "system.switches." + inst.ProsimDataRefOnOff
+                        : "";
                     VoltageInputs[idx] = new PhidgetsVoltageInput(
                         inst.Serial, inst.HubPort, inst.Channel, _connection,
-                        inst.ProsimDataRef, inst.ProsimDataRefOnOff,
+                        viRef, viOnOffRef,
                         inst.InputPoints.ToArray(), inst.OutputPoints.ToArray(),
                         inst.InterpolationMode, inst.CurvePower,
                         inst.DataInterval, inst.MinChangeTriggerValue, inst.UseRange);
+                    VoltageInputs[idx].RoundUp   = true;
                     VoltageInputs[idx].ErrorLog += RaiseError;
                     VoltageInputs[idx].InfoLog  += RaiseInfo;
                 }
