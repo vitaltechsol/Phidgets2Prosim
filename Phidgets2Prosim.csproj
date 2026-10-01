@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigRepository.cs" />
     <Compile Include="Custom_TrimWheel.cs" />
     <Compile Include="Custom_ParkingBrake.cs" />
     <Compile Include="DefaultIntput.cs" />
@@ -94,6 +95,7 @@
     </Compile>
     <Compile Include="ConfigInstances.cs" />
     <Compile Include="DeviceIOUI.cs" />
+    <Compile Include="HubManager.cs" />
     <Compile Include="ManageHubsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +103,7 @@
     <Compile Include="PhidgetDevice.cs" />
     <Compile Include="PhidgetsButton.cs" />
     <Compile Include="PhidgetsDCMotor.cs" />
+    <Compile Include="PhidgetsDeviceService.cs" />
     <Compile Include="PhidgetsEncoder.cs" />
     <Compile Include="PhidgetsMotorBase.cs" />
     <Compile Include="PhidgetsVoltageInput.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProsimConnectionUI.cs" />
+    <Compile Include="ProSimService.cs" />
     <Compile Include="VariableManager.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>PhidgetsVoltageOutput.cs</DependentUpon>
