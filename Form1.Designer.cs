@@ -109,8 +109,8 @@ namespace Phidgets2Prosim
             // ── Form Main setup ─────────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(950, 680);
-            this.MinimumSize = new System.Drawing.Size(920, 620);
+            this.ClientSize = new System.Drawing.Size(1040, 760);
+            this.MinimumSize = new System.Drawing.Size(1000, 700);
             this.Controls.Add(this.pnlMainContent);
             this.Controls.Add(this.pnlSidebar);
             this.Name = "Form1";
@@ -148,13 +148,26 @@ namespace Phidgets2Prosim
         {
             this.pnlPageDashboard.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageDashboard.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
-            this.pnlPageDashboard.Padding = new System.Windows.Forms.Padding(0);
+            this.pnlPageDashboard.Padding = new System.Windows.Forms.Padding(20, 16, 20, 20);
+            this.pnlPageDashboard.AutoScroll = true;
+            this.pnlPageDashboard.AutoScrollMargin = new System.Drawing.Size(20, 20);
+
+            var dashboardLayout = new TableLayoutPanel();
+            dashboardLayout.Dock = DockStyle.Fill;
+            dashboardLayout.BackColor = System.Drawing.Color.Transparent;
+            dashboardLayout.ColumnCount = 1;
+            dashboardLayout.RowCount = 3;
+            dashboardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 58F));
+            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
+            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             // ── ROW 1 : Connection Bar ────────────────────────────────────────────
             // Full-width dark strip that holds IP box + status + connect/disconnect
             this.cardProsimConn = new Panel();
             this.cardProsimConn.BackColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            this.cardProsimConn.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cardProsimConn.Dock = DockStyle.Fill;
+            this.cardProsimConn.Margin = new Padding(0, 0, 0, 12);
             this.cardProsimConn.Height = 58;
             this.cardProsimConn.Padding = new System.Windows.Forms.Padding(16, 0, 16, 0);
 
@@ -242,16 +255,15 @@ namespace Phidgets2Prosim
             this.cardProsimConn.Controls.Add(this.connectionStatusLabel);
             this.cardProsimConn.Controls.Add(this.btnConnectProsim);
             this.cardProsimConn.Controls.Add(this.btnDisconnectProsim);
-            this.pnlPageDashboard.Controls.Add(this.cardProsimConn);
+            dashboardLayout.Controls.Add(this.cardProsimConn, 0, 0);
 
             // ── ROW 2 : Stats / Telemetry ─────────────────────────────────────────
             // A white card below the bar that contains a wrap-panel of stat chips.
             // The card anchors left+right so chips fill the available width.
             this.cardTelemetry = new Panel();
             this.cardTelemetry.BackColor = System.Drawing.Color.White;
-            this.cardTelemetry.Location = new System.Drawing.Point(16, 70);
-            this.cardTelemetry.Size = new System.Drawing.Size(this.pnlPageDashboard.Width - 32, 100);
-            this.cardTelemetry.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            this.cardTelemetry.Dock = DockStyle.Fill;
+            this.cardTelemetry.Margin = new Padding(0, 0, 0, 12);
             StyleCard_Custom(this.cardTelemetry);
 
             this.lblTelemetryTitle = new Label();
@@ -279,14 +291,14 @@ namespace Phidgets2Prosim
 
             this.cardTelemetry.Controls.Add(this.lblTelemetryTitle);
             this.cardTelemetry.Controls.Add(this.flowTelemetry);
-            this.pnlPageDashboard.Controls.Add(this.cardTelemetry);
+            dashboardLayout.Controls.Add(this.cardTelemetry, 0, 1);
 
             // ── ROW 3 : Console Log ───────────────────────────────────────────────
             this.cardLogs = new Panel();
             this.cardLogs.BackColor = System.Drawing.Color.White;
-            this.cardLogs.Location = new System.Drawing.Point(16, 182);
-            this.cardLogs.Size = new System.Drawing.Size(this.pnlPageDashboard.Width - 32, 440);
-            this.cardLogs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.cardLogs.Dock = DockStyle.Fill;
+            this.cardLogs.Margin = new Padding(0);
+            this.cardLogs.MinimumSize = new System.Drawing.Size(0, 240);
             StyleCard_Custom(this.cardLogs);
 
             this.lblLogsTitle = new Label();
@@ -338,37 +350,77 @@ namespace Phidgets2Prosim
             this.cardLogs.Controls.Add(this.btnLogClear);
             this.cardLogs.Controls.Add(this.btnLogOk);
             this.cardLogs.Controls.Add(this.txtLog);
-            this.pnlPageDashboard.Controls.Add(this.cardLogs);
+            dashboardLayout.Controls.Add(this.cardLogs, 0, 2);
+            this.pnlPageDashboard.Controls.Add(dashboardLayout);
         }
 
         private void InitializeHubsPage_Custom()
         {
             this.pnlPageHubs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageHubs.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
-            this.pnlPageHubs.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlPageHubs.Padding = new System.Windows.Forms.Padding(24);
+            this.pnlPageHubs.AutoScroll = true;
+            this.pnlPageHubs.AutoScrollMargin = new System.Drawing.Size(20, 20);
+
+            var hubsLayout = new TableLayoutPanel();
+            hubsLayout.Dock = DockStyle.Fill;
+            hubsLayout.BackColor = System.Drawing.Color.Transparent;
+            hubsLayout.ColumnCount = 1;
+            hubsLayout.RowCount = 2;
+            hubsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            hubsLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            hubsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             Label lblHubHeader = new Label();
             lblHubHeader.Text = "Phidgets Network Hubs";
             lblHubHeader.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             lblHubHeader.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            lblHubHeader.Location = new System.Drawing.Point(20, 15);
+            lblHubHeader.Dock = DockStyle.Top;
+            lblHubHeader.Margin = new Padding(0, 0, 0, 16);
             lblHubHeader.Size = new System.Drawing.Size(400, 30);
-            this.pnlPageHubs.Controls.Add(lblHubHeader);
+            hubsLayout.Controls.Add(lblHubHeader, 0, 0);
+
+            var hubsContentLayout = new TableLayoutPanel();
+            hubsContentLayout.Dock = DockStyle.Fill;
+            hubsContentLayout.BackColor = System.Drawing.Color.Transparent;
+            hubsContentLayout.ColumnCount = 2;
+            hubsContentLayout.RowCount = 1;
+            hubsContentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 360F));
+            hubsContentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            hubsContentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            hubsLayout.Controls.Add(hubsContentLayout, 0, 1);
 
             // Left side: Configured Hubs Card
             Panel cardConfigured = new Panel();
             cardConfigured.BackColor = System.Drawing.Color.White;
-            cardConfigured.Location = new System.Drawing.Point(20, 60);
-            cardConfigured.Size = new System.Drawing.Size(340, 560);
-            cardConfigured.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            cardConfigured.Dock = DockStyle.Fill;
+            cardConfigured.Margin = new Padding(0, 0, 20, 0);
             StyleCard_Custom(cardConfigured);
+
+            var configuredLayout = new TableLayoutPanel();
+            configuredLayout.Dock = DockStyle.Fill;
+            configuredLayout.BackColor = System.Drawing.Color.Transparent;
+            configuredLayout.ColumnCount = 1;
+            configuredLayout.RowCount = 3;
+            configuredLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            configuredLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            configuredLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            configuredLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160F));
+            cardConfigured.Controls.Add(configuredLayout);
+
+            Panel pnlConfiguredHeader = new Panel();
+            pnlConfiguredHeader.Dock = DockStyle.Fill;
 
             Label lblConfiguredTitle = new Label();
             lblConfiguredTitle.Text = "Configured Hubs";
             lblConfiguredTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            lblConfiguredTitle.Location = new System.Drawing.Point(15, 15);
+            lblConfiguredTitle.Location = new System.Drawing.Point(15, 10);
             lblConfiguredTitle.Size = new System.Drawing.Size(180, 20);
-            cardConfigured.Controls.Add(lblConfiguredTitle);
+            pnlConfiguredHeader.Controls.Add(lblConfiguredTitle);
+            configuredLayout.Controls.Add(pnlConfiguredHeader, 0, 0);
+
+            Panel pnlHubEditor = new Panel();
+            pnlHubEditor.Dock = DockStyle.Fill;
 
             this.dgvConfiguredHubs = new DataGridView();
             this.dgvConfiguredHubs.BorderStyle = BorderStyle.None;
@@ -376,24 +428,22 @@ namespace Phidgets2Prosim
             this.dgvConfiguredHubs.AllowUserToAddRows = false;
             this.dgvConfiguredHubs.RowHeadersVisible = false;
             this.dgvConfiguredHubs.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dgvConfiguredHubs.Location = new System.Drawing.Point(15, 52);
-            this.dgvConfiguredHubs.Size = new System.Drawing.Size(310, 340);
-            this.dgvConfiguredHubs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            this.dgvConfiguredHubs.Dock = DockStyle.Fill;
             this.dgvConfiguredHubs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            cardConfigured.Controls.Add(this.dgvConfiguredHubs);
+            configuredLayout.Controls.Add(this.dgvConfiguredHubs, 0, 1);
 
-            Label lblHubName = new Label(); lblHubName.Text = "Name:"; lblHubName.Location = new System.Drawing.Point(15, 405); lblHubName.Size = new System.Drawing.Size(60, 20);
-            lblHubName.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            this.txtHubName = new TextBox(); this.txtHubName.Location = new System.Drawing.Point(80, 403); this.txtHubName.Size = new System.Drawing.Size(245, 23);
-            this.txtHubName.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label lblHubName = new Label(); lblHubName.Text = "Name:"; lblHubName.Location = new System.Drawing.Point(15, 12); lblHubName.Size = new System.Drawing.Size(60, 20);
+            lblHubName.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            this.txtHubName = new TextBox(); this.txtHubName.Location = new System.Drawing.Point(85, 10); this.txtHubName.Size = new System.Drawing.Size(240, 23);
+            this.txtHubName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblHubSerial = new Label(); lblHubSerial.Text = "Serial:"; lblHubSerial.Location = new System.Drawing.Point(15, 435); lblHubSerial.Size = new System.Drawing.Size(60, 20);
-            lblHubSerial.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            this.txtHubSerial = new TextBox(); this.txtHubSerial.Location = new System.Drawing.Point(80, 433); this.txtHubSerial.Size = new System.Drawing.Size(245, 23);
-            this.txtHubSerial.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label lblHubSerial = new Label(); lblHubSerial.Text = "Serial:"; lblHubSerial.Location = new System.Drawing.Point(15, 47); lblHubSerial.Size = new System.Drawing.Size(60, 20);
+            lblHubSerial.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            this.txtHubSerial = new TextBox(); this.txtHubSerial.Location = new System.Drawing.Point(85, 45); this.txtHubSerial.Size = new System.Drawing.Size(240, 23);
+            this.txtHubSerial.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            this.chkHubEnabled = new CheckBox(); this.chkHubEnabled.Text = "Enabled"; this.chkHubEnabled.Location = new System.Drawing.Point(80, 465); this.chkHubEnabled.Size = new System.Drawing.Size(100, 20);
-            this.chkHubEnabled.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            this.chkHubEnabled = new CheckBox(); this.chkHubEnabled.Text = "Enabled"; this.chkHubEnabled.Location = new System.Drawing.Point(85, 78); this.chkHubEnabled.Size = new System.Drawing.Size(100, 20);
+            this.chkHubEnabled.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
             this.btnAddHub = new Button();
             this.btnAddHub.Text = "Add Hub";
@@ -402,8 +452,8 @@ namespace Phidgets2Prosim
             this.btnAddHub.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
             this.btnAddHub.ForeColor = System.Drawing.Color.White;
             this.btnAddHub.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnAddHub.Location = new System.Drawing.Point(80, 500);
-            this.btnAddHub.Size = new System.Drawing.Size(115, 32);
+            this.btnAddHub.Location = new System.Drawing.Point(15, 114);
+            this.btnAddHub.Size = new System.Drawing.Size(150, 32);
             this.btnAddHub.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 
             this.btnDeleteHub = new Button();
@@ -413,31 +463,44 @@ namespace Phidgets2Prosim
             this.btnDeleteHub.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
             this.btnDeleteHub.ForeColor = System.Drawing.Color.White;
             this.btnDeleteHub.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnDeleteHub.Location = new System.Drawing.Point(210, 500);
-            this.btnDeleteHub.Size = new System.Drawing.Size(115, 32);
-            this.btnDeleteHub.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            this.btnDeleteHub.Location = new System.Drawing.Point(175, 114);
+            this.btnDeleteHub.Size = new System.Drawing.Size(150, 32);
+            this.btnDeleteHub.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
-            cardConfigured.Controls.Add(lblHubName); cardConfigured.Controls.Add(this.txtHubName);
-            cardConfigured.Controls.Add(lblHubSerial); cardConfigured.Controls.Add(this.txtHubSerial);
-            cardConfigured.Controls.Add(this.chkHubEnabled);
-            cardConfigured.Controls.Add(this.btnAddHub);
-            cardConfigured.Controls.Add(this.btnDeleteHub);
-            this.pnlPageHubs.Controls.Add(cardConfigured);
+            pnlHubEditor.Controls.Add(lblHubName); pnlHubEditor.Controls.Add(this.txtHubName);
+            pnlHubEditor.Controls.Add(lblHubSerial); pnlHubEditor.Controls.Add(this.txtHubSerial);
+            pnlHubEditor.Controls.Add(this.chkHubEnabled);
+            pnlHubEditor.Controls.Add(this.btnAddHub);
+            pnlHubEditor.Controls.Add(this.btnDeleteHub);
+            configuredLayout.Controls.Add(pnlHubEditor, 0, 2);
+            hubsContentLayout.Controls.Add(cardConfigured, 0, 0);
 
             // Right side: Active Network Scans Card
             Panel cardDiscovery = new Panel();
             cardDiscovery.BackColor = System.Drawing.Color.White;
-            cardDiscovery.Location = new System.Drawing.Point(380, 60);
-            cardDiscovery.Size = new System.Drawing.Size(340, 560);
-            cardDiscovery.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            cardDiscovery.Dock = DockStyle.Fill;
+            cardDiscovery.Margin = new Padding(0);
             StyleCard_Custom(cardDiscovery);
+
+            var discoveryLayout = new TableLayoutPanel();
+            discoveryLayout.Dock = DockStyle.Fill;
+            discoveryLayout.BackColor = System.Drawing.Color.Transparent;
+            discoveryLayout.ColumnCount = 1;
+            discoveryLayout.RowCount = 2;
+            discoveryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            cardDiscovery.Controls.Add(discoveryLayout);
+
+            Panel pnlDiscoveryHeader = new Panel();
+            pnlDiscoveryHeader.Dock = DockStyle.Fill;
 
             Label lblDiscoveredTitle = new Label();
             lblDiscoveredTitle.Text = "Autodetect Hubs (In-Network)";
             lblDiscoveredTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            lblDiscoveredTitle.Location = new System.Drawing.Point(15, 15);
+            lblDiscoveredTitle.Location = new System.Drawing.Point(15, 10);
             lblDiscoveredTitle.Size = new System.Drawing.Size(220, 20);
-            cardDiscovery.Controls.Add(lblDiscoveredTitle);
+            pnlDiscoveryHeader.Controls.Add(lblDiscoveredTitle);
 
             this.btnScan = new Button();
             this.btnScan.Text = "Scan Network";
@@ -446,10 +509,11 @@ namespace Phidgets2Prosim
             this.btnScan.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
             this.btnScan.ForeColor = System.Drawing.Color.White;
             this.btnScan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnScan.Location = new System.Drawing.Point(205, 11);
+            this.btnScan.Location = new System.Drawing.Point(295, 6);
             this.btnScan.Size = new System.Drawing.Size(120, 28);
             this.btnScan.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            cardDiscovery.Controls.Add(this.btnScan);
+            pnlDiscoveryHeader.Controls.Add(this.btnScan);
+            discoveryLayout.Controls.Add(pnlDiscoveryHeader, 0, 0);
 
             this.lvDiscoveredHubs = new ListView();
             this.lvDiscoveredHubs.View = View.Details;
@@ -459,32 +523,45 @@ namespace Phidgets2Prosim
             this.lvDiscoveredHubs.Columns.Add("Device Model", 110);
             this.lvDiscoveredHubs.Columns.Add("Network Host", 110);
             this.lvDiscoveredHubs.BorderStyle = BorderStyle.None;
-            this.lvDiscoveredHubs.Location = new System.Drawing.Point(15, 52);
-            this.lvDiscoveredHubs.Size = new System.Drawing.Size(310, 480);
-            this.lvDiscoveredHubs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            cardDiscovery.Controls.Add(this.lvDiscoveredHubs);
+            this.lvDiscoveredHubs.Dock = DockStyle.Fill;
+            discoveryLayout.Controls.Add(this.lvDiscoveredHubs, 0, 1);
 
-            this.pnlPageHubs.Controls.Add(cardDiscovery);
+            hubsContentLayout.Controls.Add(cardDiscovery, 1, 0);
+            this.pnlPageHubs.Controls.Add(hubsLayout);
         }
 
         private void InitializeDevicesPage_Custom()
         {
             this.pnlPageDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageDevices.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
-            this.pnlPageDevices.Padding = new System.Windows.Forms.Padding(15);
+            this.pnlPageDevices.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlPageDevices.AutoScroll = true;
+            this.pnlPageDevices.AutoScrollMargin = new System.Drawing.Size(20, 20);
 
-            // Left Col: Selection of current values
-            Panel cardDeviceNav = new Panel();
-            cardDeviceNav.BackColor = System.Drawing.Color.White;
-            cardDeviceNav.Location = new System.Drawing.Point(15, 15);
-            cardDeviceNav.Size = new System.Drawing.Size(260, 620);
-            cardDeviceNav.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            StyleCard_Custom(cardDeviceNav);
+            var devicesLayout = new TableLayoutPanel();
+            devicesLayout.Dock = DockStyle.Top;
+            devicesLayout.BackColor = System.Drawing.Color.Transparent;
+            devicesLayout.Height = 744;
+            devicesLayout.MinimumSize = new System.Drawing.Size(0, 744);
+            devicesLayout.ColumnCount = 2;
+            devicesLayout.RowCount = 2;
+            devicesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 280F));
+            devicesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            devicesLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 132F));
+            devicesLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+            var categoriesCard = new Panel();
+            categoriesCard.BackColor = System.Drawing.Color.White;
+            categoriesCard.Dock = DockStyle.Fill;
+            categoriesCard.Margin = new Padding(0, 0, 0, 16);
+            StyleCard_Custom(categoriesCard);
 
             this.flowCategories = new FlowLayoutPanel();
-            this.flowCategories.Location = new System.Drawing.Point(10, 10);
-            this.flowCategories.Size = new System.Drawing.Size(240, 185);
+            this.flowCategories.Dock = DockStyle.Fill;
+            this.flowCategories.Margin = new Padding(0);
+            this.flowCategories.Padding = new Padding(0);
             this.flowCategories.FlowDirection = FlowDirection.LeftToRight;
+            this.flowCategories.WrapContents = true;
 
             // Category filter buttons
             string[] categories = { "Outputs", "Gates", "Inputs", "Multi-Input", "Encoders", "Voltage Out", "Voltage In", "Buttons" };
@@ -498,24 +575,52 @@ namespace Phidgets2Prosim
                 catBtn.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
                 catBtn.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85);
                 catBtn.Font    = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-                catBtn.Size    = new System.Drawing.Size(110, 38);
-                catBtn.Margin  = new System.Windows.Forms.Padding(2);
+                catBtn.Size    = new System.Drawing.Size(170, 34);
+                catBtn.Margin  = new System.Windows.Forms.Padding(4);
                 this.flowCategories.Controls.Add(catBtn);
             }
 
-            cardDeviceNav.Controls.Add(this.flowCategories);
+            categoriesCard.Controls.Add(this.flowCategories);
+            devicesLayout.Controls.Add(categoriesCard, 0, 0);
+            devicesLayout.SetColumnSpan(categoriesCard, 2);
+
+            // Left Col: Selection of current values
+            Panel cardDeviceNav = new Panel();
+            cardDeviceNav.BackColor = System.Drawing.Color.White;
+            cardDeviceNav.Dock = DockStyle.Fill;
+            cardDeviceNav.Margin = new Padding(0, 0, 20, 0);
+            StyleCard_Custom(cardDeviceNav);
+
+            var deviceNavLayout = new TableLayoutPanel();
+            deviceNavLayout.Dock = DockStyle.Fill;
+            deviceNavLayout.BackColor = System.Drawing.Color.Transparent;
+            deviceNavLayout.ColumnCount = 1;
+            deviceNavLayout.RowCount = 3;
+            deviceNavLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            deviceNavLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
+            deviceNavLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            deviceNavLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52F));
+            cardDeviceNav.Controls.Add(deviceNavLayout);
 
             this.txtDeviceSearch = new TextBox();
-            this.txtDeviceSearch.Location = new System.Drawing.Point(10, 205);
-            this.txtDeviceSearch.Size = new System.Drawing.Size(240, 23);
-            cardDeviceNav.Controls.Add(this.txtDeviceSearch);
+            this.txtDeviceSearch.Dock = DockStyle.Fill;
+            this.txtDeviceSearch.Margin = new Padding(0, 0, 0, 10);
+            deviceNavLayout.Controls.Add(this.txtDeviceSearch, 0, 0);
 
             this.lstDevices = new ListBox();
             this.lstDevices.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lstDevices.Location = new System.Drawing.Point(10, 235);
-            this.lstDevices.Size = new System.Drawing.Size(240, 310);
-            this.lstDevices.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            cardDeviceNav.Controls.Add(this.lstDevices);
+            this.lstDevices.Dock = DockStyle.Fill;
+            this.lstDevices.Margin = new Padding(0, 0, 0, 10);
+            deviceNavLayout.Controls.Add(this.lstDevices, 0, 1);
+
+            var deviceButtonsLayout = new TableLayoutPanel();
+            deviceButtonsLayout.Dock = DockStyle.Fill;
+            deviceButtonsLayout.Padding = new Padding(0, 6, 0, 0);
+            deviceButtonsLayout.ColumnCount = 2;
+            deviceButtonsLayout.RowCount = 1;
+            deviceButtonsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            deviceButtonsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            deviceButtonsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             this.btnAddDevice = new Button();
             this.btnAddDevice.Text = "+ Add Mapping";
@@ -524,46 +629,56 @@ namespace Phidgets2Prosim
             this.btnAddDevice.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
             this.btnAddDevice.ForeColor = System.Drawing.Color.White;
             this.btnAddDevice.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-            this.btnAddDevice.Location = new System.Drawing.Point(10, 565);
-            this.btnAddDevice.Size = new System.Drawing.Size(115, 36);
-            this.btnAddDevice.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            cardDeviceNav.Controls.Add(this.btnAddDevice);
+            this.btnAddDevice.Dock = DockStyle.Fill;
+            this.btnAddDevice.Margin = new Padding(0, 0, 6, 0);
+            deviceButtonsLayout.Controls.Add(this.btnAddDevice, 0, 0);
 
             this.btnDeleteDevice = new Button();
-            this.btnDeleteDevice.Text = "🗑️ Delete";
+            this.btnDeleteDevice.Text = "Delete";
             this.btnDeleteDevice.FlatStyle = FlatStyle.Flat;
             this.btnDeleteDevice.FlatAppearance.BorderSize = 0;
             this.btnDeleteDevice.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
             this.btnDeleteDevice.ForeColor = System.Drawing.Color.White;
             this.btnDeleteDevice.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-            this.btnDeleteDevice.Location = new System.Drawing.Point(135, 565);
-            this.btnDeleteDevice.Size = new System.Drawing.Size(115, 36);
-            this.btnDeleteDevice.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            cardDeviceNav.Controls.Add(this.btnDeleteDevice);
+            this.btnDeleteDevice.Dock = DockStyle.Fill;
+            this.btnDeleteDevice.Margin = new Padding(6, 0, 0, 0);
+            deviceButtonsLayout.Controls.Add(this.btnDeleteDevice, 1, 0);
 
-            this.pnlPageDevices.Controls.Add(cardDeviceNav);
+            deviceNavLayout.Controls.Add(deviceButtonsLayout, 0, 2);
+
+            devicesLayout.Controls.Add(cardDeviceNav, 0, 1);
 
             // Right Col: Detail fields cards editor
             this.pnlDeviceEditorCard = new Panel();
             this.pnlDeviceEditorCard.BackColor = System.Drawing.Color.White;
-            this.pnlDeviceEditorCard.Location = new System.Drawing.Point(290, 15);
-            this.pnlDeviceEditorCard.Size = new System.Drawing.Size(430, 620);
-            this.pnlDeviceEditorCard.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlDeviceEditorCard.Dock = DockStyle.Fill;
+            this.pnlDeviceEditorCard.Margin = new Padding(0);
             StyleCard_Custom(this.pnlDeviceEditorCard);
+
+            var deviceEditorLayout = new TableLayoutPanel();
+            deviceEditorLayout.Dock = DockStyle.Fill;
+            deviceEditorLayout.BackColor = System.Drawing.Color.Transparent;
+            deviceEditorLayout.ColumnCount = 1;
+            deviceEditorLayout.RowCount = 4;
+            deviceEditorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            deviceEditorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+            deviceEditorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 180F));
+            deviceEditorLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            deviceEditorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+            this.pnlDeviceEditorCard.Controls.Add(deviceEditorLayout);
 
             this.lblCardItemTitle = new Label();
             this.lblCardItemTitle.Text = "Configure Hardware Mapping";
             this.lblCardItemTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblCardItemTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblCardItemTitle.Dock = DockStyle.Fill;
             this.lblCardItemTitle.Size = new System.Drawing.Size(300, 25);
             this.lblCardItemTitle.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            this.pnlDeviceEditorCard.Controls.Add(this.lblCardItemTitle);
+            deviceEditorLayout.Controls.Add(this.lblCardItemTitle, 0, 0);
 
             // Unified input form
             this.pnlGeneralProperties = new Panel();
-            this.pnlGeneralProperties.Size = new System.Drawing.Size(390, 180);
-            this.pnlGeneralProperties.Location = new System.Drawing.Point(20, 50);
-            this.pnlGeneralProperties.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlGeneralProperties.Dock = DockStyle.Fill;
+            this.pnlGeneralProperties.Margin = new Padding(0, 0, 0, 10);
 
             Label lblExHub = new Label(); lblExHub.Text = "Target Hub Serial:"; lblExHub.Location = new System.Drawing.Point(0, 5); lblExHub.Size = new System.Drawing.Size(120, 18);
             this.cboDeviceHub = new ComboBox(); this.cboDeviceHub.Location = new System.Drawing.Point(130, 2); this.cboDeviceHub.Size = new System.Drawing.Size(260, 23);
@@ -586,54 +701,52 @@ namespace Phidgets2Prosim
             this.pnlGeneralProperties.Controls.Add(lblExChan); this.pnlGeneralProperties.Controls.Add(this.cboDeviceChannel);
             this.pnlGeneralProperties.Controls.Add(lblExRef); this.pnlGeneralProperties.Controls.Add(this.txtDeviceProsimRef);
 
-            this.pnlDeviceEditorCard.Controls.Add(this.pnlGeneralProperties);
+            deviceEditorLayout.Controls.Add(this.pnlGeneralProperties, 0, 1);
+
+            var advancedPropertiesHost = new Panel();
+            advancedPropertiesHost.Dock = DockStyle.Fill;
+            advancedPropertiesHost.Margin = new Padding(0, 0, 0, 10);
+            advancedPropertiesHost.AutoScroll = true;
 
             // Container Panel for category properties
             this.pnlAdvancedProperties_Inputs = new Panel();
-            this.pnlAdvancedProperties_Inputs.Location = new System.Drawing.Point(20, 230);
-            this.pnlAdvancedProperties_Inputs.Size = new System.Drawing.Size(390, 280);
-            this.pnlAdvancedProperties_Inputs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlAdvancedProperties_Inputs.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Inputs.Visible = false;
             InitializeInputsFields_Custom();
-            this.pnlDeviceEditorCard.Controls.Add(this.pnlAdvancedProperties_Inputs);
+            advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Inputs);
 
             this.pnlAdvancedProperties_Outputs = new Panel();
-            this.pnlAdvancedProperties_Outputs.Location = new System.Drawing.Point(20, 230);
-            this.pnlAdvancedProperties_Outputs.Size = new System.Drawing.Size(390, 280);
-            this.pnlAdvancedProperties_Outputs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlAdvancedProperties_Outputs.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Outputs.Visible = false;
             InitializeOutputsFields_Custom();
-            this.pnlDeviceEditorCard.Controls.Add(this.pnlAdvancedProperties_Outputs);
+            advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Outputs);
 
             this.pnlAdvancedProperties_Motors = new Panel();
-            this.pnlAdvancedProperties_Motors.Location = new System.Drawing.Point(20, 230);
-            this.pnlAdvancedProperties_Motors.Size = new System.Drawing.Size(390, 280);
-            this.pnlAdvancedProperties_Motors.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlAdvancedProperties_Motors.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Motors.Visible = false;
             InitializeMotorsFields_Custom();
-            this.pnlDeviceEditorCard.Controls.Add(this.pnlAdvancedProperties_Motors);
+            advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Motors);
 
             this.pnlAdvancedProperties_Voltages = new Panel();
-            this.pnlAdvancedProperties_Voltages.Location = new System.Drawing.Point(20, 230);
-            this.pnlAdvancedProperties_Voltages.Size = new System.Drawing.Size(390, 280);
-            this.pnlAdvancedProperties_Voltages.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.pnlAdvancedProperties_Voltages.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Voltages.Visible = false;
             InitializeVoltagesFields_Custom();
-            this.pnlDeviceEditorCard.Controls.Add(this.pnlAdvancedProperties_Voltages);
+            advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Voltages);
+            deviceEditorLayout.Controls.Add(advancedPropertiesHost, 0, 2);
 
             this.btnSaveDevice = new Button();
-            this.btnSaveDevice.Text = "💾 Apply Settings & Save";
+            this.btnSaveDevice.Text = "Save Mapping";
             this.btnSaveDevice.FlatStyle = FlatStyle.Flat;
             this.btnSaveDevice.FlatAppearance.BorderSize = 0;
             this.btnSaveDevice.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
             this.btnSaveDevice.ForeColor = System.Drawing.Color.White;
             this.btnSaveDevice.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.btnSaveDevice.Location = new System.Drawing.Point(20, 565);
-            this.btnSaveDevice.Size = new System.Drawing.Size(390, 40);
-            this.btnSaveDevice.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.pnlDeviceEditorCard.Controls.Add(this.btnSaveDevice);
+            this.btnSaveDevice.Dock = DockStyle.Fill;
+            this.btnSaveDevice.Margin = new Padding(0);
+            deviceEditorLayout.Controls.Add(this.btnSaveDevice, 0, 3);
 
-            this.pnlPageDevices.Controls.Add(this.pnlDeviceEditorCard);
+            devicesLayout.Controls.Add(this.pnlDeviceEditorCard, 1, 1);
+            this.pnlPageDevices.Controls.Add(devicesLayout);
         }
 
         private void InitializeInputsFields_Custom()
@@ -840,21 +953,42 @@ namespace Phidgets2Prosim
             this.pnlPageSpecial.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageSpecial.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
             this.pnlPageSpecial.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlPageSpecial.AutoScroll = true;
+            this.pnlPageSpecial.AutoScrollMargin = new System.Drawing.Size(20, 20);
+
+            var specialLayout = new TableLayoutPanel();
+            specialLayout.Dock = DockStyle.Fill;
+            specialLayout.BackColor = System.Drawing.Color.Transparent;
+            specialLayout.ColumnCount = 1;
+            specialLayout.RowCount = 2;
+            specialLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            specialLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            specialLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             Label lblSpecialHeader = new Label();
             lblSpecialHeader.Text = "Dedicated Trim Wheel & Braking Core";
             lblSpecialHeader.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             lblSpecialHeader.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            lblSpecialHeader.Location = new System.Drawing.Point(20, 15);
+            lblSpecialHeader.Dock = DockStyle.Top;
+            lblSpecialHeader.Margin = new Padding(0, 0, 0, 16);
             lblSpecialHeader.Size = new System.Drawing.Size(500, 30);
-            this.pnlPageSpecial.Controls.Add(lblSpecialHeader);
+            specialLayout.Controls.Add(lblSpecialHeader, 0, 0);
+
+            var specialCardsLayout = new TableLayoutPanel();
+            specialCardsLayout.Dock = DockStyle.Fill;
+            specialCardsLayout.BackColor = System.Drawing.Color.Transparent;
+            specialCardsLayout.ColumnCount = 2;
+            specialCardsLayout.RowCount = 1;
+            specialCardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 340F));
+            specialCardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            specialCardsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            specialLayout.Controls.Add(specialCardsLayout, 0, 1);
 
             // Box 1: Custom Trim Wheel Speed Mapping
             Panel cardTrim = new Panel();
             cardTrim.BackColor = System.Drawing.Color.White;
-            cardTrim.Location = new System.Drawing.Point(20, 60);
-            cardTrim.Size = new System.Drawing.Size(340, 560);
-            cardTrim.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            cardTrim.Dock = DockStyle.Fill;
+            cardTrim.Margin = new Padding(0, 0, 20, 0);
             StyleCard_Custom(cardTrim);
 
             Label lblTrimTitle = new Label();
@@ -878,14 +1012,13 @@ namespace Phidgets2Prosim
             this.txtTrimAPClean = CreateLabelNud_Custom(cardTrim, "Speed Autopilot Clean:", tY); tY += 50;
             this.txtTrimAPDirty = CreateLabelNud_Custom(cardTrim, "Speed Autopilot Dirty:", tY);
 
-            this.pnlPageSpecial.Controls.Add(cardTrim);
+            specialCardsLayout.Controls.Add(cardTrim, 0, 0);
 
             // Box 2: Custom Parking Brake System
             Panel cardBrake = new Panel();
             cardBrake.BackColor = System.Drawing.Color.White;
-            cardBrake.Location = new System.Drawing.Point(380, 60);
-            cardBrake.Size = new System.Drawing.Size(340, 560);
-            cardBrake.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            cardBrake.Dock = DockStyle.Fill;
+            cardBrake.Margin = new Padding(0);
             StyleCard_Custom(cardBrake);
 
             Label lblBrakeTitle = new Label();
@@ -916,7 +1049,8 @@ namespace Phidgets2Prosim
             this.txtBrakeReleaseVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cardBrake.Controls.Add(lblBv); cardBrake.Controls.Add(this.txtBrakeReleaseVar);
 
-            this.pnlPageSpecial.Controls.Add(cardBrake);
+            specialCardsLayout.Controls.Add(cardBrake, 1, 0);
+            this.pnlPageSpecial.Controls.Add(specialLayout);
         }
 
         private NumericUpDown CreateLabelNud_Custom(Panel card, string title, int y, int defaultVal = 0)
@@ -952,19 +1086,32 @@ namespace Phidgets2Prosim
             this.pnlPageSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPageSettings.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
             this.pnlPageSettings.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlPageSettings.AutoScroll = true;
+            this.pnlPageSettings.AutoScrollMargin = new System.Drawing.Size(20, 20);
+
+            var settingsLayout = new TableLayoutPanel();
+            settingsLayout.Dock = DockStyle.Fill;
+            settingsLayout.BackColor = System.Drawing.Color.Transparent;
+            settingsLayout.ColumnCount = 1;
+            settingsLayout.RowCount = 2;
+            settingsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            settingsLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            settingsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             Label lblSettingsHeader = new Label();
             lblSettingsHeader.Text = "Global Device Settings";
             lblSettingsHeader.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             lblSettingsHeader.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            lblSettingsHeader.Location = new System.Drawing.Point(20, 15);
+            lblSettingsHeader.Dock = DockStyle.Top;
+            lblSettingsHeader.Margin = new Padding(0, 0, 0, 16);
             lblSettingsHeader.Size = new System.Drawing.Size(400, 30);
-            this.pnlPageSettings.Controls.Add(lblSettingsHeader);
+            settingsLayout.Controls.Add(lblSettingsHeader, 0, 0);
 
             Panel cardMainSettings = new Panel();
             cardMainSettings.BackColor = System.Drawing.Color.White;
-            cardMainSettings.Location = new System.Drawing.Point(20, 60);
+            cardMainSettings.Dock = DockStyle.Top;
             cardMainSettings.Size = new System.Drawing.Size(700, 300);
+            cardMainSettings.Margin = new Padding(0);
             StyleCard_Custom(cardMainSettings);
 
             Label lblBlinkTitle = new Label();
@@ -979,7 +1126,8 @@ namespace Phidgets2Prosim
             this.txtBlinkSlow = CreateLabelNud_Custom(cardMainSettings, "Slow Blink Interval (ms):", sY, 600); sY += 50;
             this.txtDefaultDim = CreateLabelNud_Custom(cardMainSettings, "Default Dim Voltage Ratio:", sY);
 
-            this.pnlPageSettings.Controls.Add(cardMainSettings);
+            settingsLayout.Controls.Add(cardMainSettings, 0, 1);
+            this.pnlPageSettings.Controls.Add(settingsLayout);
         }
 
         private void StyleCard_Custom(Panel pnl)

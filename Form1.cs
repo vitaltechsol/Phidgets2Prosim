@@ -444,42 +444,42 @@
                     case "Outputs":
                         var outs = cfg?.PhidgetsOutputInstances ?? new List<PhidgetsOutputInst>();
                         foreach (var o in outs.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(o.Serial)} P:{o.HubPort} Ch:{o.Channel}  → {o.ProsimDataRef}", Tag = o });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(o.Serial, o.HubPort, o.Channel, o.ProsimDataRef), Tag = o });
                         break;
                     case "Inputs":
                         var ins = cfg?.PhidgetsInputInstances ?? new List<PhidgetsInputInst>();
                         foreach (var i in ins.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(i.Serial)} P:{i.HubPort} Ch:{i.Channel}  → {i.ProsimDataRef}", Tag = i });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(i.Serial, i.HubPort, i.Channel, i.ProsimDataRef), Tag = i });
                         break;
                     case "Encoders":
                         var encs = cfg?.PhidgetsEncoderInstances ?? new List<PhidgetsEncoderInst>();
                         foreach (var enc in encs.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(enc.Serial)} P:{enc.HubPort} Ch:{enc.Channel}  → {enc.ProsimDataRef}", Tag = enc });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(enc.Serial, enc.HubPort, enc.Channel, enc.ProsimDataRef), Tag = enc });
                         break;
                     case "Gates":
                         var gates = cfg?.PhidgetsGateInstances ?? new List<PhidgetsGateInst>();
                         foreach (var g in gates.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(g.Serial)} P:{g.HubPort} Ch:{g.Channel}  → {g.ProsimDataRef}", Tag = g });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(g.Serial, g.HubPort, g.Channel, g.ProsimDataRef), Tag = g });
                         break;
                     case "Voltage Out":
                         var vouts = cfg?.PhidgetsVoltageOutputInstances ?? new List<PhidgetsVoltageOutputInst>();
                         foreach (var v in vouts.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(v.Serial)} P:{v.HubPort}  → {v.ProsimDataRef}", Tag = v });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(v.Serial, v.HubPort, null, v.ProsimDataRef), Tag = v });
                         break;
                     case "Voltage In":
                         var vins = cfg?.PhidgetsVoltageInputInstances ?? new List<PhidgetsVoltageInputInst>();
                         foreach (var vi in vins.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(vi.Serial)} P:{vi.HubPort} Ch:{vi.Channel}  → {vi.ProsimDataRef}", Tag = vi });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(vi.Serial, vi.HubPort, vi.Channel, vi.ProsimDataRef), Tag = vi });
                         break;
                     case "Multi-Input":
                         var mults = cfg?.PhidgetsMultiInputInstances ?? new List<PhidgetsMultiInputInst>();
                         foreach (var m in mults.Where(x => search == "" || x.ProsimDataRef?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(m.Serial)} P:{m.HubPort}  → {m.ProsimDataRef}", Tag = m });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(m.Serial, m.HubPort, null, m.ProsimDataRef), Tag = m });
                         break;
                     case "Buttons":
                         var btns = cfg?.PhidgetsButtonInstances ?? new List<PhidgetsButtonInst>();
                         foreach (var bt in btns.Where(x => search == "" || x.Name?.ToLower().Contains(search) == true))
-                            lstDevices.Items.Add(new DeviceListItem { Label = $"Hub:{x_Short(bt.Serial)} P:{bt.HubPort} Ch:{bt.Channel}  → {bt.Name}", Tag = bt });
+                            lstDevices.Items.Add(new DeviceListItem { Label = BuildDeviceListLabel(bt.Serial, bt.HubPort, bt.Channel, bt.Name), Tag = bt });
                         break;
                 }
             }
@@ -487,6 +487,22 @@
         }
 
         private static string x_Short(int serial) => serial == 0 ? "?" : serial.ToString();
+
+        private static string BuildDeviceListLabel(int serial, int hubPort, int? channel, string value)
+        {
+            var portText = channel.HasValue
+                ? $"H:{x_Short(serial)} P:{hubPort} C:{channel.Value}"
+                : $"H:{x_Short(serial)} P:{hubPort}";
+
+            return portText + "  " + ShortDeviceValue(value, 16);
+        }
+
+        private static string ShortDeviceValue(string value, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return "-";
+            value = value.Trim();
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength - 1) + "…";
+        }
 
         private void TxtDeviceSearch_TextChanged(object sender, EventArgs e) => LoadDeviceListForCategory(_activeDeviceCategory);
 
