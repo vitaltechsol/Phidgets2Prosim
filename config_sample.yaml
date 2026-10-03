@@ -1161,10 +1161,10 @@ PhidgetsAudioInstances:
     HubPort: 5
     Channel: 8
     ProsimDataRef: "Gear_warning"
-  # - Serial: 618534
-  #   HubPort: 5
-  #   Channel: 9
-  #   ProsimDataRef: "Autopilot_Disconnect"
+  - Serial: 618534
+    HubPort: 5
+    Channel: 9
+    ProsimDataRef: "Autopilot_Disconnect"
   - Serial: 618534
     HubPort: 5
     Channel: 10
@@ -2409,6 +2409,7 @@ PhidgetsButtonInstances:
 
 PhidgetsDCMotorInstances:
   - Serial: 668066
+    UseRefTarget: system.gauge.G_PED_ELEV_TRIM
     HubPort: 2
     Acceleration: 30
     CurrentLimit: 4
@@ -2436,4 +2437,3 @@ PhidgetsDCMotorInstances:
       TickMs: 15 
       SetpointSlewPerTick: 0.012 
         
-
