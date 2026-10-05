@@ -146,13 +146,11 @@ namespace Phidgets2Prosim
         // ── Schema migration ─────────────────────────────────────────────────────
 
         /// <summary>
-        /// Checks whether config.yaml is schema 1.0 and, if so, opens
-        /// <paramref name="migrationDialog"/> to let the user confirm hub serials.
+        /// Checks whether config.yaml is schema 1.0 and, if so, asks the caller
+        /// to provide the migrated hub list.
         /// Returns true when the file is at schema 2.0 (or doesn't exist).
-        /// The caller must supply a factory for the migration dialog because
-        /// this class has no UI dependency.
         /// </summary>
-        public bool CheckAndMigrate(Func<List<PhidgetsHubInst>, Form> migrationDialogFactory)
+        public bool CheckAndMigrate(Func<List<PhidgetsHubInst>, List<PhidgetsHubInst>> migrationHubsProvider)
         {
             if (!File.Exists(ConfigFile)) return true;
             try
@@ -172,19 +170,16 @@ namespace Phidgets2Prosim
                         if (!string.IsNullOrWhiteSpace(name))
                             stubs.Add(new PhidgetsHubInst { Name = name, Serial = 0, Enabled = true });
 
-                using (var dlg = migrationDialogFactory(stubs))
+                var migratedHubs = migrationHubsProvider(stubs);
+                if (migratedHubs != null)
                 {
-                    dlg.Text = "Migrate Hubs to Schema 2.0 – Confirm / Scan for Hubs";
-                    if (dlg.ShowDialog() == DialogResult.OK)
-                    {
-                        var manageForm = (ManageHubsForm)dlg;
-                        UpgradeToV2(yaml, cv1, manageForm.Hubs);
-                        RaiseInfo("Config migrated to schema 2.0.");
-                        return true;
-                    }
-                    RaiseInfo("Hub migration cancelled.");
-                    return false;
+                    UpgradeToV2(yaml, cv1, migratedHubs);
+                    RaiseInfo("Config migrated to schema 2.0.");
+                    return true;
                 }
+
+                RaiseInfo("Hub migration cancelled.");
+                return false;
             }
             catch (Exception ex)
             {

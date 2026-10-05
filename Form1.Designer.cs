@@ -49,19 +49,19 @@ namespace Phidgets2Prosim
             // ── Sidebar Layout ──────────────────────────────────────────────
             this.pnlSidebar.BackColor = System.Drawing.Color.FromArgb(24, 28, 36);
             this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlSidebar.Width = 200;
+            this.pnlSidebar.Width = 150;
             this.pnlSidebar.Padding = new System.Windows.Forms.Padding(0, 15, 0, 10);
 
             this.lblLogo.ForeColor = System.Drawing.Color.White;
-            this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 13.5F, System.Drawing.FontStyle.Bold);
-            this.lblLogo.Location = new System.Drawing.Point(12, 15);
+            this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblLogo.Location = new System.Drawing.Point(-15, 20);
             this.lblLogo.Size = new System.Drawing.Size(176, 25);
             this.lblLogo.Text = "Phidgets2Prosim";
             this.lblLogo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.lblLogoSub.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184);
-            this.lblLogoSub.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.lblLogoSub.Location = new System.Drawing.Point(12, 40);
+            this.lblLogoSub.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Bold);
+            this.lblLogoSub.Location = new System.Drawing.Point(10, 40);
             this.lblLogoSub.Size = new System.Drawing.Size(176, 18);
             this.lblLogoSub.Text = "HARDWARE HUB";
             this.lblLogoSub.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -69,16 +69,16 @@ namespace Phidgets2Prosim
             // Nav Buttons
             int btnY = 85;
             this.btnNavDashboard = CreateSidebarButton("Dashboard", btnY); btnY += 45;
-            this.btnNavHubs = CreateSidebarButton("Scan & Hubs", btnY); btnY += 45;
-            this.btnNavDevices = CreateSidebarButton("Mappings Studio", btnY); btnY += 45;
+            this.btnNavHubs = CreateSidebarButton("Manage Hubs", btnY); btnY += 45;
+            this.btnNavDevices = CreateSidebarButton("I/O Mappings", btnY); btnY += 45;
             this.btnNavSpecial = CreateSidebarButton("Special Drives", btnY); btnY += 45;
-            this.btnNavSettings = CreateSidebarButton("Global Settings", btnY);
+            this.btnNavSettings = CreateSidebarButton("Settings", btnY);
 
             this.lblSidebarVersion.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
             this.lblSidebarVersion.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblSidebarVersion.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblSidebarVersion.Height = 24;
-            this.lblSidebarVersion.Text = "v1.4.0 • Modern UI";
+            this.lblSidebarVersion.Text = "v1.4.0";
             this.lblSidebarVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.pnlSidebar.Controls.Add(this.lblLogo);
@@ -167,7 +167,7 @@ namespace Phidgets2Prosim
             this.cardProsimConn = new Panel();
             this.cardProsimConn.BackColor = System.Drawing.Color.FromArgb(17, 24, 39);
             this.cardProsimConn.Dock = DockStyle.Fill;
-            this.cardProsimConn.Margin = new Padding(0, 0, 0, 12);
+            this.cardProsimConn.Margin = new Padding(0, 0, 0, 0);
             this.cardProsimConn.Height = 58;
             this.cardProsimConn.Padding = new System.Windows.Forms.Padding(16, 0, 16, 0);
 
@@ -219,29 +219,15 @@ namespace Phidgets2Prosim
             this.btnConnectProsim.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
             this.btnConnectProsim.ForeColor = System.Drawing.Color.White;
             this.btnConnectProsim.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnConnectProsim.Size = new System.Drawing.Size(95, 30);
+            this.btnConnectProsim.Size = new System.Drawing.Size(100, 30);
             this.btnConnectProsim.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.btnConnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 210, 14);
-
-            // Disconnect button — right of connect, red
-            this.btnDisconnectProsim = new Button();
-            this.btnDisconnectProsim.Text = "Disconnect";
-            this.btnDisconnectProsim.FlatStyle = FlatStyle.Flat;
-            this.btnDisconnectProsim.FlatAppearance.BorderSize = 0;
-            this.btnDisconnectProsim.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
-            this.btnDisconnectProsim.ForeColor = System.Drawing.Color.White;
-            this.btnDisconnectProsim.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnDisconnectProsim.Size = new System.Drawing.Size(100, 30);
-            this.btnDisconnectProsim.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.btnDisconnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
-            this.btnDisconnectProsim.Enabled = false;
+            this.btnConnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
 
             // Keep buttons stuck to the right edge when the window is resized
             this.cardProsimConn.Resize += (s, e2) =>
             {
-                this.btnConnectProsim.Location    = new System.Drawing.Point(this.cardProsimConn.Width - 210, 14);
-                this.btnDisconnectProsim.Location = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
-                this.connectionStatusLabel.Size   = new System.Drawing.Size(this.cardProsimConn.Width - 530, 22);
+                this.btnConnectProsim.Location    = new System.Drawing.Point(this.cardProsimConn.Width - 108, 14);
+                this.connectionStatusLabel.Size   = new System.Drawing.Size(this.cardProsimConn.Width - 420, 22);
             };
 
             // unused but kept for designer field compatibility
@@ -254,7 +240,6 @@ namespace Phidgets2Prosim
             this.cardProsimConn.Controls.Add(this.btnSaveProsimIP);
             this.cardProsimConn.Controls.Add(this.connectionStatusLabel);
             this.cardProsimConn.Controls.Add(this.btnConnectProsim);
-            this.cardProsimConn.Controls.Add(this.btnDisconnectProsim);
             dashboardLayout.Controls.Add(this.cardProsimConn, 0, 0);
 
             // ── ROW 2 : Stats / Telemetry ─────────────────────────────────────────
@@ -383,6 +368,7 @@ namespace Phidgets2Prosim
             var hubsContentLayout = new TableLayoutPanel();
             hubsContentLayout.Dock = DockStyle.Fill;
             hubsContentLayout.BackColor = System.Drawing.Color.Transparent;
+            hubsContentLayout.MinimumSize = new System.Drawing.Size(0, 520);
             hubsContentLayout.ColumnCount = 2;
             hubsContentLayout.RowCount = 1;
             hubsContentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 360F));
@@ -401,11 +387,10 @@ namespace Phidgets2Prosim
             configuredLayout.Dock = DockStyle.Fill;
             configuredLayout.BackColor = System.Drawing.Color.Transparent;
             configuredLayout.ColumnCount = 1;
-            configuredLayout.RowCount = 3;
+            configuredLayout.RowCount = 2;
             configuredLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             configuredLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             configuredLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            configuredLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160F));
             cardConfigured.Controls.Add(configuredLayout);
 
             Panel pnlConfiguredHeader = new Panel();
@@ -426,11 +411,25 @@ namespace Phidgets2Prosim
             this.dgvConfiguredHubs.BorderStyle = BorderStyle.None;
             this.dgvConfiguredHubs.BackgroundColor = System.Drawing.Color.White;
             this.dgvConfiguredHubs.AllowUserToAddRows = false;
+            this.dgvConfiguredHubs.AllowUserToResizeRows = false;
             this.dgvConfiguredHubs.RowHeadersVisible = false;
             this.dgvConfiguredHubs.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dgvConfiguredHubs.MultiSelect = false;
             this.dgvConfiguredHubs.Dock = DockStyle.Fill;
             this.dgvConfiguredHubs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             configuredLayout.Controls.Add(this.dgvConfiguredHubs, 0, 1);
+
+            this.btnDeleteHub = new Button();
+            this.btnDeleteHub.Text = "Delete Selected";
+            this.btnDeleteHub.FlatStyle = FlatStyle.Flat;
+            this.btnDeleteHub.FlatAppearance.BorderSize = 0;
+            this.btnDeleteHub.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
+            this.btnDeleteHub.ForeColor = System.Drawing.Color.White;
+            this.btnDeleteHub.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnDeleteHub.Size = new System.Drawing.Size(130, 28);
+            this.btnDeleteHub.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnDeleteHub.Location = new System.Drawing.Point(pnlConfiguredHeader.Width - 145, 6);
+            configuredLayout.Controls.Add(this.btnDeleteHub);
 
             Label lblHubName = new Label(); lblHubName.Text = "Name:"; lblHubName.Location = new System.Drawing.Point(15, 12); lblHubName.Size = new System.Drawing.Size(60, 20);
             lblHubName.Anchor = AnchorStyles.Top | AnchorStyles.Left;
@@ -456,23 +455,10 @@ namespace Phidgets2Prosim
             this.btnAddHub.Size = new System.Drawing.Size(150, 32);
             this.btnAddHub.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 
-            this.btnDeleteHub = new Button();
-            this.btnDeleteHub.Text = "Delete Active";
-            this.btnDeleteHub.FlatStyle = FlatStyle.Flat;
-            this.btnDeleteHub.FlatAppearance.BorderSize = 0;
-            this.btnDeleteHub.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
-            this.btnDeleteHub.ForeColor = System.Drawing.Color.White;
-            this.btnDeleteHub.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnDeleteHub.Location = new System.Drawing.Point(175, 114);
-            this.btnDeleteHub.Size = new System.Drawing.Size(150, 32);
-            this.btnDeleteHub.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-
             pnlHubEditor.Controls.Add(lblHubName); pnlHubEditor.Controls.Add(this.txtHubName);
             pnlHubEditor.Controls.Add(lblHubSerial); pnlHubEditor.Controls.Add(this.txtHubSerial);
             pnlHubEditor.Controls.Add(this.chkHubEnabled);
             pnlHubEditor.Controls.Add(this.btnAddHub);
-            pnlHubEditor.Controls.Add(this.btnDeleteHub);
-            configuredLayout.Controls.Add(pnlHubEditor, 0, 2);
             hubsContentLayout.Controls.Add(cardConfigured, 0, 0);
 
             // Right side: Active Network Scans Card
@@ -486,10 +472,11 @@ namespace Phidgets2Prosim
             discoveryLayout.Dock = DockStyle.Fill;
             discoveryLayout.BackColor = System.Drawing.Color.Transparent;
             discoveryLayout.ColumnCount = 1;
-            discoveryLayout.RowCount = 2;
+            discoveryLayout.RowCount = 3;
             discoveryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
             discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            discoveryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             cardDiscovery.Controls.Add(discoveryLayout);
 
             Panel pnlDiscoveryHeader = new Panel();
@@ -498,8 +485,8 @@ namespace Phidgets2Prosim
             Label lblDiscoveredTitle = new Label();
             lblDiscoveredTitle.Text = "Autodetect Hubs (In-Network)";
             lblDiscoveredTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            lblDiscoveredTitle.Location = new System.Drawing.Point(15, 10);
-            lblDiscoveredTitle.Size = new System.Drawing.Size(220, 20);
+            lblDiscoveredTitle.Location = new System.Drawing.Point(15, 12);
+            lblDiscoveredTitle.AutoSize = true;
             pnlDiscoveryHeader.Controls.Add(lblDiscoveredTitle);
 
             this.btnScan = new Button();
@@ -509,10 +496,12 @@ namespace Phidgets2Prosim
             this.btnScan.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
             this.btnScan.ForeColor = System.Drawing.Color.White;
             this.btnScan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnScan.Location = new System.Drawing.Point(295, 6);
-            this.btnScan.Size = new System.Drawing.Size(120, 28);
-            this.btnScan.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            this.btnScan.Size = new System.Drawing.Size(130, 30);
+            this.btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnScan.Location = new System.Drawing.Point(pnlDiscoveryHeader.Width - 145, 8);
             pnlDiscoveryHeader.Controls.Add(this.btnScan);
+            pnlDiscoveryHeader.SizeChanged += (s, ev) =>
+                this.btnScan.Left = ((Panel)s).Width - 145;
             discoveryLayout.Controls.Add(pnlDiscoveryHeader, 0, 0);
 
             this.lvDiscoveredHubs = new ListView();
@@ -521,10 +510,21 @@ namespace Phidgets2Prosim
             this.lvDiscoveredHubs.GridLines = true;
             this.lvDiscoveredHubs.Columns.Add("Serial Number", 90);
             this.lvDiscoveredHubs.Columns.Add("Device Model", 110);
-            this.lvDiscoveredHubs.Columns.Add("Network Host", 110);
+            this.lvDiscoveredHubs.Columns.Add("Network Host", 130);
             this.lvDiscoveredHubs.BorderStyle = BorderStyle.None;
             this.lvDiscoveredHubs.Dock = DockStyle.Fill;
             discoveryLayout.Controls.Add(this.lvDiscoveredHubs, 0, 1);
+
+            this.btnAddFromDiscovered = new Button();
+            this.btnAddFromDiscovered.Text = "Add Selected to Configured";
+            this.btnAddFromDiscovered.FlatStyle = FlatStyle.Flat;
+            this.btnAddFromDiscovered.FlatAppearance.BorderSize = 0;
+            this.btnAddFromDiscovered.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
+            this.btnAddFromDiscovered.ForeColor = System.Drawing.Color.White;
+            this.btnAddFromDiscovered.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAddFromDiscovered.Dock = DockStyle.Fill;
+            this.btnAddFromDiscovered.Margin = new Padding(0, 2, 0, 0);
+            discoveryLayout.Controls.Add(this.btnAddFromDiscovered, 0, 2);
 
             hubsContentLayout.Controls.Add(cardDiscovery, 1, 0);
             this.pnlPageHubs.Controls.Add(hubsLayout);
@@ -1167,7 +1167,6 @@ namespace Phidgets2Prosim
         private Label lblProsimIPLabelOnDash;
         private TextBox txtProsimIP;
         private Button btnConnectProsim;
-        private Button btnDisconnectProsim;
         private Button btnSaveProsimIP;
         private Label connectionStatusLabel; // Preserve name
 
@@ -1187,6 +1186,7 @@ namespace Phidgets2Prosim
         private Button btnScan;
         private Button btnAddHub;
         private Button btnDeleteHub;
+        private Button btnAddFromDiscovered;
         private TextBox txtHubName;
         private TextBox txtHubSerial;
         private CheckBox chkHubEnabled;

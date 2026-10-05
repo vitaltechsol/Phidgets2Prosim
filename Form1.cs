@@ -25,6 +25,9 @@
         // ── UI state ──────────────────────────────────────────────────────────────
         private bool   _configsInsLoaded      = false;
         private string _activeDeviceCategory  = "Outputs";
+        private readonly HubWorkflowService _hubWorkflow = new HubWorkflowService();
+        private List<DiscoveredHubInfo> _discoveredHubs = new List<DiscoveredHubInfo>();
+        private bool _isLoadingHubsGrid = false;
 
         // ── Constructor ──────────────────────────────────────────────────────────
         public Form1()
@@ -66,13 +69,16 @@
             // Wire Dashboard – ProSim connection
             btnSaveProsimIP.Click    += BtnSaveProsimIP_Click;
             btnConnectProsim.Click   += BtnConnectProsim_Click;
-            btnDisconnectProsim.Click += BtnDisconnectProsim_Click;
 
             // Wire Hubs page
-            btnAddHub.Click    += BtnAddHub_Click;
-            btnDeleteHub.Click += BtnDeleteHub_Click;
-            btnScan.Click      += BtnScan_Click;
+            btnAddHub.Click           += BtnAddHub_Click;
+            btnDeleteHub.Click        += BtnDeleteHub_Click;
+            btnScan.Click             += BtnScan_Click;
+            btnAddFromDiscovered.Click += BtnAddFromDiscovered_Click;
             dgvConfiguredHubs.SelectionChanged += (s, e) => LoadHubEditorFromSelection();
+            dgvConfiguredHubs.KeyDown += DgvConfiguredHubs_KeyDown;
+            dgvConfiguredHubs.CurrentCellDirtyStateChanged += DgvConfiguredHubs_CurrentCellDirtyStateChanged;
+            dgvConfiguredHubs.CellValueChanged += DgvConfiguredHubs_CellValueChanged;
 
             // Wire Devices page category filter
             foreach (Control c in flowCategories.Controls)
@@ -138,13 +144,27 @@
 
         private void BtnConnectProsim_Click(object sender, EventArgs e)
         {
+            if (_prosim.IsConnected)
+            {
+                DisconnectProsim();
+                return;
+            }
+
+            ConnectProsim();
+        }
+
+        private void ConnectProsim()
+        {
             string ip = txtProsimIP.Text.Trim();
             if (string.IsNullOrWhiteSpace(ip)) ip = "127.0.0.1";
             connectionStatusLabel.Text = "● CONNECTING TO " + ip;
+            connectionStatusLabel.ForeColor = Color.FromArgb(14, 165, 233);
+            btnConnectProsim.Text = "Connecting...";
+            btnConnectProsim.Enabled = false;
             _ = _prosim.ConnectAsync(ip);
         }
 
-        private void BtnDisconnectProsim_Click(object sender, EventArgs e)
+        private void DisconnectProsim()
         {
             _devices.UnloadInputDevices();
             _configsInsLoaded = false;
@@ -190,16 +210,18 @@
             if (_prosim.IsConnected)
             {
                 UpdatePauseLabel();
-                btnConnectProsim.Enabled    = false;
-                btnDisconnectProsim.Enabled = true;
+                btnConnectProsim.Text = "Disconnect";
+                btnConnectProsim.BackColor = Color.FromArgb(239, 68, 68);
+                btnConnectProsim.Enabled = true;
             }
             else
             {
                 DisplayInfoLog("ProSim DISCONNECTED");
                 connectionStatusLabel.Text      = "● DISCONNECTED";
                 connectionStatusLabel.ForeColor = Color.FromArgb(239, 68, 68);
-                btnConnectProsim.Enabled        = true;
-                btnDisconnectProsim.Enabled     = false;
+                btnConnectProsim.Text = "Connect";
+                btnConnectProsim.BackColor = Color.FromArgb(16, 185, 129);
+                btnConnectProsim.Enabled = true;
                 UpdateTelemetryPanel();
             }
         }
@@ -263,7 +285,7 @@
             p.Controls.Add(new Label
             {
                 Text      = count.ToString(),
-                Font      = new Font("Segoe UI", 15F, FontStyle.Bold),
+                Font      = new Font("Segoe UI", 13F, FontStyle.Bold),
                 ForeColor = active ? Color.FromArgb(22, 163, 74) : Color.FromArgb(148, 163, 184),
                 Location  = new Point(10, 6),
                 Size      = new Size(44, 28),
@@ -322,16 +344,42 @@
             bool configReady = CheckAndMigrateConfig();
             if (configReady)
             {
-                Task.Run(() =>
+                btnConnectProsim.Text = "Loading...";
+                btnConnectProsim.Enabled = false;
+
+                Task.Run(async () =>
                 {
                     try
                     {
                         var cfg = _config.Load();
                         _hubs.RegisterHubs(cfg?.PhidgetsHubsInstances);
+                        int totalOuts = CountStartupOutputDevices(cfg);
+                        string prosimIp = string.IsNullOrWhiteSpace(cfg?.GeneralConfig?.ProSimIP) ? "127.0.0.1" : cfg.GeneralConfig.ProSimIP;
+
+                        DisplayInfoLog("Prosim IP: " + prosimIp);
+                        DisplayInfoLog("Opening outputs: " + totalOuts);
+
                         _devices.LoadOutputDevices(cfg);
                         BeginInvoke(new Action(UpdateTelemetryPanel));
+
+                        await Task.Delay((totalOuts + 10) * 40);
+                        DisplayInfoLog("Outputs loaded successfully");
+                        DisplayInfoLog("Connecting to Prosim");
+
+                        if (!IsDisposed)
+                            BeginInvoke(new Action(ConnectProsim));
                     }
-                    catch (Exception ex) { DisplayErrorLog("Error loading config: " + ex.Message); }
+                    catch (Exception ex)
+                    {
+                        DisplayErrorLog("Error loading config: " + ex.Message);
+                        if (!IsDisposed)
+                            BeginInvoke(new Action(() =>
+                            {
+                                btnConnectProsim.Text = "Connect";
+                                btnConnectProsim.BackColor = Color.FromArgb(16, 185, 129);
+                                btnConnectProsim.Enabled = true;
+                            }));
+                    }
                 });
             }
             else
@@ -341,6 +389,25 @@
 
             _prosim.SubscribePause();
             LoadSettingsPage();
+        }
+
+        private int CountStartupOutputDevices(Config cfg)
+        {
+            if (cfg == null) return 0;
+
+            int total = 0;
+            total += cfg.PhidgetsOutputInstances?.Count ?? 0;
+            total += cfg.PhidgetsAudioInstances?.Count ?? 0;
+            total += cfg.PhidgetsGateInstances?.Count ?? 0;
+            total += cfg.PhidgetsVoltageOutputInstances?.Count ?? 0;
+            total += cfg.PhidgetsBLDCMotorInstances?.Count ?? 0;
+            total += cfg.PhidgetsDCMotorInstances?.Count ?? 0;
+            total += cfg.PhidgetsEncoderInstances?.Count ?? 0;
+            total += cfg.PhidgetsButtonInstances?.Count ?? 0;
+            if (cfg.CustomTrimWheelInstance != null) total++;
+            if (cfg.CustomParkingBrakeInstance != null) total++;
+
+            return total;
         }
 
         private void Form1_Closed(object sender, EventArgs e)
@@ -354,14 +421,50 @@
         {
             try
             {
-                var hubs = _hubs.GetAll();
-                dgvConfiguredHubs.Columns.Clear();
-                dgvConfiguredHubs.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName",    HeaderText = "Name",    DataPropertyName = "Name",    FillWeight = 50 });
-                dgvConfiguredHubs.Columns.Add(new DataGridViewTextBoxColumn { Name = "colSerial",  HeaderText = "Serial",  DataPropertyName = "Serial",  FillWeight = 30 });
-                dgvConfiguredHubs.Columns.Add(new DataGridViewCheckBoxColumn{ Name = "colEnabled", HeaderText = "Enabled", DataPropertyName = "Enabled", FillWeight = 20 });
+                _isLoadingHubsGrid = true;
+                var hubs = _hubs.GetAll() ?? new List<PhidgetsHubInst>();
+
+                dgvConfiguredHubs.AutoGenerateColumns = false;
+                dgvConfiguredHubs.AllowUserToDeleteRows = false;
+                dgvConfiguredHubs.AllowUserToResizeRows = false;
+                dgvConfiguredHubs.DataSource = null;
+
+                if (dgvConfiguredHubs.Columns.Count == 0)
+                {
+                    dgvConfiguredHubs.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Name", DataPropertyName = "Name", FillWeight = 50, ReadOnly = true });
+                    dgvConfiguredHubs.Columns.Add(new DataGridViewTextBoxColumn { Name = "colSerial", HeaderText = "Serial", DataPropertyName = "Serial", FillWeight = 30, ReadOnly = true });
+                    dgvConfiguredHubs.Columns.Add(new DataGridViewCheckBoxColumn { Name = "colEnabled", HeaderText = "Enabled", DataPropertyName = "Enabled", FillWeight = 20, ReadOnly = false });
+                }
+
                 dgvConfiguredHubs.DataSource = new BindingList<PhidgetsHubInst>(hubs);
+
+                if (dgvConfiguredHubs.Rows.Count > 0)
+                {
+                    dgvConfiguredHubs.ClearSelection();
+                    dgvConfiguredHubs.Rows[dgvConfiguredHubs.Rows.Count - 1].Selected = true;
+                }
+
+                UpdateDiscoveredHubsDisplay();
             }
             catch (Exception ex) { DisplayErrorLog("Error loading hubs: " + ex.Message); }
+            finally { _isLoadingHubsGrid = false; }
+        }
+
+        private void DgvConfiguredHubs_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgvConfiguredHubs.IsCurrentCellDirty)
+                dgvConfiguredHubs.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void DgvConfiguredHubs_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (_isLoadingHubsGrid || e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgvConfiguredHubs.Columns[e.ColumnIndex].Name != "colEnabled") return;
+
+            var bound = dgvConfiguredHubs.DataSource as BindingList<PhidgetsHubInst>;
+            if (bound == null) return;
+
+            _hubs.SaveAll(bound.ToList());
         }
 
         private void LoadHubEditorFromSelection()
@@ -395,22 +498,98 @@
             LoadHubsGrid();
         }
 
-        private void BtnScan_Click(object sender, EventArgs e)
+        private void DgvConfiguredHubs_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode != Keys.Delete) return;
+            BtnDeleteHub_Click(sender, EventArgs.Empty);
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private async void BtnScan_Click(object sender, EventArgs e)
+        {
+            btnScan.Enabled = false;
+            btnScan.Text = "Scanning...";
+            lvDiscoveredHubs.Items.Clear();
+            _discoveredHubs = new List<DiscoveredHubInfo>();
+
             try
             {
-                var hubs = _hubs.GetAll();
-                using (var form = new ManageHubsForm(hubs))
-                {
-                    if (form.ShowDialog(this) == DialogResult.OK)
-                    {
-                        _hubs.SaveAll(form.Hubs);
-                        DisplayInfoLog("Hubs configuration saved.");
-                        LoadHubsGrid();
-                    }
-                }
+                _discoveredHubs = await _hubWorkflow.ScanAsync();
             }
-            catch (Exception ex) { DisplayErrorLog("Error scanning hubs: " + ex.Message); }
+            catch (Exception ex)
+            {
+                DisplayErrorLog("Error scanning for hubs: " + ex.Message);
+            }
+
+            UpdateDiscoveredHubsDisplay();
+            btnScan.Enabled = true;
+            btnScan.Text = "Scan Network";
+        }
+
+        private void UpdateDiscoveredHubsDisplay()
+        {
+            if (lvDiscoveredHubs.InvokeRequired) { lvDiscoveredHubs.Invoke(new Action(UpdateDiscoveredHubsDisplay)); return; }
+
+            lvDiscoveredHubs.BeginUpdate();
+            lvDiscoveredHubs.Items.Clear();
+            var configuredSerials = _hubWorkflow.GetConfiguredSerials(_hubs.GetAll());
+
+            foreach (var hub in _discoveredHubs)
+            {
+                var item = new ListViewItem(hub.Serial.ToString());
+                item.SubItems.Add(hub.DeviceName);
+                item.SubItems.Add(hub.ServerName);
+                item.Tag = hub;
+                if (configuredSerials.Contains(hub.Serial))
+                    item.ForeColor = Color.Gray;
+                lvDiscoveredHubs.Items.Add(item);
+            }
+
+            if (lvDiscoveredHubs.Columns.Count >= 3)
+            {
+                lvDiscoveredHubs.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize);
+                lvDiscoveredHubs.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
+                lvDiscoveredHubs.AutoResizeColumn(2, ColumnHeaderAutoResizeStyle.ColumnContent);
+            }
+
+            lvDiscoveredHubs.EndUpdate();
+        }
+
+        private void BtnAddFromDiscovered_Click(object sender, EventArgs e)
+        {
+            if (lvDiscoveredHubs.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select a discovered hub to add.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            bool anyAdded = false;
+            var configuredHubs = _hubs.GetAll();
+
+            foreach (ListViewItem item in lvDiscoveredHubs.SelectedItems)
+            {
+                var hub = item.Tag as DiscoveredHubInfo;
+                if (hub == null) continue;
+
+                if (!_hubWorkflow.TryAddDiscoveredHub(configuredHubs, hub))
+                {
+                    MessageBox.Show("Hub " + hub.Serial + " is already configured.",
+                        "Already Configured", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    continue;
+                }
+
+                anyAdded = true;
+            }
+
+            if (anyAdded)
+            {
+                _hubs.SaveAll(configuredHubs);
+                DisplayInfoLog("Hub(s) added from network scan.");
+                LoadHubsGrid();
+                UpdateDiscoveredHubsDisplay();
+            }
         }
 
         // ── Devices / Mapping Studio page ─────────────────────────────────────────
@@ -768,11 +947,36 @@
         // ── Schema migration (delegate to ConfigRepository) ───────────────────────
         private bool CheckAndMigrateConfig()
         {
-            return _config.CheckAndMigrate(stubs => new ManageHubsForm(stubs));
+            return _config.CheckAndMigrate(stubs =>
+            {
+                var workingHubs = _hubWorkflow.CloneConfiguredHubs(stubs);
+
+                if (workingHubs.Any(h => h.Serial <= 0))
+                {
+                    try
+                    {
+                        var discovered = _hubWorkflow.ScanAsync().GetAwaiter().GetResult();
+                        foreach (var hub in discovered)
+                        {
+                            var match = workingHubs.FirstOrDefault(h => h.Serial <= 0 &&
+                                string.Equals(h.Name, hub.ServerName, StringComparison.OrdinalIgnoreCase));
+                            if (match != null)
+                            {
+                                match.Serial = hub.Serial;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayErrorLog("Error scanning hubs during migration: " + ex.Message);
+                    }
+                }
+
+                return workingHubs;
+            });
         }
     }
 
-    // ── Small helper class for ListBox items ──────────────────────────────────────
     internal class DeviceListItem
     {
         public string Label { get; set; }
