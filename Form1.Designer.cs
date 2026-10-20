@@ -508,9 +508,9 @@ namespace Phidgets2Prosim
             this.lvDiscoveredHubs.View = View.Details;
             this.lvDiscoveredHubs.FullRowSelect = true;
             this.lvDiscoveredHubs.GridLines = true;
-            this.lvDiscoveredHubs.Columns.Add("Serial Number", 90);
-            this.lvDiscoveredHubs.Columns.Add("Device Model", 110);
-            this.lvDiscoveredHubs.Columns.Add("Network Host", 130);
+            this.lvDiscoveredHubs.Columns.Add("Serial Number", 110);
+            this.lvDiscoveredHubs.Columns.Add("Device Model", 120);
+            this.lvDiscoveredHubs.Columns.Add("Network Host", 180);
             this.lvDiscoveredHubs.BorderStyle = BorderStyle.None;
             this.lvDiscoveredHubs.Dock = DockStyle.Fill;
             discoveryLayout.Controls.Add(this.lvDiscoveredHubs, 0, 1);
@@ -715,6 +715,12 @@ namespace Phidgets2Prosim
             InitializeInputsFields_Custom();
             advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Inputs);
 
+            this.pnlAdvancedProperties_MultiInputs = new Panel();
+            this.pnlAdvancedProperties_MultiInputs.Dock = DockStyle.Fill;
+            this.pnlAdvancedProperties_MultiInputs.Visible = false;
+            InitializeMultiInputsFields_Custom();
+            advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_MultiInputs);
+
             this.pnlAdvancedProperties_Outputs = new Panel();
             this.pnlAdvancedProperties_Outputs.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Outputs.Visible = false;
@@ -751,31 +757,115 @@ namespace Phidgets2Prosim
 
         private void InitializeInputsFields_Custom()
         {
-            Label lblVal = new Label(); lblExRefText(lblVal, "Input Active Value:", 0);
-            this.txtInputValue = new NumericUpDown(); this.txtInputValue.Location = new System.Drawing.Point(130, 2); this.txtInputValue.Size = new System.Drawing.Size(260, 23);
+            Label lblHub = new Label(); lblExRefText(lblHub, "Phidgets Hub:", 0);
+            this.cboInputHub = new ComboBox(); this.cboInputHub.Location = new System.Drawing.Point(130, 2); this.cboInputHub.Size = new System.Drawing.Size(260, 23);
+            this.cboInputHub.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblPort = new Label(); lblExRefText(lblPort, "Hub Port (-1 = USB):", 30);
+            this.nudInputHubPort = new NumericUpDown(); this.nudInputHubPort.Location = new System.Drawing.Point(130, 32); this.nudInputHubPort.Size = new System.Drawing.Size(260, 23);
+            this.nudInputHubPort.Minimum = -1;
+            this.nudInputHubPort.Maximum = 16;
+            this.nudInputHubPort.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblChannel = new Label(); lblExRefText(lblChannel, "Channel:", 60);
+            this.nudInputChannel = new NumericUpDown(); this.nudInputChannel.Location = new System.Drawing.Point(130, 62); this.nudInputChannel.Size = new System.Drawing.Size(260, 23);
+            this.nudInputChannel.Minimum = 0;
+            this.nudInputChannel.Maximum = 64;
+            this.nudInputChannel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblRef = new Label(); lblExRefText(lblRef, "ProSim DataRef:", 90);
+            this.txtInputProsimRef = new TextBox(); this.txtInputProsimRef.Location = new System.Drawing.Point(130, 92); this.txtInputProsimRef.Size = new System.Drawing.Size(260, 23);
+            this.txtInputProsimRef.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblVal = new Label(); lblExRefText(lblVal, "Input Active Value:", 120);
+            this.txtInputValue = new NumericUpDown(); this.txtInputValue.Location = new System.Drawing.Point(130, 122); this.txtInputValue.Size = new System.Drawing.Size(260, 23);
+            this.txtInputValue.Minimum = -2147483648;
+            this.txtInputValue.Maximum = 2147483647;
             this.txtInputValue.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblOffVal = new Label(); lblExRefText(lblOffVal, "Input Inactive Value:", 30);
-            this.txtOffInputValue = new NumericUpDown(); this.txtOffInputValue.Location = new System.Drawing.Point(130, 32); this.txtOffInputValue.Size = new System.Drawing.Size(260, 23);
+            Label lblOffVal = new Label(); lblExRefText(lblOffVal, "Input Inactive Value:", 150);
+            this.txtOffInputValue = new NumericUpDown(); this.txtOffInputValue.Location = new System.Drawing.Point(130, 152); this.txtOffInputValue.Size = new System.Drawing.Size(260, 23);
+            this.txtOffInputValue.Minimum = -2147483648;
+            this.txtOffInputValue.Maximum = 2147483647;
             this.txtOffInputValue.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblRef2 = new Label(); lblExRefText(lblRef2, "Aux DataRef 2:", 60);
-            this.txtInputRef2 = new TextBox(); this.txtInputRef2.Location = new System.Drawing.Point(130, 62); this.txtInputRef2.Size = new System.Drawing.Size(260, 23);
+            Label lblRef2 = new Label(); lblExRefText(lblRef2, "Aux DataRef 2:", 180);
+            this.txtInputRef2 = new TextBox(); this.txtInputRef2.Location = new System.Drawing.Point(130, 182); this.txtInputRef2.Size = new System.Drawing.Size(260, 23);
             this.txtInputRef2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblRef3 = new Label(); lblExRefText(lblRef3, "Aux DataRef 3:", 90);
-            this.txtInputRef3 = new TextBox(); this.txtInputRef3.Location = new System.Drawing.Point(130, 92); this.txtInputRef3.Size = new System.Drawing.Size(260, 23);
+            Label lblRef3 = new Label(); lblExRefText(lblRef3, "Aux DataRef 3:", 210);
+            this.txtInputRef3 = new TextBox(); this.txtInputRef3.Location = new System.Drawing.Point(130, 212); this.txtInputRef3.Size = new System.Drawing.Size(260, 23);
             this.txtInputRef3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblVar = new Label(); lblExRefText(lblVar, "User Variable:", 120);
-            this.txtInputUserVar = new TextBox(); this.txtInputUserVar.Location = new System.Drawing.Point(130, 122); this.txtInputUserVar.Size = new System.Drawing.Size(260, 23);
+            Label lblVar = new Label(); lblExRefText(lblVar, "User Variable:", 240);
+            this.txtInputUserVar = new TextBox(); this.txtInputUserVar.Location = new System.Drawing.Point(130, 242); this.txtInputUserVar.Size = new System.Drawing.Size(260, 23);
             this.txtInputUserVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
+            this.pnlAdvancedProperties_Inputs.Controls.Add(lblHub); this.pnlAdvancedProperties_Inputs.Controls.Add(this.cboInputHub);
+            this.pnlAdvancedProperties_Inputs.Controls.Add(lblPort); this.pnlAdvancedProperties_Inputs.Controls.Add(this.nudInputHubPort);
+            this.pnlAdvancedProperties_Inputs.Controls.Add(lblChannel); this.pnlAdvancedProperties_Inputs.Controls.Add(this.nudInputChannel);
+            this.pnlAdvancedProperties_Inputs.Controls.Add(lblRef); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtInputProsimRef);
             this.pnlAdvancedProperties_Inputs.Controls.Add(lblVal); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtInputValue);
             this.pnlAdvancedProperties_Inputs.Controls.Add(lblOffVal); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtOffInputValue);
             this.pnlAdvancedProperties_Inputs.Controls.Add(lblRef2); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtInputRef2);
             this.pnlAdvancedProperties_Inputs.Controls.Add(lblRef3); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtInputRef3);
             this.pnlAdvancedProperties_Inputs.Controls.Add(lblVar); this.pnlAdvancedProperties_Inputs.Controls.Add(this.txtInputUserVar);
+        }
+
+        private void InitializeMultiInputsFields_Custom()
+        {
+            Label lblHub = new Label(); lblExRefText(lblHub, "Phidgets Hub:", 0);
+            this.cboMultiHub = new ComboBox(); this.cboMultiHub.Location = new System.Drawing.Point(140, 2); this.cboMultiHub.Size = new System.Drawing.Size(250, 23);
+            this.cboMultiHub.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblPort = new Label(); lblExRefText(lblPort, "Hub Port (-1 = USB):", 30);
+            this.nudMultiHubPort = new NumericUpDown(); this.nudMultiHubPort.Location = new System.Drawing.Point(140, 32); this.nudMultiHubPort.Size = new System.Drawing.Size(250, 23);
+            this.nudMultiHubPort.Minimum = -1; this.nudMultiHubPort.Maximum = 16;
+            this.nudMultiHubPort.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblRef = new Label(); lblExRefText(lblRef, "ProSim DataRef:", 60);
+            this.txtMultiProsimRef = new TextBox(); this.txtMultiProsimRef.Location = new System.Drawing.Point(140, 62); this.txtMultiProsimRef.Size = new System.Drawing.Size(250, 23);
+            this.txtMultiProsimRef.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            Label lblChannels = new Label(); lblExRefText(lblChannels, "Channels (in order):", 90);
+            this.clbMultiChannels = new CheckedListBox(); this.clbMultiChannels.Location = new System.Drawing.Point(140, 92); this.clbMultiChannels.Size = new System.Drawing.Size(250, 76);
+            this.clbMultiChannels.CheckOnClick = true;
+            this.clbMultiChannels.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            for (int i = 0; i <= 15; i++) this.clbMultiChannels.Items.Add(i.ToString());
+
+            this.btnMultiGenerateMappings = new Button();
+            this.btnMultiGenerateMappings.Text = "Generate Mapping Combinations";
+            this.btnMultiGenerateMappings.FlatStyle = FlatStyle.Flat;
+            this.btnMultiGenerateMappings.Location = new System.Drawing.Point(140, 170);
+            this.btnMultiGenerateMappings.Size = new System.Drawing.Size(250, 24);
+            this.btnMultiGenerateMappings.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            this.dgvMultiMappings = new DataGridView();
+            this.dgvMultiMappings.Location = new System.Drawing.Point(140, 198);
+            this.dgvMultiMappings.Size = new System.Drawing.Size(250, 180);
+            this.dgvMultiMappings.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.dgvMultiMappings.AllowUserToAddRows = false;
+            this.dgvMultiMappings.AllowUserToDeleteRows = false;
+            this.dgvMultiMappings.RowHeadersVisible = false;
+            this.dgvMultiMappings.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvMultiMappings.SelectionMode = DataGridViewSelectionMode.CellSelect;
+            this.dgvMultiMappings.MultiSelect = false;
+            this.dgvMultiMappings.Columns.Add(new DataGridViewTextBoxColumn { Name = "Combination", HeaderText = "Input Combination", ReadOnly = true, FillWeight = 55f });
+            this.dgvMultiMappings.Columns.Add(new DataGridViewTextBoxColumn { Name = "Value", HeaderText = "ProSim Value", FillWeight = 45f });
+
+            Label lblHelp = new Label();
+            lblHelp.Text = "Order follows Channels. Example [14,15]: 01,10,00";
+            lblHelp.Location = new System.Drawing.Point(140, 382);
+            lblHelp.Size = new System.Drawing.Size(250, 28);
+            lblHelp.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(lblHub); this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.cboMultiHub);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(lblPort); this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.nudMultiHubPort);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(lblRef); this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.txtMultiProsimRef);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(lblChannels); this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.clbMultiChannels);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.btnMultiGenerateMappings);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(this.dgvMultiMappings);
+            this.pnlAdvancedProperties_MultiInputs.Controls.Add(lblHelp);
         }
 
         private void InitializeOutputsFields_Custom()
@@ -1210,6 +1300,7 @@ namespace Phidgets2Prosim
         // Specific fields shown based on tab/collapsible sections
         private Panel pnlGeneralProperties;
         private Panel pnlAdvancedProperties_Inputs;
+        private Panel pnlAdvancedProperties_MultiInputs;
         private Panel pnlAdvancedProperties_Outputs;
         private Panel pnlAdvancedProperties_Motors;
         private Panel pnlAdvancedProperties_Voltages;
@@ -1220,6 +1311,10 @@ namespace Phidgets2Prosim
         private TextBox txtInputUserVar;
         private TextBox txtInputRef2;
         private TextBox txtInputRef3;
+        private ComboBox cboInputHub;
+        private NumericUpDown nudInputHubPort;
+        private NumericUpDown nudInputChannel;
+        private TextBox txtInputProsimRef;
 
         // Specific editor fields (Outputs & Gates)
         private CheckBox chkOutputInverse;
@@ -1234,8 +1329,12 @@ namespace Phidgets2Prosim
         private TextBox txtOutputUserVar;
 
         // Specific editor fields (Multi-Inputs)
-        private TextBox txtMultiInputChannels;
-        private TextBox txtMultiInputMappings;
+        private ComboBox cboMultiHub;
+        private NumericUpDown nudMultiHubPort;
+        private TextBox txtMultiProsimRef;
+        private CheckedListBox clbMultiChannels;
+        private DataGridView dgvMultiMappings;
+        private Button btnMultiGenerateMappings;
 
         // Specific editor fields (Voltages In & Out)
         private TextBox txtVoltageInputPoints;

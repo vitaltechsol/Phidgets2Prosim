@@ -28,6 +28,8 @@
         private readonly HubWorkflowService _hubWorkflow = new HubWorkflowService();
         private List<DiscoveredHubInfo> _discoveredHubs = new List<DiscoveredHubInfo>();
         private bool _isLoadingHubsGrid = false;
+        private object _currentEditingDeviceTag = null;
+        private bool _suppressMultiChannelsChange = false;
 
         // ── Constructor ──────────────────────────────────────────────────────────
         public Form1()
@@ -87,10 +89,14 @@
 
             // Wire device list & editor buttons
             lstDevices.SelectedIndexChanged += LstDevices_SelectedIndexChanged;
+            lstDevices.MouseDown += LstDevices_MouseDown;
+            lstDevices.MouseClick += (s, e) => LoadSelectedDeviceEditor();
             btnAddDevice.Click    += BtnAddDevice_Click;
             btnDeleteDevice.Click += BtnDeleteDevice_Click;
             btnSaveDevice.Click   += BtnSaveDevice_Click;
             txtDeviceSearch.TextChanged += TxtDeviceSearch_TextChanged;
+            if (btnMultiGenerateMappings != null) btnMultiGenerateMappings.Click += (s, e) => RebuildMultiMappingsGrid();
+            if (clbMultiChannels != null) clbMultiChannels.ItemCheck += ClbMultiChannels_ItemCheck;
 
             // Show Dashboard first
             ShowPage(pnlPageDashboard, btnNavDashboard);
@@ -546,13 +552,6 @@
                 lvDiscoveredHubs.Items.Add(item);
             }
 
-            if (lvDiscoveredHubs.Columns.Count >= 3)
-            {
-                lvDiscoveredHubs.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize);
-                lvDiscoveredHubs.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
-                lvDiscoveredHubs.AutoResizeColumn(2, ColumnHeaderAutoResizeStyle.ColumnContent);
-            }
-
             lvDiscoveredHubs.EndUpdate();
         }
 
@@ -606,6 +605,7 @@
 
             LoadDeviceListForCategory(_activeDeviceCategory);
             ClearDeviceEditor();
+            lstDevices.ClearSelected();
         }
 
         private void LoadDeviceListForCategory(string category)
@@ -687,15 +687,33 @@
 
         private void LstDevices_SelectedIndexChanged(object sender, EventArgs e)
         {
+            LoadSelectedDeviceEditor();
+        }
+
+        private void LstDevices_MouseDown(object sender, MouseEventArgs e)
+        {
+            int index = lstDevices.IndexFromPoint(e.Location);
+            if (index >= 0 && index < lstDevices.Items.Count)
+            {
+                lstDevices.SelectedIndex = index;
+                LoadSelectedDeviceEditor();
+            }
+        }
+
+        private void LoadSelectedDeviceEditor()
+        {
             if (lstDevices.SelectedItem is DeviceListItem item)
                 LoadDeviceEditorFromItem(item);
         }
 
         private void LoadDeviceEditorFromItem(DeviceListItem item)
         {
+            _currentEditingDeviceTag = item?.Tag;
             ClearDeviceEditor();
             var hubs = _hubs.GetAll();
             PopulateHubDropdown(cboDeviceHub, hubs);
+            PopulateInputHubDropdown(hubs);
+            PopulateMultiHubDropdown(hubs);
 
             switch (item.Tag)
             {
@@ -713,9 +731,18 @@
                     break;
                 case PhidgetsInputInst i:
                     lblCardItemTitle.Text = "Edit Input";
-                    SetHubAndPortChannel(i.Serial, i.HubPort, i.Channel, hubs);
-                    txtDeviceProsimRef.Text = i.ProsimDataRef ?? "";
                     ShowAdvancedPanel(pnlAdvancedProperties_Inputs);
+                    SetInputEditorValues(i, hubs);
+                    txtInputValue.Value = i.InputValue;
+                    txtOffInputValue.Value = i.OffInputValue;
+                    txtInputRef2.Text = i.ProsimDataRef2 ?? "";
+                    txtInputRef3.Text = i.ProsimDataRef3 ?? "";
+                    txtInputUserVar.Text = i.UserVariable ?? "";
+                    break;
+                case PhidgetsMultiInputInst m:
+                    lblCardItemTitle.Text = "Edit Multi-Input";
+                    ShowAdvancedPanel(pnlAdvancedProperties_MultiInputs);
+                    SetMultiInputEditorValues(m, hubs);
                     break;
                 case PhidgetsEncoderInst enc:
                     lblCardItemTitle.Text = "Edit Encoder";
@@ -758,7 +785,13 @@
 
         private void ShowAdvancedPanel(Panel panel)
         {
+            bool hideGeneral =
+                (panel == pnlAdvancedProperties_Inputs && _activeDeviceCategory == "Inputs") ||
+                (panel == pnlAdvancedProperties_MultiInputs && _activeDeviceCategory == "Multi-Input");
+
+            SetGeneralPropertiesVisibility(!hideGeneral);
             pnlAdvancedProperties_Inputs.Visible   = panel == pnlAdvancedProperties_Inputs;
+            pnlAdvancedProperties_MultiInputs.Visible = panel == pnlAdvancedProperties_MultiInputs;
             pnlAdvancedProperties_Outputs.Visible  = panel == pnlAdvancedProperties_Outputs;
             pnlAdvancedProperties_Motors.Visible   = panel == pnlAdvancedProperties_Motors;
             pnlAdvancedProperties_Voltages.Visible = panel == pnlAdvancedProperties_Voltages;
@@ -766,12 +799,35 @@
 
         private void ClearDeviceEditor()
         {
+            _currentEditingDeviceTag = null;
+            SetGeneralPropertiesVisibility(true);
             lblCardItemTitle.Text = _activeDeviceCategory + " — select or add";
             cboDeviceHub.Items.Clear();
             cboDeviceHubPort.Items.Clear();
             cboDeviceChannel.Items.Clear();
             txtDeviceProsimRef.Text = "";
+
+            txtInputValue.Value = 1;
+            txtOffInputValue.Value = 0;
+            txtInputRef2.Text = "";
+            txtInputRef3.Text = "";
+            txtInputUserVar.Text = "";
+            cboInputHub.Items.Clear();
+            nudInputHubPort.Value = 0;
+            nudInputChannel.Value = 0;
+            txtInputProsimRef.Text = "";
+
+            cboMultiHub.Items.Clear();
+            nudMultiHubPort.Value = 0;
+            txtMultiProsimRef.Text = "";
+            _suppressMultiChannelsChange = true;
+            for (int i = 0; i < clbMultiChannels.Items.Count; i++)
+                clbMultiChannels.SetItemChecked(i, false);
+            _suppressMultiChannelsChange = false;
+            dgvMultiMappings.Rows.Clear();
+
             pnlAdvancedProperties_Inputs.Visible   = false;
+            pnlAdvancedProperties_MultiInputs.Visible = false;
             pnlAdvancedProperties_Outputs.Visible  = false;
             pnlAdvancedProperties_Motors.Visible   = false;
             pnlAdvancedProperties_Voltages.Visible = false;
@@ -782,6 +838,161 @@
             cbo.Items.Clear();
             foreach (var h in hubs) cbo.Items.Add(h.Name);
             if (cbo.Items.Count > 0) cbo.SelectedIndex = 0;
+        }
+
+        private void PopulateInputHubDropdown(List<PhidgetsHubInst> hubs)
+        {
+            cboInputHub.Items.Clear();
+            foreach (var h in hubs) cboInputHub.Items.Add(h.Name);
+            if (cboInputHub.Items.Count > 0) cboInputHub.SelectedIndex = 0;
+        }
+
+        private void PopulateMultiHubDropdown(List<PhidgetsHubInst> hubs)
+        {
+            cboMultiHub.Items.Clear();
+            foreach (var h in hubs) cboMultiHub.Items.Add(h.Name);
+            if (cboMultiHub.Items.Count > 0) cboMultiHub.SelectedIndex = 0;
+        }
+
+        private void SetInputEditorValues(PhidgetsInputInst input, List<PhidgetsHubInst> hubs)
+        {
+            var hub = hubs.FirstOrDefault(h => h.Serial == input.Serial);
+            cboInputHub.Text = hub?.Name ?? "";
+            nudInputHubPort.Value = ClampToRange(input.HubPort, nudInputHubPort.Minimum, nudInputHubPort.Maximum);
+            nudInputChannel.Value = ClampToRange(input.Channel, nudInputChannel.Minimum, nudInputChannel.Maximum);
+            txtInputProsimRef.Text = input.ProsimDataRef ?? "";
+        }
+
+        private void SetMultiInputEditorValues(PhidgetsMultiInputInst multi, List<PhidgetsHubInst> hubs)
+        {
+            var hub = hubs.FirstOrDefault(h => h.Serial == multi.Serial);
+            cboMultiHub.Text = hub?.Name ?? "";
+            nudMultiHubPort.Value = ClampToRange(multi.HubPort, nudMultiHubPort.Minimum, nudMultiHubPort.Maximum);
+            txtMultiProsimRef.Text = multi.ProsimDataRef ?? "";
+
+            _suppressMultiChannelsChange = true;
+            for (int i = 0; i < clbMultiChannels.Items.Count; i++)
+                clbMultiChannels.SetItemChecked(i, false);
+
+            if (multi.Channels != null)
+            {
+                foreach (var channel in multi.Channels)
+                {
+                    int idx = clbMultiChannels.Items.IndexOf(channel.ToString());
+                    if (idx >= 0) clbMultiChannels.SetItemChecked(idx, true);
+                }
+            }
+            _suppressMultiChannelsChange = false;
+
+            RebuildMultiMappingsGrid(multi.Mappings);
+        }
+
+        private void SetGeneralPropertiesVisibility(bool visible)
+        {
+            pnlGeneralProperties.Visible = visible;
+            var layout = pnlGeneralProperties.Parent as TableLayoutPanel;
+            if (layout == null) return;
+            int row = layout.GetRow(pnlGeneralProperties);
+            layout.RowStyles[row].SizeType = SizeType.Absolute;
+            layout.RowStyles[row].Height = visible ? 180F : 0F;
+        }
+
+        private static decimal ClampToRange(int value, decimal min, decimal max)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
+
+        private void ClbMultiChannels_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (_suppressMultiChannelsChange) return;
+
+            int checkedCount = clbMultiChannels.CheckedItems.Count + (e.NewValue == CheckState.Checked ? 1 : -1);
+            if (checkedCount < 0) checkedCount = 0;
+            if (checkedCount > 8)
+            {
+                e.NewValue = e.CurrentValue;
+                MessageBox.Show("Select up to 8 channels to keep mappings manageable.", "Multi-Input", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            BeginInvoke(new Action(() => RebuildMultiMappingsGrid()));
+        }
+
+        private List<int> GetCheckedMultiChannelsOrdered()
+        {
+            var result = new List<int>();
+            foreach (var item in clbMultiChannels.CheckedItems)
+            {
+                if (int.TryParse(item?.ToString(), out int channel))
+                    result.Add(channel);
+            }
+            return result.OrderBy(x => x).ToList();
+        }
+
+        private Dictionary<string, int> ReadMultiMappingsFromGrid()
+        {
+            var mappings = new Dictionary<string, int>();
+            foreach (DataGridViewRow row in dgvMultiMappings.Rows)
+            {
+                if (row.IsNewRow) continue;
+                var key = row.Cells[0].Value?.ToString();
+                if (string.IsNullOrWhiteSpace(key)) continue;
+                int value = 0;
+                int.TryParse(row.Cells[1].Value?.ToString(), out value);
+                mappings[key.Trim()] = value;
+            }
+            return mappings;
+        }
+
+        private void RebuildMultiMappingsGrid(Dictionary<string, int> existingMappings = null)
+        {
+            var channels = GetCheckedMultiChannelsOrdered();
+            var currentValues = ReadMultiMappingsFromGrid();
+            if (existingMappings != null)
+            {
+                foreach (var kv in existingMappings)
+                    currentValues[kv.Key] = kv.Value;
+            }
+
+            dgvMultiMappings.Rows.Clear();
+            if (channels.Count == 0) return;
+
+            int combinations = 1 << channels.Count;
+            for (int i = 0; i < combinations; i++)
+            {
+                string key = Convert.ToString(i, 2).PadLeft(channels.Count, '0');
+                int value = currentValues.ContainsKey(key) ? currentValues[key] : 0;
+                dgvMultiMappings.Rows.Add(key, value);
+            }
+        }
+
+        private bool TryGetMultiInputMappings(out List<int> channels, out Dictionary<string, int> mappings)
+        {
+            channels = GetCheckedMultiChannelsOrdered();
+            mappings = ReadMultiMappingsFromGrid();
+
+            if (channels.Count < 2)
+            {
+                MessageBox.Show("Select at least 2 channels for Multi-Input.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtMultiProsimRef.Text))
+            {
+                MessageBox.Show("ProSim DataRef is required for Multi-Input.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            int expected = 1 << channels.Count;
+            if (mappings.Count != expected)
+            {
+                MessageBox.Show("Mappings must include all combinations for the selected channels.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         private void SetHubAndPortChannel(int serial, int hubPort, int channel, List<PhidgetsHubInst> hubs)
@@ -802,16 +1013,40 @@
         {
             var hubs = _hubs.GetAll();
             PopulateHubDropdown(cboDeviceHub, hubs);
-            lblCardItemTitle.Text = "New " + _activeDeviceCategory;
+            PopulateInputHubDropdown(hubs);
+            PopulateMultiHubDropdown(hubs);
             ClearDeviceEditor();
+            lblCardItemTitle.Text = "New " + _activeDeviceCategory;
             PopulateHubDropdown(cboDeviceHub, hubs);
             SetHubAndPortChannel(0, 0, 0, hubs);
+            lstDevices.ClearSelected();
             switch (_activeDeviceCategory)
             {
                 case "Outputs":     ShowAdvancedPanel(pnlAdvancedProperties_Outputs);  break;
                 case "Voltage Out": ShowAdvancedPanel(pnlAdvancedProperties_Voltages); break;
                 case "Voltage In":  ShowAdvancedPanel(pnlAdvancedProperties_Voltages); break;
-                default:            ShowAdvancedPanel(pnlAdvancedProperties_Inputs);   break;
+                case "Multi-Input":
+                    ShowAdvancedPanel(pnlAdvancedProperties_MultiInputs);
+                    if (cboMultiHub.Items.Count > 0) cboMultiHub.SelectedIndex = 0;
+                    nudMultiHubPort.Value = 0;
+                    txtMultiProsimRef.Text = "";
+                    RebuildMultiMappingsGrid();
+                    break;
+                default:
+                    ShowAdvancedPanel(pnlAdvancedProperties_Inputs);
+                    if (_activeDeviceCategory == "Inputs")
+                    {
+                        if (cboInputHub.Items.Count > 0) cboInputHub.SelectedIndex = 0;
+                        nudInputHubPort.Value = 0;
+                        nudInputChannel.Value = 0;
+                        txtInputProsimRef.Text = "";
+                        txtInputValue.Value = 1;
+                        txtOffInputValue.Value = 0;
+                        txtInputRef2.Text = "";
+                        txtInputRef3.Text = "";
+                        txtInputUserVar.Text = "";
+                    }
+                    break;
             }
         }
 
@@ -828,12 +1063,30 @@
         {
             // Collect common fields
             var hubs = _hubs.GetAll();
-            string hubName = cboDeviceHub.Text;
+            bool isInputCategory = _activeDeviceCategory == "Inputs";
+            bool isMultiInputCategory = _activeDeviceCategory == "Multi-Input";
+            string hubName = isInputCategory ? cboInputHub.Text : (isMultiInputCategory ? cboMultiHub.Text : cboDeviceHub.Text);
             var hub = hubs.FirstOrDefault(h => h.Name == hubName);
             int serial  = hub?.Serial ?? 0;
-            int hubPort = int.TryParse(cboDeviceHubPort.Text, out int hp) ? hp : 0;
-            int channel = int.TryParse(cboDeviceChannel.Text, out int ch) ? ch : 0;
-            string prosimRef = txtDeviceProsimRef.Text.Trim();
+            int hubPort = isInputCategory
+                ? (int)nudInputHubPort.Value
+                : isMultiInputCategory
+                    ? (int)nudMultiHubPort.Value
+                : (int.TryParse(cboDeviceHubPort.Text, out int hp) ? hp : 0);
+            int channel = isInputCategory
+                ? (int)nudInputChannel.Value
+                : (int.TryParse(cboDeviceChannel.Text, out int ch) ? ch : 0);
+            string prosimRef = isInputCategory
+                ? txtInputProsimRef.Text.Trim()
+                : isMultiInputCategory
+                    ? txtMultiProsimRef.Text.Trim()
+                    : txtDeviceProsimRef.Text.Trim();
+
+            if (isMultiInputCategory)
+            {
+                if (!TryGetMultiInputMappings(out _, out _))
+                    return;
+            }
 
             // Route to type-specific save
             SaveDeviceToConfig(serial, hubPort, channel, prosimRef);
@@ -865,8 +1118,20 @@
                         break;
                     case "Inputs":
                         cfg.PhidgetsInputInstances = cfg.PhidgetsInputInstances ?? new List<PhidgetsInputInst>();
-                        if (existing?.Tag is PhidgetsInputInst oldI) cfg.PhidgetsInputInstances.Remove(oldI);
-                        cfg.PhidgetsInputInstances.Add(new PhidgetsInputInst { Serial = serial, HubPort = hubPort, Channel = channel, ProsimDataRef = prosimRef });
+                        if (_currentEditingDeviceTag is PhidgetsInputInst oldI) cfg.PhidgetsInputInstances.Remove(oldI);
+                        else if (existing?.Tag is PhidgetsInputInst selectedI) cfg.PhidgetsInputInstances.Remove(selectedI);
+                        cfg.PhidgetsInputInstances.Add(new PhidgetsInputInst
+                        {
+                            Serial = serial,
+                            HubPort = hubPort,
+                            Channel = channel,
+                            ProsimDataRef = prosimRef,
+                            InputValue = (int)txtInputValue.Value,
+                            OffInputValue = (int)txtOffInputValue.Value,
+                            ProsimDataRef2 = txtInputRef2.Text.NullIfEmpty(),
+                            ProsimDataRef3 = txtInputRef3.Text.NullIfEmpty(),
+                            UserVariable = txtInputUserVar.Text.NullIfEmpty()
+                        });
                         break;
                     case "Encoders":
                         cfg.PhidgetsEncoderInstances = cfg.PhidgetsEncoderInstances ?? new List<PhidgetsEncoderInst>();
@@ -877,6 +1142,23 @@
                         cfg.PhidgetsGateInstances = cfg.PhidgetsGateInstances ?? new List<PhidgetsGateInst>();
                         if (existing?.Tag is PhidgetsGateInst oldG) cfg.PhidgetsGateInstances.Remove(oldG);
                         cfg.PhidgetsGateInstances.Add(new PhidgetsGateInst { Serial = serial, HubPort = hubPort, Channel = channel, ProsimDataRef = prosimRef });
+                        break;
+                    case "Multi-Input":
+                        if (!TryGetMultiInputMappings(out List<int> channels, out Dictionary<string, int> mappings))
+                            return;
+
+                        cfg.PhidgetsMultiInputInstances = cfg.PhidgetsMultiInputInstances ?? new List<PhidgetsMultiInputInst>();
+                        if (_currentEditingDeviceTag is PhidgetsMultiInputInst oldM) cfg.PhidgetsMultiInputInstances.Remove(oldM);
+                        else if (existing?.Tag is PhidgetsMultiInputInst selectedM) cfg.PhidgetsMultiInputInstances.Remove(selectedM);
+
+                        cfg.PhidgetsMultiInputInstances.Add(new PhidgetsMultiInputInst
+                        {
+                            Serial = serial,
+                            HubPort = hubPort,
+                            ProsimDataRef = prosimRef,
+                            Channels = channels,
+                            Mappings = mappings
+                        });
                         break;
                 }
 
@@ -893,6 +1175,7 @@
                 if (cfg == null) return;
                 if (tag is PhidgetsOutputInst o)      cfg.PhidgetsOutputInstances?.Remove(o);
                 else if (tag is PhidgetsInputInst i)   cfg.PhidgetsInputInstances?.Remove(i);
+                else if (tag is PhidgetsMultiInputInst m) cfg.PhidgetsMultiInputInstances?.Remove(m);
                 else if (tag is PhidgetsEncoderInst e) cfg.PhidgetsEncoderInstances?.Remove(e);
                 else if (tag is PhidgetsGateInst g)    cfg.PhidgetsGateInstances?.Remove(g);
                 WriteConfig(cfg);
