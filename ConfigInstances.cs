@@ -28,6 +28,7 @@ namespace Phidgets2Prosim
         public List<PhidgetsVoltageInputInst> PhidgetsVoltageInputInstances { get; set; }
         public List<PhidgetsBLDCMotorInst> PhidgetsBLDCMotorInstances { get; set; }
         public List<PhidgetsDCMotorInst> PhidgetsDCMotorInstances { get; set; }
+        public List<PhidgetsLinkInst> PhidgetsLinkInstances { get; set; }
         public List<PhidgetsVoltageOutputInst> PhidgetsVoltageOutputInstances { get; set; }
         public List<PhidgetsEncoderInst> PhidgetsEncoderInstances { get; set; }
         public CustomTrimWheelInst CustomTrimWheelInstance { get; set; }
@@ -163,6 +164,40 @@ namespace Phidgets2Prosim
 		public double Acceleration { get; set; }
 
 		public MotorTuningOptions Options { get; set; } = new MotorTuningOptions();
+	}
+
+
+	public enum LinkSourceType
+	{
+		VoltageInput,
+		DigitalInput
+	}
+
+	// Maps an input directly to a PWM (duty cycle) output. No ProSim involved.
+	// Serial / HubPort / Channel (inherited) describe the INPUT; Out* describe the output.
+	public class PhidgetsLinkInst : PhidgetDevice
+	{
+		public string Name { get; set; }
+		public LinkSourceType SourceType { get; set; } = LinkSourceType.VoltageInput;
+
+		// Voltage input only: read volts (VoltageInput) instead of ratio (VoltageRatioInput)
+		public bool UseRange { get; set; } = false;
+		// Voltage input range (ratio 0..1, or volts when UseRange) mapped onto OutputMin..OutputMax
+		public double InputMin { get; set; } = 0.0;
+		public double InputMax { get; set; } = 1.0;
+		// Flip the direction (voltage: high input = low output; digital: on = OutputMin)
+		public bool InvertInput { get; set; } = false;
+		// 1 = linear; >1 = slow start; <1 = fast start
+		public double CurvePower { get; set; } = 1.0;
+		public double MinChangeTriggerValue { get; set; } = 0.002;
+		public int DataInterval { get; set; } = 50;
+
+		public int OutSerial { get; set; }
+		public int OutHubPort { get; set; }
+		public int OutChannel { get; set; }
+		// Duty cycle 0..1 (0 = off, 1 = fully on) at the low / high end of the input
+		public double OutputMin { get; set; } = 0.0;
+		public double OutputMax { get; set; } = 1.0;
 	}
 
 

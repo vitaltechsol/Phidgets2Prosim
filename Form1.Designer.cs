@@ -564,7 +564,7 @@ namespace Phidgets2Prosim
             this.flowCategories.WrapContents = true;
 
             // Category filter buttons
-            string[] categories = { "Outputs", "Gates", "Inputs", "Multi-Input", "Encoders", "Voltage Out", "Voltage In", "DC Motors", "Buttons" };
+            string[] categories = { "Outputs", "Gates", "Inputs", "Multi-Input", "Encoders", "Voltage Out", "Voltage In", "DC Motors", "Links", "Buttons" };
             foreach (var cat in categories)
             {
                 var catBtn = new Button();
@@ -575,7 +575,7 @@ namespace Phidgets2Prosim
                 catBtn.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
                 catBtn.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85);
                 catBtn.Font    = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-                catBtn.Size    = new System.Drawing.Size(170, 34);
+                catBtn.Size    = new System.Drawing.Size(120, 34);
                 catBtn.Margin  = new System.Windows.Forms.Padding(4);
                 this.flowCategories.Controls.Add(catBtn);
             }
@@ -746,6 +746,7 @@ namespace Phidgets2Prosim
             advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Simple);
 
             advancedPropertiesHost.Controls.Add(BuildDCMotorEditor());
+            advancedPropertiesHost.Controls.Add(BuildLinkEditor());
             deviceEditorLayout.Controls.Add(advancedPropertiesHost, 0, 2);
 
             FitEditorPanels(this.pnlGeneralProperties, this.pnlAdvancedProperties_Inputs, this.pnlAdvancedProperties_MultiInputs,

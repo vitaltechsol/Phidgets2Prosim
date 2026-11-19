@@ -24,6 +24,7 @@ namespace Phidgets2Prosim
         public PhidgetsDCMotor[]       DCMotors      { get; } = new PhidgetsDCMotor[10];
         public PhidgetsEncoder[]       Encoders      { get; } = new PhidgetsEncoder[20];
         public List<PhidgetsButton>    Buttons       { get; } = new List<PhidgetsButton>();
+        public List<PhidgetsLink>      Links         { get; } = new List<PhidgetsLink>();
 
         /// <summary>Custom trim-wheel instance — null until LoadOutputDevices is called.</summary>
         public Custom_TrimWheel TrimWheel { get; private set; }
@@ -75,6 +76,7 @@ namespace Phidgets2Prosim
             LoadDCMotors(config);
             LoadEncoders(config);
             LoadButtons(config);
+            LoadLinks(config);
             LoadTrimWheel(config);
             LoadParkingBrake(config);
         }
@@ -97,7 +99,31 @@ namespace Phidgets2Prosim
             for (int i = 0; i < VoltageInputs.Length; i++) { VoltageInputs[i]?.Close(); VoltageInputs[i] = null; }
         }
 
+        // Links do not use ProSim, so they are loaded at startup and released on exit
+        public void UnloadLinks()
+        {
+            foreach (var l in Links) l.Stop();
+            Links.Clear();
+        }
+
         // ── Private load helpers ─────────────────────────────────────────────────
+
+        private void LoadLinks(Config config)
+        {
+            if (config?.PhidgetsLinkInstances == null) return;
+            foreach (var inst in config.PhidgetsLinkInstances)
+            {
+                try
+                {
+                    var link = new PhidgetsLink(inst);
+                    link.ErrorLog += RaiseError;
+                    link.InfoLog  += RaiseInfo;
+                    Links.Add(link);
+                    _ = link.Start();
+                }
+                catch (Exception ex) { RaiseError("Error loading link config: " + ex.Message); }
+            }
+        }
 
         private void LoadGates(Config config)
         {

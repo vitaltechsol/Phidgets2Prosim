@@ -223,7 +223,7 @@ namespace Phidgets2Prosim
         private async System.Threading.Tasks.Task StartDcTest()
         {
             if (_dcTestStarting || _dcTestMotor != null) return;
-            var hub = _hubs.GetAll().FirstOrDefault(h => h.Name == cboDeviceHub.Text);
+            var hub = _hubs.GetAll().FirstOrDefault(h => HubText(h) == cboDeviceHub.Text);
             if (hub == null)
             {
                 MessageBox.Show("Select a Phidgets hub first.", "Test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -425,7 +425,7 @@ namespace Phidgets2Prosim
         {
             inst = null;
             var hubs = _hubs.GetAll();
-            var hub = hubs.FirstOrDefault(h => h.Name == cboDeviceHub.Text);
+            var hub = hubs.FirstOrDefault(h => HubText(h) == cboDeviceHub.Text);
             if (hub == null)
             {
                 MessageBox.Show("Select a Phidgets hub for this motor.", "DC Motor", MessageBoxButtons.OK, MessageBoxIcon.Warning);

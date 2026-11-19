@@ -411,6 +411,7 @@
             total += cfg.PhidgetsDCMotorInstances?.Count ?? 0;
             total += cfg.PhidgetsEncoderInstances?.Count ?? 0;
             total += cfg.PhidgetsButtonInstances?.Count ?? 0;
+            total += cfg.PhidgetsLinkInstances?.Count ?? 0;
             if (cfg.CustomTrimWheelInstance != null) total++;
             if (cfg.CustomParkingBrakeInstance != null) total++;
 
@@ -420,6 +421,7 @@
         private void Form1_Closed(object sender, EventArgs e)
         {
             _devices.UnloadInputDevices();
+            _devices.UnloadLinks();
             Debug.WriteLine("closed");
         }
 
@@ -675,6 +677,9 @@
                     case DcMotorCategory:
                         LoadDcMotorList(cfg, search);
                         break;
+                    case LinkCategory:
+                        Fill(cfg.PhidgetsLinkInstances, x => x.Name ?? ("C" + x.Channel), x => LinkLabel(x));
+                        break;
                     case "Buttons":
                         Fill(cfg.PhidgetsButtonInstances, x => x.Name, x => BuildDeviceListLabel(x.Serial, x.HubPort, x.Channel, x.Name));
                         break;
@@ -793,6 +798,9 @@
                 case DcMotorRef dc:
                     LoadDcMotorEditor(dc.Inst, hubs);
                     break;
+                case PhidgetsLinkInst lk:
+                    LoadLinkEditor(lk);
+                    break;
                 case PhidgetsButtonInst bt:
                     lblCardItemTitle.Text = "Edit Button";
                     SetHubAndPortChannel(bt.Serial, bt.HubPort, bt.Channel, hubs);
@@ -850,13 +858,16 @@
             pnlAdvancedProperties_Voltages.Visible = false;
             pnlAdvancedProperties_Simple.Visible   = false;
             ResetDcMotorEditor();
+            ResetLinkEditor();
         }
+
+        private static string HubText(PhidgetsHubInst h) => $"{h.Name} ({h.Serial})";
 
         // Hub list is app-wide (configured on the Hubs page); every category shares the same dropdown
         private void PopulateHubDropdown(ComboBox cbo, List<PhidgetsHubInst> hubs)
         {
             cbo.Items.Clear();
-            foreach (var h in hubs) cbo.Items.Add(h.Name);
+            foreach (var h in hubs) cbo.Items.Add(HubText(h));
             if (cbo.Items.Count > 0) cbo.SelectedIndex = 0;
         }
 
@@ -882,6 +893,7 @@
         // Shared form at the top of the editor: hub + hub port always; channel and ProSim ref only where the type uses them
         private void SetGeneralPropertiesVisibility(bool visible)
         {
+            if (_activeDeviceCategory == LinkCategory) visible = false; // Links carry their own input + output hub selectors
             pnlGeneralProperties.Visible = visible;
 
             bool showChannel = _activeDeviceCategory != DcMotorCategory
@@ -1013,7 +1025,7 @@
         private void SetHubAndPortChannel(int serial, int hubPort, int channel, List<PhidgetsHubInst> hubs)
         {
             var hub = hubs.FirstOrDefault(h => h.Serial == serial);
-            if (hub != null) cboDeviceHub.Text = hub.Name;
+            if (hub != null) cboDeviceHub.Text = HubText(hub);
 
             nudDeviceHubPort.Value = ClampToRange(hubPort, nudDeviceHubPort.Minimum, nudDeviceHubPort.Maximum);
 
@@ -1036,6 +1048,9 @@
             {
                 case DcMotorCategory:
                     NewDcMotorEditor();
+                    break;
+                case LinkCategory:
+                    NewLinkEditor();
                     break;
                 case "Outputs":
                 case "Gates":
@@ -1072,9 +1087,10 @@
         private void BtnSaveDevice_Click(object sender, EventArgs e)
         {
             if (_activeDeviceCategory == DcMotorCategory) { SaveDcMotor(); return; }
+            if (_activeDeviceCategory == LinkCategory) { SaveLink(); return; }
 
             // Common fields (shared form)
-            var hub = _hubs.GetAll().FirstOrDefault(h => h.Name == cboDeviceHub.Text);
+            var hub = _hubs.GetAll().FirstOrDefault(h => HubText(h) == cboDeviceHub.Text);
             int serial  = hub?.Serial ?? 0;
             int hubPort = (int)nudDeviceHubPort.Value;
             int channel = int.TryParse(cboDeviceChannel.Text, out int ch) ? ch : 0;
@@ -1235,6 +1251,7 @@
                     case "Encoders":    Remove(cfg.PhidgetsEncoderInstances); break;
                     case "Gates":       Remove(cfg.PhidgetsGateInstances); break;
                     case "Buttons":     Remove(cfg.PhidgetsButtonInstances); break;
+                    case LinkCategory:  Remove(cfg.PhidgetsLinkInstances); break;
                     case "Multi-Input": Remove(cfg.PhidgetsMultiInputInstances); break;
                     case "Voltage Out": Remove(cfg.PhidgetsVoltageOutputInstances); break;
                     case "Voltage In":  Remove(cfg.PhidgetsVoltageInputInstances); break;
