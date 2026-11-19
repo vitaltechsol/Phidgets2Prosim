@@ -198,6 +198,9 @@ namespace Phidgets2Prosim
 		// Duty cycle 0..1 (0 = off, 1 = fully on) at the low / high end of the input
 		public double OutputMin { get; set; } = 0.0;
 		public double OutputMax { get; set; } = 1.0;
+
+		// (Optional) PWM frequency in Hz. Set once when the output opens and never changed. Leave empty to keep the device default.
+		public double? Frequency { get; set; }
 	}
 
 

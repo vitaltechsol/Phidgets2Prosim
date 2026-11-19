@@ -13,7 +13,7 @@ namespace Phidgets2Prosim
 
         private Panel pnlAdvancedProperties_Links;
         private TableLayoutPanel pnlLinkGrid;
-        private TextBox txtLinkName;
+        private TextBox txtLinkName, txtLinkFreq;
         private ComboBox cboLinkSource, cboLinkInHub, cboLinkOutHub;
         private NumericUpDown nudLinkInPort, nudLinkInChannel, nudLinkOutPort, nudLinkOutChannel;
         private CheckBox chkLinkUseRange, chkLinkInvert;
@@ -79,6 +79,9 @@ namespace Phidgets2Prosim
             DcRow(grid, "Output at minimum (%)", nudLinkOutMin, "PWM duty cycle at the minimum input (0 = off).");
             nudLinkOutMax = new NumericUpDown { Minimum = 0, Maximum = 100, DecimalPlaces = 1, Value = 100 };
             DcRow(grid, "Output at maximum (%)", nudLinkOutMax, "PWM duty cycle at the maximum input (100 = fully on).");
+            txtLinkFreq = new TextBox();
+            DcRow(grid, "Frequency (Hz)", txtLinkFreq, "Optional. PWM frequency, set once when the link starts and never changed. Empty keeps the device default.");
+            txtLinkFreq.HandleCreated += (s, e) => SendMessage(txtLinkFreq.Handle, EM_SETCUEBANNER, (IntPtr)1, "optional");
 
             // ── Tuning (voltage only) ──
             DcSection(grid, "Tuning", "How often the input is read");
@@ -157,6 +160,7 @@ namespace Phidgets2Prosim
             nudLinkInMin.Value = 0; nudLinkInMax.Value = 1;
             nudLinkCurve.Value = 1;
             nudLinkOutMin.Value = 0; nudLinkOutMax.Value = 100;
+            txtLinkFreq.Text = "";
             nudLinkMinChange.Value = 0.002M;
             nudLinkInterval.Value = 50;
             UpdateLinkSourceVisibility();
@@ -218,6 +222,7 @@ namespace Phidgets2Prosim
             SetNud(nudLinkCurve, l.CurvePower > 0 ? l.CurvePower : 1);
             SetNud(nudLinkOutMin, l.OutputMin * 100);
             SetNud(nudLinkOutMax, l.OutputMax * 100);
+            txtLinkFreq.Text = l.Frequency?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "";
             SetNud(nudLinkMinChange, l.MinChangeTriggerValue);
             SetNud(nudLinkInterval, l.DataInterval > 0 ? l.DataInterval : 50);
             lblCardItemTitle.Text = "Edit Link";
@@ -241,7 +246,21 @@ namespace Phidgets2Prosim
                 return false;
             }
 
+            double? freq = null;
+            string freqText = txtLinkFreq.Text.Trim();
+            if (freqText != "")
+            {
+                if (!double.TryParse(freqText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double hz) || hz <= 0)
+                {
+                    MessageBox.Show("Frequency must be a positive number of Hz, or empty.", "Link", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtLinkFreq.Focus();
+                    return false;
+                }
+                freq = hz;
+            }
+
             l.Name = txtLinkName.Text.NullIfEmpty();
+            l.Frequency = freq;
             l.SourceType = LinkIsVoltage ? LinkSourceType.VoltageInput : LinkSourceType.DigitalInput;
             l.Serial = inHub.Serial;
             l.HubPort = (int)nudLinkInPort.Value;

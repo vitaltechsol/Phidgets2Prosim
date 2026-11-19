@@ -76,6 +76,12 @@ namespace Phidgets2Prosim
                 _out = new DigitalOutput();
                 Configure(_out, _cfg.OutSerial, _cfg.OutHubPort, _cfg.OutChannel);
                 await Task.Run(() => _out.Open(5000));
+                if (_cfg.Frequency.HasValue)
+                {
+                    // One-time setting; clamped to what the device supports
+                    double hz = Math.Max(_out.MinFrequency, Math.Min(_out.MaxFrequency, _cfg.Frequency.Value));
+                    _out.Frequency = hz;
+                }
 
                 switch (_cfg.SourceType)
                 {
