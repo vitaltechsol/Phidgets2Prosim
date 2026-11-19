@@ -95,6 +95,10 @@
     </Compile>
     <Compile Include="ConfigInstances.cs" />
     <Compile Include="DeviceIOUI.cs" />
+    <Compile Include="DCMotorEditorUI.cs" />
+    <Compile Include="VoltageEditorUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="HubManager.cs" />
     <Compile Include="HubWorkflowService.cs" />
     <Compile Include="PhidgetDevice.cs" />

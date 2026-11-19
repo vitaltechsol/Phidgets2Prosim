@@ -2304,12 +2304,12 @@ PhidgetsVoltageInputInstances:
     HubPort: 2
     Channel: 0
     ProsimDataRef: A_ASP2_VHF_1_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_1_REC_LATCH # S_ASP2_VHF_1_REC_LATCH
+    ProsimDataRefOnOff: S_ASP2_VHF_1_REC_LATCH # S_ASP2_VHF_1_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 1
     ProsimDataRef: A_ASP2_VHF_2_VOLUME
-    ProsimDataRefOnOff: S_ASP_VHF_2_REC_LATCH # S_ASP2_VHF_2_REC_LATCH
+    ProsimDataRefOnOff: S_ASP2_VHF_2_REC_LATCH # S_ASP2_VHF_2_REC_LATCH
   - Serial: 745566
     HubPort: 2
     Channel: 2
@@ -2409,7 +2409,7 @@ PhidgetsButtonInstances:
 
 PhidgetsDCMotorInstances:
   - Serial: 668066
-    UseRefTarget: system.gauge.G_PED_ELEV_TRIM
+    RefTargetPos: system.gauge.G_PED_ELEV_TRIM
     HubPort: 2
     Acceleration: 30
     CurrentLimit: 4

@@ -319,7 +319,7 @@ namespace Phidgets2Prosim
 
                     // Subscribe to ProSim target ref if configured
                     if (!string.IsNullOrWhiteSpace(inst.RefTargetPos))
-                        DCMotors[idx].UseRefTarget(inst.RefTargetPos);
+                        DCMotors[idx].SubscribeTargetRef(inst.RefTargetPos);
 
                     idx++;
                 }

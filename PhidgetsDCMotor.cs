@@ -12,7 +12,7 @@ namespace Phidgets2Prosim
         // ---- ProSim refs (optional) -----------------------------------------
         public string RefTurnOn { get; set; } = string.Empty;
         public string RefCurrentPos { get; set; } = string.Empty; // if you also mirror position back
-        public string RefTargetPos { get; set; } = string.Empty;  // used by UseRefTarget()
+        public string RefTargetPos { get; set; } = string.Empty;  // followed via SubscribeTargetRef()
         public double CurrentVelocity { get; set; } = 0;
 
         private bool isPaused = false;
@@ -45,21 +45,7 @@ namespace Phidgets2Prosim
             {
                 await base.InitializeAsync();
 
-                _motor.HubPort = HubPort;
-                _motor.Channel = Channel;
-                if (HubPort >= 0)
-                {
-                    _motor.HubPort = HubPort;
-                    _motor.IsRemote = true;
-                }
-                _motor.DeviceSerialNumber = Serial;
-                _motor.Open(5000);
-                if (Acceleration <= 0) Acceleration = 50;
-                _motor.Acceleration = Acceleration;
-                _motor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
-                _motor.TargetBrakingStrength = TargetBrakingStrength;
-
-
+                OpenMotor();
 
                 SendInfoLog($"DCMotor Connected: serial={Serial} hub={HubPort} ch={Channel} accel={Acceleration}");
             }
@@ -68,6 +54,43 @@ namespace Phidgets2Prosim
                 SendErrorLog($"Open Fail for DC Motor {Serial}: {HubPort} ch={Channel}");
                 SendErrorLog(ex.ToString());
             }
+        }
+
+        private void OpenMotor()
+        {
+            _motor.HubPort = HubPort;
+            _motor.Channel = Channel;
+            if (HubPort >= 0)
+            {
+                _motor.HubPort = HubPort;
+                _motor.IsRemote = true;
+            }
+            _motor.DeviceSerialNumber = Serial;
+            _motor.Open(5000);
+            if (Acceleration <= 0) Acceleration = 50;
+            _motor.Acceleration = Acceleration;
+            _motor.CurrentLimit = (CurrentLimit > 0) ? CurrentLimit : 4;
+            _motor.TargetBrakingStrength = TargetBrakingStrength;
+        }
+
+        /// <summary>Stops and closes the channel so another handle (e.g. the editor test) can open it.</summary>
+        public void Disconnect()
+        {
+            try { if (_motor.Attached) _motor.TargetVelocity = 0; } catch { }
+            try { _motor.Close(); } catch (Exception ex) { SendErrorLog("DC motor disconnect: " + ex.Message); }
+            CurrentVelocity = 0;
+            SendInfoLog($"DCMotor disconnected for test: serial={Serial} hub={HubPort}");
+        }
+
+        /// <summary>Re-opens the channel after <see cref="Disconnect"/>.</summary>
+        public void Reconnect()
+        {
+            try
+            {
+                OpenMotor();
+                SendInfoLog($"DCMotor reconnected: serial={Serial} hub={HubPort}");
+            }
+            catch (Exception ex) { SendErrorLog($"DC motor reconnect failed ({Serial}:{HubPort}): {ex.Message}"); }
         }
 
         public override void ApplyVelocity(double velocity)
@@ -84,7 +107,7 @@ namespace Phidgets2Prosim
         // ---- Hook ProSim target ref to controller ---------------------------
 
         /// <summary>Subscribe to a ProSim data ref; on change, move to mapped target.</summary>
-        public void UseRefTarget(string refTargetName)
+        public void SubscribeTargetRef(string refTargetName)
         {
             if (string.IsNullOrWhiteSpace(refTargetName)) return;
 
