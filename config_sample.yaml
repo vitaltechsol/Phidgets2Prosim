@@ -1106,10 +1106,10 @@ PhidgetsGateInstances:
     Channel: 15
     Inverse: true   
     ProsimDataRef: B_DC_POWER
-  - Serial: 741087
-    HubPort: 0
-    Channel: 15
-    ProsimDataRef: B_FLIGHTDECK_DOOR_LOCK
+  # - Serial: 741087
+  #   HubPort: 0
+  #   Channel: 15
+  #   ProsimDataRef: B_FLIGHTDECK_DOOR_LOCK
   # - Serial: 741087
   #   HubPort: 0
   #   Channel: 14
@@ -1608,15 +1608,15 @@ PhidgetsInputInstances:
     OffInputValue: 0
      
   - Serial: 618534
-    HubPort: 1
-    Channel: 6
-    InputValue: 1 #Deny
-    ProsimDataRef: S_FLIGHT_DEK_DOOR
-  - Serial: 618534  
-    HubPort: 1
-    Channel: 7
-    ProsimDataRef: S_FLIGHT_DEK_DOOR
-    InputValue: 2 #Unlock
+  #   HubPort: 1
+  #   Channel: 6
+  #   InputValue: 1 Deny
+  #   ProsimDataRef: S_FLIGHT_DEK_DOOR
+  # - Serial: 618534  
+  #   HubPort: 1
+  #   Channel: 7
+  #   ProsimDataRef: S_FLIGHT_DEK_DOOR
+  #   InputValue: 2 Unlock
   - Serial: 668015
     HubPort: 1
     Channel: 7
@@ -2436,4 +2436,13 @@ PhidgetsDCMotorInstances:
       PositionFilterAlpha: 0.85
       TickMs: 15 
       SetpointSlewPerTick: 0.012 
-        
+
+PhidgetsLinkInstances:
+  - Serial: 618534
+    HubPort: 1
+    Channel: 7
+    Name: Unlock
+    SourceType: DigitalInput
+    OutSerial: 741087
+    OutHubPort: 0
+    OutChannel: 15

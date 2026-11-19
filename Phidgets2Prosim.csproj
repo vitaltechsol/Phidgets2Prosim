@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigRepository.cs" />
+    <Compile Include="ConfigYaml.cs" />
     <Compile Include="Custom_TrimWheel.cs" />
     <Compile Include="Custom_ParkingBrake.cs" />
     <Compile Include="DefaultIntput.cs" />

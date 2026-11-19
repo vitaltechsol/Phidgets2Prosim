@@ -39,13 +39,31 @@ namespace Phidgets2Prosim
             }
         }
 
-        /// <summary>Serialises <paramref name="cfg"/> and overwrites config.yaml.</summary>
+        /// <summary>
+        /// Saves <paramref name="cfg"/>. Only the list entries that changed are edited in place (everything else in the
+        /// file, comments included, is untouched). Falls back to rewriting the whole file when that is not possible.
+        /// Nulls and values equal to the class defaults are omitted from written entries.
+        /// </summary>
         public void Save(Config cfg)
         {
             try
             {
-                var s = new SerializerBuilder().Build();
-                File.WriteAllText(ConfigFile, s.Serialize(cfg));
+                string output = null;
+                bool bom = false;
+                if (File.Exists(ConfigFile))
+                {
+                    var raw = File.ReadAllBytes(ConfigFile);
+                    bom = raw.Length >= 3 && raw[0] == 0xEF && raw[1] == 0xBB && raw[2] == 0xBF;
+                    string text = File.ReadAllText(ConfigFile);
+                    var orig = Load();
+                    if (orig != null && ConfigYaml.TrySplice(text, orig, cfg, out string spliced) && ConfigYaml.Verify(spliced, cfg))
+                        output = spliced;
+                    else
+                        RaiseInfo("Config rewritten in full (entry-level update was not possible).");
+
+                    if (output == text) return; // nothing changed
+                }
+                File.WriteAllText(ConfigFile, output ?? ConfigYaml.FullDocument(cfg), new UTF8Encoding(bom));
             }
             catch (Exception ex)
             {
