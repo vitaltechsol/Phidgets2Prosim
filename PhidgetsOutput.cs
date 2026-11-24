@@ -268,6 +268,18 @@ namespace Phidgets2Prosim
             }
         }
 
+        /// <summary>Releases the channel for a manual test (keeps subscriptions alive).</summary>
+        public void Disconnect()
+        {
+            try { digitalOutput.Close(); } catch (Exception ex) { SendErrorLog("Output disconnect: " + ex.Message); }
+        }
+
+        /// <summary>Re-opens the channel after <see cref="Disconnect"/>.</summary>
+        public void Reconnect()
+        {
+            _ = Open();
+        }
+
         public void Close()
         {
             try

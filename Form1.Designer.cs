@@ -935,6 +935,7 @@ namespace Phidgets2Prosim
             this.pnlAdvancedProperties_Outputs.Controls.Add(lblVOn); this.pnlAdvancedProperties_Outputs.Controls.Add(this.txtValueOn);
             this.pnlAdvancedProperties_Outputs.Controls.Add(lblVOff); this.pnlAdvancedProperties_Outputs.Controls.Add(this.txtValueOff);
             this.pnlAdvancedProperties_Outputs.Controls.Add(lblVDim); this.pnlAdvancedProperties_Outputs.Controls.Add(this.txtValueDim);
+            InitializeOutputTestControls();
         }
 
         private void InitializeMotorsFields_Custom()

@@ -97,6 +97,9 @@
     <Compile Include="ConfigInstances.cs" />
     <Compile Include="DeviceIOUI.cs" />
     <Compile Include="DCMotorEditorUI.cs" />
+    <Compile Include="OutputTestUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="LinkEditorUI.cs">
       <SubType>Form</SubType>
     </Compile>
