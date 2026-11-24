@@ -76,6 +76,7 @@ namespace Phidgets2Prosim
                 _out = new DigitalOutput();
                 Configure(_out, _cfg.OutSerial, _cfg.OutHubPort, _cfg.OutChannel);
                 await Task.Run(() => _out.Open(5000));
+                if (!_running) { Stop(); return false; } // stopped (e.g. config reloaded) while opening
                 if (_cfg.Frequency.HasValue)
                 {
                     // One-time setting; clamped to what the device supports

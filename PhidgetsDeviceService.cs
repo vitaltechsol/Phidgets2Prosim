@@ -106,6 +106,43 @@ namespace Phidgets2Prosim
             Links.Clear();
         }
 
+        private void UnloadInputs()      { for (int i = 0; i < Inputs.Length; i++)        { Inputs[i]?.Close();        Inputs[i] = null; } }
+        private void UnloadMultiInputs() { for (int i = 0; i < MultiInputs.Length; i++)   { MultiInputs[i]?.Close();   MultiInputs[i] = null; } }
+        private void UnloadVoltageInputs() { for (int i = 0; i < VoltageInputs.Length; i++) { VoltageInputs[i]?.Close(); VoltageInputs[i] = null; } }
+
+        private readonly object _reloadLock = new object();
+
+        /// <summary>
+        /// Applies a saved / deleted mapping without restarting: closes every runtime object of the category and
+        /// re-creates them from <paramref name="cfg"/>. Returns false when the category cannot be reloaded live yet
+        /// (the change is in the config file and takes effect after a restart).
+        /// <paramref name="inputsLoaded"/>: input categories are skipped while ProSim is not connected; they load fresh on connect.
+        /// </summary>
+        public bool ReloadCategory(string category, Config cfg, bool inputsLoaded)
+        {
+            lock (_reloadLock)
+            {
+                switch (category)
+                {
+                    case "Links":
+                        UnloadLinks();
+                        LoadLinks(cfg);
+                        return true;
+                    case "Inputs":
+                        if (inputsLoaded) { UnloadInputs(); LoadInputs(cfg); }
+                        return true;
+                    case "Multi-Input":
+                        if (inputsLoaded) { UnloadMultiInputs(); LoadMultiInputs(cfg); }
+                        return true;
+                    case "Voltage In":
+                        if (inputsLoaded) { UnloadVoltageInputs(); LoadVoltageInputs(cfg); }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
         // ── Private load helpers ─────────────────────────────────────────────────
 
         private void LoadLinks(Config config)

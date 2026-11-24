@@ -292,8 +292,10 @@ namespace Phidgets2Prosim
                 {
                     return; // nothing is written; the unsaved target is discarded with this config copy
                 }
+                StopLinkTest(); // release the test's channels before the link is (re)started
                 WriteConfig(cfg);
-                DisplayInfoLog("Link saved. Restart the app (or reconnect) to apply it.");
+                DisplayInfoLog("Link saved.");
+                ApplyDeviceChanges(LinkCategory);
 
                 LoadDeviceListForCategory(LinkCategory);
                 for (int i = 0; i < lstDevices.Items.Count; i++)

@@ -1080,6 +1080,7 @@
             if (MessageBox.Show("Delete this device mapping?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             DeleteDeviceFromConfig(item);
             DisplayInfoLog("Device mapping deleted.");
+            ApplyDeviceChanges(_activeDeviceCategory);
             LoadDeviceListForCategory(_activeDeviceCategory);
             BtnAddDevice_Click(this, EventArgs.Empty);
         }
@@ -1108,6 +1109,7 @@
 
             LoadDeviceListForCategory(_activeDeviceCategory);
             DisplayInfoLog("Device mapping saved.");
+            ApplyDeviceChanges(_activeDeviceCategory);
 
             // Re-select the saved entry so the next save updates it instead of adding a new one
             for (int i = 0; i < lstDevices.Items.Count; i++)
@@ -1121,6 +1123,24 @@
         }
 
         private int _lastSavedIndex = -1;
+
+        // Applies a saved / deleted mapping to the running devices (no restart) for categories that support it
+        private void ApplyDeviceChanges(string category)
+        {
+            var cfg = _config.Load();
+            if (cfg == null) return;
+            bool inputsLoaded = _configsInsLoaded;
+            Task.Run(() =>
+            {
+                try
+                {
+                    bool applied = _devices.ReloadCategory(category, cfg, inputsLoaded);
+                    DisplayInfoLog(applied ? category + " applied." : category + " saved. Restart the app to apply it.");
+                    if (applied && !IsDisposed) BeginInvoke(new Action(UpdateTelemetryPanel));
+                }
+                catch (Exception ex) { DisplayErrorLog("Error applying " + category + ": " + ex.Message); }
+            });
+        }
 
         // Returns the entry being edited (index into the config list) or appends a new one. Editing in place keeps
         // every property the form does not expose.
