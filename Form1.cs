@@ -749,6 +749,9 @@
                     chkOutputInverse.Checked      = o.Inverse == true;
                     txtOutputDelayOn.Value         = o.DelayOn  ?? 0;
                     txtOutputMaxTimeOn.Value        = o.MaxTimeOn ?? 0;
+                    txtValueOn.Value  = ClampToRange((decimal)o.ValueOn, txtValueOn.Minimum, txtValueOn.Maximum);
+                    txtValueOff.Value = ClampToRange((decimal)o.ValueOff, txtValueOff.Minimum, txtValueOff.Maximum);
+                    txtValueDim.Value = ClampToRange((decimal)o.ValueDim, txtValueDim.Minimum, txtValueDim.Maximum);
                     break;
                 case PhidgetsInputInst i:
                     lblCardItemTitle.Text = "Edit Input";
@@ -780,6 +783,12 @@
                     SetHubAndPortChannel(g.Serial, g.HubPort, g.Channel, hubs);
                     txtDeviceProsimRef.Text = g.ProsimDataRef ?? "";
                     ShowAdvancedPanel(pnlAdvancedProperties_Outputs);
+                    txtOutputRefOff.Text   = g.ProsimDataRefOff ?? "";
+                    txtOutputRef2.Text     = g.ProsimDataRef2 ?? "";
+                    cboGateOperator.Text   = string.Equals(g.Operator, "AND", StringComparison.OrdinalIgnoreCase) ? "AND" : "OR";
+                    chkOutputInverse.Checked = g.Inverse;
+                    txtOutputDelayOn.Value   = g.DelayOn ?? 0;
+                    txtOutputMaxTimeOn.Value = g.MaxTimeOn ?? 0;
                     break;
                 case PhidgetsVoltageOutputInst v:
                     lblCardItemTitle.Text = "Edit Voltage Output";
@@ -821,6 +830,7 @@
             pnlAdvancedProperties_Voltages.Visible = panel == pnlAdvancedProperties_Voltages;
             pnlAdvancedProperties_Simple.Visible   = panel == pnlAdvancedProperties_Simple;
             if (panel == pnlAdvancedProperties_Voltages) ReflowVoltageFields(_activeDeviceCategory == "Voltage Out");
+            if (panel == pnlAdvancedProperties_Outputs) ApplyOutputFieldVisibility(_activeDeviceCategory == "Gates");
             lblEncoderScale.Visible = txtEncoderScale.Visible = _activeDeviceCategory == "Encoders";
             lblButtonName.Visible   = txtButtonName.Visible   = _activeDeviceCategory == "Buttons";
             if (pnlAdvancedProperties_DCMotors != null) pnlAdvancedProperties_DCMotors.Visible = false;
@@ -842,6 +852,9 @@
             txtInputRef3.Text = "";
             txtInputUserVar.Text = "";
             txtEncoderScale.Value = 1;
+            txtOutputRefOff.Text = ""; txtOutputRef2.Text = ""; txtOutputUserVar.Text = ""; cboGateOperator.Text = "OR";
+            chkOutputInverse.Checked = false; txtOutputDelayOn.Value = 0; txtOutputMaxTimeOn.Value = 0;
+            txtValueOn.Value = 1; txtValueOff.Value = 0; txtValueDim.Value = 0.7M;
             txtButtonName.Text = "";
             ResetVoltageFields();
 
@@ -923,6 +936,8 @@
             layout.RowStyles[row].SizeType = SizeType.Absolute;
             layout.RowStyles[row].Height = visible ? y + 10 : 0F;
         }
+
+        private static decimal ClampToRange(decimal value, decimal min, decimal max) => value < min ? min : value > max ? max : value;
 
         private static decimal ClampToRange(int value, decimal min, decimal max)
         {
@@ -1176,6 +1191,9 @@
                         o.Inverse          = chkOutputInverse.Checked ? (bool?)true : null;
                         o.DelayOn          = txtOutputDelayOn.Value > 0 ? (int?)((int)txtOutputDelayOn.Value) : null;
                         o.MaxTimeOn        = txtOutputMaxTimeOn.Value > 0 ? (int?)((int)txtOutputMaxTimeOn.Value) : null;
+                        o.ValueOn  = (double)txtValueOn.Value;
+                        o.ValueOff = (double)txtValueOff.Value;
+                        o.ValueDim = (double)txtValueDim.Value;
                         break;
                     }
                     case "Inputs":
@@ -1203,6 +1221,12 @@
                         cfg.PhidgetsGateInstances = cfg.PhidgetsGateInstances ?? new List<PhidgetsGateInst>();
                         var g = EditTarget(cfg.PhidgetsGateInstances, idx, out at, out isNew);
                         g.Serial = serial; g.HubPort = hubPort; g.Channel = channel; g.ProsimDataRef = prosimRef;
+                        g.ProsimDataRefOff = txtOutputRefOff.Text.NullIfEmpty();
+                        g.ProsimDataRef2   = txtOutputRef2.Text.NullIfEmpty();
+                        g.Operator         = g.ProsimDataRef2 != null && cboGateOperator.Text == "AND" ? "AND" : "OR";
+                        g.Inverse          = chkOutputInverse.Checked;
+                        g.DelayOn          = txtOutputDelayOn.Value > 0 ? (int?)((int)txtOutputDelayOn.Value) : null;
+                        g.MaxTimeOn        = txtOutputMaxTimeOn.Value > 0 ? (int?)((int)txtOutputMaxTimeOn.Value) : null;
                         break;
                     }
                     case "Buttons":

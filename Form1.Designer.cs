@@ -901,27 +901,27 @@ namespace Phidgets2Prosim
             this.txtOutputRefOff = new TextBox(); this.txtOutputRefOff.Location = new System.Drawing.Point(140, 92); this.txtOutputRefOff.Size = new System.Drawing.Size(250, 23);
             this.txtOutputRefOff.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblUVar = new Label(); lblExRefText(lblUVar, "User Variable:", 120);
+            lblUVar = new Label(); lblExRefText(lblUVar, "User Variable:", 120);
             this.txtOutputUserVar = new TextBox(); this.txtOutputUserVar.Location = new System.Drawing.Point(140, 122); this.txtOutputUserVar.Size = new System.Drawing.Size(250, 23);
             this.txtOutputUserVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblOp = new Label(); lblExRefText(lblOp, "Operator (Gates):", 150);
+            lblOp = new Label(); lblExRefText(lblOp, "Operator (Gates):", 150);
             this.cboGateOperator = new ComboBox(); this.cboGateOperator.Items.Add("OR"); this.cboGateOperator.Items.Add("AND"); this.cboGateOperator.Location = new System.Drawing.Point(140, 152); this.cboGateOperator.Size = new System.Drawing.Size(250, 23);
             this.cboGateOperator.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblR2G = new Label(); lblExRefText(lblR2G, "Gate Altern. Ref 2:", 180);
+            lblR2G = new Label(); lblExRefText(lblR2G, "Gate Altern. Ref 2:", 180);
             this.txtOutputRef2 = new TextBox(); this.txtOutputRef2.Location = new System.Drawing.Point(140, 182); this.txtOutputRef2.Size = new System.Drawing.Size(250, 23);
             this.txtOutputRef2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblVOn = new Label(); lblExRefText(lblVOn, "Custom On Volt Ratio:", 210);
+            lblVOn = new Label(); lblExRefText(lblVOn, "Custom On Volt Ratio:", 210);
             this.txtValueOn = new NumericUpDown(); this.txtValueOn.DecimalPlaces = 2; this.txtValueOn.Increment = 0.1M; this.txtValueOn.Location = new System.Drawing.Point(140, 212); this.txtValueOn.Size = new System.Drawing.Size(70, 23);
             this.txtValueOn.Value = 1.0M;
 
-            Label lblVOff = new Label(); lblExRefText(lblVOff, "Off Ratio:", 210); lblVOff.Location = new System.Drawing.Point(215, 215); lblVOff.Width = 60;
+            lblVOff = new Label(); lblExRefText(lblVOff, "Off Ratio:", 210); lblVOff.Location = new System.Drawing.Point(215, 215); lblVOff.Width = 60;
             this.txtValueOff = new NumericUpDown(); this.txtValueOff.DecimalPlaces = 2; this.txtValueOff.Increment = 0.1M; this.txtValueOff.Location = new System.Drawing.Point(270, 212); this.txtValueOff.Size = new System.Drawing.Size(50, 23);
             this.txtValueOff.Value = 0.0M;
 
-            Label lblVDim = new Label(); lblExRefText(lblVDim, "Dim:", 210); lblVDim.Location = new System.Drawing.Point(325, 215); lblVDim.Width = 35;
+            lblVDim = new Label(); lblExRefText(lblVDim, "Dim:", 210); lblVDim.Location = new System.Drawing.Point(325, 215); lblVDim.Width = 35;
             this.txtValueDim = new NumericUpDown(); this.txtValueDim.DecimalPlaces = 2; this.txtValueDim.Increment = 0.1M; this.txtValueDim.Location = new System.Drawing.Point(355, 212); this.txtValueDim.Size = new System.Drawing.Size(40, 23);
             this.txtValueDim.Value = 0.7M;
 

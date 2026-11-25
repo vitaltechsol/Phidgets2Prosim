@@ -250,8 +250,9 @@ namespace Phidgets2Prosim
         {
             try
             {
-                if (voltageOutput.IsOpen)
-                    voltageOutput.Voltage = Convert.ToDouble(convertedValue);
+                // IsOpen is true as soon as Open() is called; only write once the device is really attached
+                if (voltageOutput.IsOpen && voltageOutput.Attached)
+                    voltageOutput.Voltage = ClampToDevice(voltageOutput, Convert.ToDouble(convertedValue));
             }
             catch (Exception ex)
             {
@@ -370,11 +371,11 @@ namespace Phidgets2Prosim
 
             try
             {
-                if (voltageOutput.IsOpen)
-                    voltageOutput.Voltage = sinV;
+                if (voltageOutput.IsOpen && voltageOutput.Attached)
+                    voltageOutput.Voltage = ClampToDevice(voltageOutput, sinV);
 
-                if (cosVoltageOutput.IsOpen)
-                    cosVoltageOutput.Voltage = cosV;
+                if (cosVoltageOutput.IsOpen && cosVoltageOutput.Attached)
+                    cosVoltageOutput.Voltage = ClampToDevice(cosVoltageOutput, cosV);
             }
             catch (Exception ex)
             {
@@ -387,6 +388,14 @@ namespace Phidgets2Prosim
         // Helpers
         // ---------------------------
         private static double Clamp(double v, double min, double max) => v < min ? min : (v > max ? max : v);
+
+        // Phidget throws 0x10 "Not enough space" when the requested voltage is outside the device's range
+        // (e.g. a negative value on a 0..10V output), so clamp to what the attached device reports.
+        private static double ClampToDevice(VoltageOutput output, double v)
+        {
+            try { return Clamp(v, output.MinVoltage, output.MaxVoltage); }
+            catch { return v; }
+        }
 
         private static double NormalizeDegrees360(double deg)
         {

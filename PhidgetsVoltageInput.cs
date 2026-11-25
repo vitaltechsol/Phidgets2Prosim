@@ -339,7 +339,7 @@ namespace Phidgets2Prosim
                     voltageRatioInput.DeviceSerialNumber = Serial;
                     SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
 
-                    await Task.Run(() => voltageRatioInput.Open(5000));
+                    await OpenWithRetry(voltageRatioInput, 5000);
                     voltageRatioInput.VoltageRatioChangeTrigger = MinChangeTriggerValue;
                     voltageRatioInput.DataInterval = DataInterval;
 
@@ -379,7 +379,7 @@ namespace Phidgets2Prosim
                     voltageInput.DeviceSerialNumber = Serial;
                     SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
 
-                    await Task.Run(() => voltageInput.Open(5000));
+                    await OpenWithRetry(voltageInput, 5000);
                     voltageInput.VoltageChangeTrigger = MinChangeTriggerValue;
                     voltageInput.DataInterval = DataInterval;
 

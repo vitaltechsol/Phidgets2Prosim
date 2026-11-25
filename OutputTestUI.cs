@@ -125,3 +125,46 @@ namespace Phidgets2Prosim
         }
     }
 }
+
+namespace Phidgets2Prosim
+{
+    public partial class Form1
+    {
+        private Label lblUVar, lblOp, lblR2G, lblVOn, lblVOff, lblVDim;
+
+        // Outputs and Gates share one panel; show only the fields each type actually supports and close the gaps.
+        private void ApplyOutputFieldVisibility(bool gate)
+        {
+            lblUVar.Visible = txtOutputUserVar.Visible = !gate;
+            lblVOn.Visible = txtValueOn.Visible = lblVOff.Visible = txtValueOff.Visible = lblVDim.Visible = txtValueDim.Visible = !gate;
+            lblOp.Visible = cboGateOperator.Visible = lblR2G.Visible = txtOutputRef2.Visible = gate;
+
+            int y = 120; // first row after "Inactive Trigger Ref"
+            void Row(Label lbl, params Control[] ctrls)
+            {
+                lbl.Top = y + 3;
+                foreach (var c in ctrls) c.Top = y + 2;
+                y += 30;
+            }
+            if (gate)
+            {
+                Row(lblR2G, txtOutputRef2);
+                Row(lblOp, cboGateOperator);
+            }
+            else
+            {
+                Row(lblUVar, txtOutputUserVar);
+                lblVOn.Top = y + 3; txtValueOn.Top = y + 2;
+                lblVOff.Top = y + 3; txtValueOff.Top = y + 2;
+                lblVDim.Top = y + 3; txtValueDim.Top = y + 2;
+                y += 30;
+            }
+            if (btnOutputTest != null)
+            {
+                btnOutputTest.Top = y + 10;
+                lblOutputTestStatus.Top = y + 46;
+                pnlAdvancedProperties_Outputs.Controls.OfType<Label>().First(l => l.Text == "Test (not saved):").Top = y + 16;
+            }
+        }
+    }
+}

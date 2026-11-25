@@ -54,7 +54,7 @@ private readonly Func<bool> _shouldUpdate;
                     encoder.IsRemote = true;
                 }
 
-                await Task.Run(() => encoder.Open(4000));
+                await OpenWithRetry(encoder, 4000);
                 encoder.PositionChangeTrigger = PositionChangeTrigger;
 
             }

@@ -158,7 +158,7 @@ namespace Phidgets2Prosim
 					digitalInput.Attach += DigitalInput_Attach;
 					digitalInput.Detach += DigitalInput_Detach;
 					digitalInput.DeviceSerialNumber = Serial;
-					await Task.Run(() => digitalInput.Open(5000));
+					await OpenWithRetry(digitalInput, 5000);
 					SendInfoLog($"-> Attached {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");
 				}
 				else
@@ -168,7 +168,7 @@ namespace Phidgets2Prosim
 			}
 			catch (System.Exception ex)
 			{
-				SendErrorLog("Error: --> Channel " + Channel + " Input " + ProsimDataRef + " - Value:" + InputValue);
+				SendErrorLog($"Error: --> Could not open input {ProsimDataRef} - Hub serial {Serial} Port {HubPort} Channel {Channel} - Value:{InputValue}");
 				SendErrorLog(ex.ToString());
 			}
 		}

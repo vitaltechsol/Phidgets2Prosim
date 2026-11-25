@@ -154,7 +154,7 @@ namespace Phidgets2Prosim
                 digitalInput.Channel = Channel;
                 digitalInput.StateChange += StateChange;
                 digitalInput.DeviceSerialNumber = serial;
-                await Task.Run(() => digitalInput.Open(500));
+                await OpenWithRetry(digitalInput, 2000);
             }
             catch (Exception ex)
             {

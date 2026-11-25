@@ -93,6 +93,9 @@ namespace Phidgets2Prosim
 
             Debug.WriteLine($"[TrimWheel] rangeMin={rangeMin:F3} rangeMax={rangeMax:F3}");
 
+            // Put the motor in a known neutral state before any events can arrive
+            Stop();
+
             DataRef dataRefSpeed = new DataRef("system.gauge.G_MIP_FLAP", 100, connection);
             DataRef dataRefAP = new DataRef("system.gates.B_PITCH_CMD", 100, connection);
 
@@ -256,6 +259,7 @@ namespace Phidgets2Prosim
                     }
                     else
                     {
+                        bool wasMoving = isMotorMoving;
                         isMotorMoving = false;
                         if (pulsateTimer != null)
                         {
@@ -263,11 +267,13 @@ namespace Phidgets2Prosim
                             pulsateTimer.Dispose();
                             pulsateTimer = null;
                         }
-                        // Kickback when stopping
                         currentVel = 0;
-                        // Kick in opposite logical direction (+0.5)
-                        dcm.ApplyVelocity(MapVelocity(0.8));
-                        Thread.Sleep(250);
+                        if (wasMoving)
+                        {
+                            // Kickback when stopping (opposite logical direction)
+                            dcm.ApplyVelocity(MapVelocity(0.8));
+                            Thread.Sleep(250);
+                        }
                         dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -293,6 +299,7 @@ namespace Phidgets2Prosim
                     }
                     else
                     {
+                        bool wasMoving = isMotorMoving;
                         isMotorMoving = false;
                         if (pulsateTimer != null)
                         {
@@ -301,9 +308,12 @@ namespace Phidgets2Prosim
                             pulsateTimer = null;
                         }
                         currentVel = 0;
-                        // Kick in opposite logical direction (-0.5)
-                        dcm.ApplyVelocity(MapVelocity(-0.8));
-                        Thread.Sleep(250);
+                        if (wasMoving)
+                        {
+                            // Kickback when stopping (opposite logical direction)
+                            dcm.ApplyVelocity(MapVelocity(-0.8));
+                            Thread.Sleep(250);
+                        }
                         dcm.ApplyVelocity(MapVelocity(currentVel));
                     }
                 }
@@ -333,9 +343,18 @@ namespace Phidgets2Prosim
 
         }
 
+        /// <summary>Applies the neutral (stopped) velocity, honoring the configured range mapping.</summary>
+        public void Stop()
+        {
+            currentVel = 0;
+            isMotorMoving = false;
+            dcm.ApplyVelocity(MapVelocity(0));
+        }
+
         public void Pause(bool isPaused)
         {
-            dcm.Pause(isPaused);
+            // Use the mapped logical velocity so a [0,1] range doesn't turn "0" into full speed
+            dcm.ApplyVelocity(MapVelocity(isPaused ? 0 : currentVel));
         }
     }
 }
