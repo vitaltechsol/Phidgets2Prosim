@@ -1075,100 +1075,178 @@ namespace Phidgets2Prosim
             this.pnlPageSpecial.AutoScrollMargin = new System.Drawing.Size(20, 20);
 
             var specialLayout = new TableLayoutPanel();
-            specialLayout.Dock = DockStyle.Fill;
+            specialLayout.Dock = DockStyle.Top;
             specialLayout.BackColor = System.Drawing.Color.Transparent;
+            specialLayout.Height = 744;
+            specialLayout.MinimumSize = new System.Drawing.Size(0, 744);
             specialLayout.ColumnCount = 1;
             specialLayout.RowCount = 2;
             specialLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            specialLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            specialLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             specialLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
-            Label lblSpecialHeader = new Label();
-            lblSpecialHeader.Text = "Dedicated Trim Wheel & Braking Core";
-            lblSpecialHeader.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            lblSpecialHeader.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
-            lblSpecialHeader.Dock = DockStyle.Top;
-            lblSpecialHeader.Margin = new Padding(0, 0, 0, 16);
-            lblSpecialHeader.Size = new System.Drawing.Size(500, 30);
-            specialLayout.Controls.Add(lblSpecialHeader, 0, 0);
+            // Tab buttons (same style as the I/O Mappings categories)
+            var tabsCard = new Panel();
+            tabsCard.BackColor = System.Drawing.Color.White;
+            tabsCard.Dock = DockStyle.Fill;
+            tabsCard.Margin = new Padding(0, 0, 0, 16);
+            StyleCard_Custom(tabsCard);
 
-            var specialCardsLayout = new TableLayoutPanel();
-            specialCardsLayout.Dock = DockStyle.Fill;
-            specialCardsLayout.BackColor = System.Drawing.Color.Transparent;
-            specialCardsLayout.ColumnCount = 2;
-            specialCardsLayout.RowCount = 1;
-            specialCardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 340F));
-            specialCardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            specialCardsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            specialLayout.Controls.Add(specialCardsLayout, 0, 1);
+            this.flowSpecialTabs = new FlowLayoutPanel();
+            this.flowSpecialTabs.Dock = DockStyle.Fill;
+            this.flowSpecialTabs.Margin = new Padding(0);
+            this.flowSpecialTabs.Padding = new Padding(0);
+            this.flowSpecialTabs.FlowDirection = FlowDirection.LeftToRight;
+            this.flowSpecialTabs.WrapContents = true;
 
-            // Box 1: Custom Trim Wheel Speed Mapping
-            Panel cardTrim = new Panel();
-            cardTrim.BackColor = System.Drawing.Color.White;
-            cardTrim.Dock = DockStyle.Fill;
-            cardTrim.Margin = new Padding(0, 0, 20, 0);
-            StyleCard_Custom(cardTrim);
+            foreach (var tab in new[] { "Trim Wheel", "Parking Brake" })
+            {
+                var tabBtn = new Button();
+                tabBtn.Text = tab;
+                tabBtn.Tag = tab;
+                tabBtn.FlatStyle = FlatStyle.Flat;
+                tabBtn.FlatAppearance.BorderSize = 0;
+                tabBtn.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
+                tabBtn.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85);
+                tabBtn.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+                tabBtn.Size = new System.Drawing.Size(120, 34);
+                tabBtn.Margin = new System.Windows.Forms.Padding(4);
+                this.flowSpecialTabs.Controls.Add(tabBtn);
+            }
+            tabsCard.Controls.Add(this.flowSpecialTabs);
+            specialLayout.Controls.Add(tabsCard, 0, 0);
 
-            Label lblTrimTitle = new Label();
-            lblTrimTitle.Text = "Trim Wheel Control Limits";
-            lblTrimTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            lblTrimTitle.Location = new System.Drawing.Point(15, 15);
-            lblTrimTitle.Size = new System.Drawing.Size(250, 20);
-            cardTrim.Controls.Add(lblTrimTitle);
+            // Editor card
+            Panel editorCard = new Panel();
+            editorCard.BackColor = System.Drawing.Color.White;
+            editorCard.Dock = DockStyle.Fill;
+            editorCard.Margin = new Padding(0);
+            StyleCard_Custom(editorCard);
 
-            this.chkTrimReversed = new CheckBox(); this.chkTrimReversed.Text = "Reverse Speed Direction Axis"; this.chkTrimReversed.Location = new System.Drawing.Point(20, 50); this.chkTrimReversed.Size = new System.Drawing.Size(220, 20);
-            cardTrim.Controls.Add(this.chkTrimReversed);
-            this.chkTrimAccelerate = new CheckBox(); this.chkTrimAccelerate.Text = "Enable Custom Acceleration Module"; this.chkTrimAccelerate.Location = new System.Drawing.Point(20, 80); this.chkTrimAccelerate.Size = new System.Drawing.Size(260, 20);
-            this.chkTrimAccelerate.Checked = true;
-            cardTrim.Controls.Add(this.chkTrimAccelerate);
+            var editorLayout = new TableLayoutPanel();
+            editorLayout.Dock = DockStyle.Fill;
+            editorLayout.BackColor = System.Drawing.Color.Transparent;
+            editorLayout.ColumnCount = 1;
+            editorLayout.RowCount = 3;
+            editorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            editorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+            editorLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            editorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+            editorCard.Controls.Add(editorLayout);
 
-            int tY = 120;
-            this.txtTrimDirtyUp = CreateLabelNud_Custom(cardTrim, "Speed Dirty Nose UP:", tY); tY += 50;
-            this.txtTrimDirtyDown = CreateLabelNud_Custom(cardTrim, "Speed Dirty Nose DOWN:", tY); tY += 50;
-            this.txtTrimCleanUp = CreateLabelNud_Custom(cardTrim, "Speed Clean Nose UP:", tY); tY += 50;
-            this.txtTrimCleanDown = CreateLabelNud_Custom(cardTrim, "Speed Clean Nose DOWN:", tY); tY += 50;
-            this.txtTrimAPClean = CreateLabelNud_Custom(cardTrim, "Speed Autopilot Clean:", tY); tY += 50;
-            this.txtTrimAPDirty = CreateLabelNud_Custom(cardTrim, "Speed Autopilot Dirty:", tY);
+            this.lblSpecialTitle = new Label();
+            this.lblSpecialTitle.Text = "Trim Wheel";
+            this.lblSpecialTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblSpecialTitle.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            this.lblSpecialTitle.Dock = DockStyle.Fill;
+            editorLayout.Controls.Add(this.lblSpecialTitle, 0, 0);
 
-            specialCardsLayout.Controls.Add(cardTrim, 0, 0);
+            var host = new Panel();
+            host.Dock = DockStyle.Fill;
+            host.Margin = new Padding(0, 0, 0, 10);
+            host.AutoScroll = true;
+            editorLayout.Controls.Add(host, 0, 1);
 
-            // Box 2: Custom Parking Brake System
-            Panel cardBrake = new Panel();
-            cardBrake.BackColor = System.Drawing.Color.White;
-            cardBrake.Dock = DockStyle.Fill;
-            cardBrake.Margin = new Padding(0);
-            StyleCard_Custom(cardBrake);
+            // ── Trim Wheel form (CustomTrimWheelInstance) ──
+            this.pnlSpecialTrim = new Panel();
+            this.pnlSpecialTrim.Dock = DockStyle.Top;
+            this.pnlSpecialTrim.Height = 600;
+            int y = 0;
+            this.cboTrimHub = SpecialRow(this.pnlSpecialTrim, "Target Hub Serial:", new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, y); y += 32;
+            this.nudTrimHubPort = SpecialRow(this.pnlSpecialTrim, "Hub Port (-1 = USB):", SpecialNud(-1, 16, 0, 1), y); y += 32;
+            this.chkTrimReversed = SpecialRow(this.pnlSpecialTrim, "Reversed:", new CheckBox { Text = "Reverse motor direction" }, y); y += 32;
+            this.chkTrimAccelerate = SpecialRow(this.pnlSpecialTrim, "Accelerate:", new CheckBox { Text = "Accelerate as the wheel spins", Checked = true }, y); y += 32;
+            this.txtTrimDirtyUp = SpecialRow(this.pnlSpecialTrim, "Dirty Up speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.txtTrimDirtyDown = SpecialRow(this.pnlSpecialTrim, "Dirty Down speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.txtTrimCleanUp = SpecialRow(this.pnlSpecialTrim, "Clean Up speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.txtTrimCleanDown = SpecialRow(this.pnlSpecialTrim, "Clean Down speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.txtTrimAPClean = SpecialRow(this.pnlSpecialTrim, "Autopilot On Clean speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.txtTrimAPDirty = SpecialRow(this.pnlSpecialTrim, "Autopilot On Dirty speed:", SpecialNud(0, 1, 2, 0.05M), y); y += 32;
+            this.nudTrimRangeMin = SpecialRow(this.pnlSpecialTrim, "Range Min (-1 to 1):", SpecialNud(-1, 1, 2, 0.05M), y); y += 32;
+            this.nudTrimRangeMax = SpecialRow(this.pnlSpecialTrim, "Range Max (-1 to 1):", SpecialNud(-1, 1, 2, 0.05M), y); y += 32;
+            this.chkTrimEncoder = SpecialRow(this.pnlSpecialTrim, "Encoder:", new CheckBox { Text = "Use encoder for manual trim wheel position" }, y); y += 32;
+            this.cboTrimEncHub = SpecialRow(this.pnlSpecialTrim, "Encoder Hub Serial:", new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, y); y += 32;
+            this.nudTrimEncHubPort = SpecialRow(this.pnlSpecialTrim, "Encoder Hub Port:", SpecialNud(-1, 16, 0, 1), y); y += 32;
+            this.nudTrimEncChannel = SpecialRow(this.pnlSpecialTrim, "Encoder Channel:", SpecialNud(0, 16, 0, 1), y); y += 32;
+            this.nudTrimEncScale = SpecialRow(this.pnlSpecialTrim, "Encoder Scale Factor:", SpecialNud(-100000, 100000, 4, 0.1M), y);
+            this.chkTrimEncoder.CheckedChanged += (s, e) =>
+            {
+                bool on = this.chkTrimEncoder.Checked;
+                this.cboTrimEncHub.Enabled = this.nudTrimEncHubPort.Enabled = this.nudTrimEncChannel.Enabled = this.nudTrimEncScale.Enabled = on;
+            };
+            host.Controls.Add(this.pnlSpecialTrim);
 
-            Label lblBrakeTitle = new Label();
-            lblBrakeTitle.Text = "Toe Brake Configuration";
-            lblBrakeTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            lblBrakeTitle.Location = new System.Drawing.Point(15, 15);
-            lblBrakeTitle.Size = new System.Drawing.Size(250, 20);
-            cardBrake.Controls.Add(lblBrakeTitle);
+            // ── Parking Brake form (CustomParkingBrakeInstance) ──
+            this.pnlSpecialBrake = new Panel();
+            this.pnlSpecialBrake.Dock = DockStyle.Top;
+            this.pnlSpecialBrake.Height = 260;
+            this.pnlSpecialBrake.Visible = false;
+            y = 0;
+            this.txtBrakeSwitchVar = SpecialRow(this.pnlSpecialBrake, "Switch Variable:", new TextBox(), y); y += 32;
+            this.txtBrakeRelayVar = SpecialRow(this.pnlSpecialBrake, "Relay Variable:", new TextBox(), y); y += 32;
+            this.txtBrakeReleaseVar = SpecialRow(this.pnlSpecialBrake, "Release Variable:", new TextBox(), y); y += 32;
+            this.txtBrakeToeThresh = SpecialRow(this.pnlSpecialBrake, "Toe Brake Threshold (engage):", SpecialNud(0, 65535, 0, 10), y); y += 32;
+            this.txtBrakeReleaseThresh = SpecialRow(this.pnlSpecialBrake, "Release Toe Brake Threshold:", SpecialNud(0, 65535, 0, 10), y); y += 32;
+            this.txtBrakeReleaseDelay = SpecialRow(this.pnlSpecialBrake, "Release Delay On (ms):", SpecialNud(0, 600000, 0, 10), y); y += 32;
+            this.txtBrakeReleaseMaxTime = SpecialRow(this.pnlSpecialBrake, "Release Max Time On (ms):", SpecialNud(0, 600000, 0, 100), y);
+            host.Controls.Add(this.pnlSpecialBrake);
 
-            int bY = 50;
-            this.txtBrakeToeThresh = CreateLabelNud_Custom(cardBrake, "Toe Brake Engage Limit:", bY, 700); bY += 50;
-            this.txtBrakeReleaseThresh = CreateLabelNud_Custom(cardBrake, "Toe Brake Release Limit:", bY, 900); bY += 50;
-            this.txtBrakeReleaseDelay = CreateLabelNud_Custom(cardBrake, "Solenoid Action Delay (ms):", bY, 50); bY += 50;
-            this.txtBrakeReleaseMaxTime = CreateLabelNud_Custom(cardBrake, "Solenoid Max On-time (ms):", bY, 1000); bY += 50;
+            // Buttons
+            var btnLayout = new TableLayoutPanel();
+            btnLayout.Dock = DockStyle.Fill;
+            btnLayout.Padding = new Padding(0, 6, 0, 0);
+            btnLayout.ColumnCount = 2;
+            btnLayout.RowCount = 1;
+            btnLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 75F));
+            btnLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            btnLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
-            Label lblBs = new Label(); lblBs.Text = "Switch Variable ID:"; lblBs.Location = new System.Drawing.Point(20, bY); lblBs.Width = 130;
-            this.txtBrakeSwitchVar = new TextBox(); this.txtBrakeSwitchVar.Location = new System.Drawing.Point(160, bY - 2); this.txtBrakeSwitchVar.Size = new System.Drawing.Size(160, 23);
-            this.txtBrakeSwitchVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cardBrake.Controls.Add(lblBs); cardBrake.Controls.Add(this.txtBrakeSwitchVar); bY += 40;
+            this.btnSaveSpecial = new Button();
+            this.btnSaveSpecial.Text = "Save";
+            this.btnSaveSpecial.FlatStyle = FlatStyle.Flat;
+            this.btnSaveSpecial.FlatAppearance.BorderSize = 0;
+            this.btnSaveSpecial.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
+            this.btnSaveSpecial.ForeColor = System.Drawing.Color.White;
+            this.btnSaveSpecial.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnSaveSpecial.Dock = DockStyle.Fill;
+            this.btnSaveSpecial.Margin = new Padding(0, 0, 6, 0);
+            btnLayout.Controls.Add(this.btnSaveSpecial, 0, 0);
 
-            Label lblBr = new Label(); lblBr.Text = "Relay Variable ID:"; lblBr.Location = new System.Drawing.Point(20, bY); lblBr.Width = 130;
-            this.txtBrakeRelayVar = new TextBox(); this.txtBrakeRelayVar.Location = new System.Drawing.Point(160, bY - 2); this.txtBrakeRelayVar.Size = new System.Drawing.Size(160, 23);
-            this.txtBrakeRelayVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cardBrake.Controls.Add(lblBr); cardBrake.Controls.Add(this.txtBrakeRelayVar); bY += 40;
+            this.btnDeleteSpecial = new Button();
+            this.btnDeleteSpecial.Text = "Remove";
+            this.btnDeleteSpecial.FlatStyle = FlatStyle.Flat;
+            this.btnDeleteSpecial.FlatAppearance.BorderSize = 0;
+            this.btnDeleteSpecial.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
+            this.btnDeleteSpecial.ForeColor = System.Drawing.Color.White;
+            this.btnDeleteSpecial.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnDeleteSpecial.Dock = DockStyle.Fill;
+            this.btnDeleteSpecial.Margin = new Padding(6, 0, 0, 0);
+            btnLayout.Controls.Add(this.btnDeleteSpecial, 1, 0);
+            editorLayout.Controls.Add(btnLayout, 0, 2);
 
-            Label lblBv = new Label(); lblBv.Text = "Release Variable ID:"; lblBv.Location = new System.Drawing.Point(20, bY); lblBv.Width = 130;
-            this.txtBrakeReleaseVar = new TextBox(); this.txtBrakeReleaseVar.Location = new System.Drawing.Point(160, bY - 2); this.txtBrakeReleaseVar.Size = new System.Drawing.Size(160, 23);
-            this.txtBrakeReleaseVar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cardBrake.Controls.Add(lblBv); cardBrake.Controls.Add(this.txtBrakeReleaseVar);
-
-            specialCardsLayout.Controls.Add(cardBrake, 1, 0);
+            specialLayout.Controls.Add(editorCard, 0, 1);
             this.pnlPageSpecial.Controls.Add(specialLayout);
+        }
+
+        // Adds "label | control" as one row of a special-drives form
+        private static T SpecialRow<T>(Panel p, string text, T c, int y) where T : Control
+        {
+            var lbl = new Label();
+            lbl.Text = text;
+            lbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
+            lbl.Location = new System.Drawing.Point(0, y + 4);
+            lbl.Size = new System.Drawing.Size(190, 18);
+            c.Location = new System.Drawing.Point(200, y);
+            c.Size = new System.Drawing.Size(280, 23);
+            c.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            p.Controls.Add(lbl);
+            p.Controls.Add(c);
+            return c;
+        }
+
+        private static NumericUpDown SpecialNud(decimal min, decimal max, int decimals, decimal increment)
+        {
+            return new NumericUpDown { Minimum = min, Maximum = max, DecimalPlaces = decimals, Increment = increment };
         }
 
         private NumericUpDown CreateLabelNud_Custom(Panel card, string title, int y, int defaultVal = 0)
@@ -1393,6 +1471,21 @@ namespace Phidgets2Prosim
         private NumericUpDown txtButtonOffValue;
 
         // Special settings tabs controls
+        private FlowLayoutPanel flowSpecialTabs;
+        private Label lblSpecialTitle;
+        private Panel pnlSpecialTrim;
+        private Panel pnlSpecialBrake;
+        private Button btnSaveSpecial;
+        private Button btnDeleteSpecial;
+        private ComboBox cboTrimHub;
+        private NumericUpDown nudTrimHubPort;
+        private NumericUpDown nudTrimRangeMin;
+        private NumericUpDown nudTrimRangeMax;
+        private CheckBox chkTrimEncoder;
+        private ComboBox cboTrimEncHub;
+        private NumericUpDown nudTrimEncHubPort;
+        private NumericUpDown nudTrimEncChannel;
+        private NumericUpDown nudTrimEncScale;
         private CheckBox chkTrimReversed;
         private CheckBox chkTrimAccelerate;
         private NumericUpDown txtTrimDirtyUp;

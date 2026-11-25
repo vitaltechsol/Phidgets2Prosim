@@ -148,8 +148,10 @@ namespace Phidgets2Prosim
                 object o = p.GetValue(orig), n = p.GetValue(cfg);
                 if (!IsListType(p))
                 {
-                    // Settings, trim wheel, parking brake: not edited entry-wise
-                    if (TreeStr(ToTree(o, false)) != TreeStr(ToTree(n, false))) return false;
+                    if (TreeStr(ToTree(o, false)) == TreeStr(ToTree(n, false))) continue;
+                    // Trim wheel / parking brake: single block, replaced in place. Settings: not edited here.
+                    if (p.Name != "CustomTrimWheelInstance" && p.Name != "CustomParkingBrakeInstance") return false;
+                    if (!SpliceBlock(lines, p.Name, n)) return false;
                     continue;
                 }
 
@@ -198,6 +200,43 @@ namespace Phidgets2Prosim
         {
             string t = line.Trim();
             return t.Length == 0 || t.StartsWith("#");
+        }
+
+        // Replaces / adds / removes a single top-level mapping block (e.g. CustomTrimWheelInstance)
+        private static bool SpliceBlock(List<string> lines, string name, object value)
+        {
+            int header = lines.FindIndex(l => Regex.IsMatch(l, "^" + Regex.Escape(name) + @":\s*(#.*)?$"));
+
+            var rendered = new List<string>();
+            if (value != null)
+            {
+                rendered.Add(name + ":");
+                foreach (var l in Plain.Serialize(ToTree(value, true)).TrimEnd('\n', '\r').Split('\n'))
+                    rendered.Add("  " + l.TrimEnd('\r'));
+            }
+
+            if (header < 0)
+            {
+                if (value == null) return true;
+                while (lines.Count > 0 && lines[lines.Count - 1].Trim().Length == 0) lines.RemoveAt(lines.Count - 1);
+                lines.Add("");
+                lines.AddRange(rendered);
+                lines.Add("");
+                return true;
+            }
+
+            // block = header up to the next top-level key; trailing blank / comment lines belong to what follows
+            int end = lines.Count;
+            for (int i = header + 1; i < lines.Count; i++)
+            {
+                string l = lines[i];
+                if (l.Length > 0 && !char.IsWhiteSpace(l[0]) && l[0] != '#' && !l.StartsWith("- ") && l != "-") { end = i; break; }
+            }
+            while (end - 1 > header && IsBlankOrComment(lines[end - 1])) end--;
+
+            lines.RemoveRange(header, end - header);
+            lines.InsertRange(header, rendered);
+            return true;
         }
 
         // Replaces original items [from, to) of a section with the rendered `added` items

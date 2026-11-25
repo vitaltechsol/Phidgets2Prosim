@@ -63,6 +63,8 @@
             btnNavDevices.Click   += (s, e) => ShowPage(pnlPageDevices,   btnNavDevices);
             btnNavDevices.Click   += (s, e) => OnDevicesPageShown();
             btnNavSpecial.Click   += (s, e) => ShowPage(pnlPageSpecial,   btnNavSpecial);
+            btnNavSpecial.Click   += (s, e) => OnSpecialPageShown();
+            WireSpecialPage();
             btnNavSettings.Click  += (s, e) => ShowPage(pnlPageSettings,  btnNavSettings);
 
             // Wire log buttons
