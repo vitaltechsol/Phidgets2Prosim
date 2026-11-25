@@ -541,13 +541,13 @@ namespace Phidgets2Prosim
             var devicesLayout = new TableLayoutPanel();
             devicesLayout.Dock = DockStyle.Top;
             devicesLayout.BackColor = System.Drawing.Color.Transparent;
-            devicesLayout.Height = 744;
-            devicesLayout.MinimumSize = new System.Drawing.Size(0, 744);
+            devicesLayout.Height = 762;
+            devicesLayout.MinimumSize = new System.Drawing.Size(0, 762);
             devicesLayout.ColumnCount = 2;
             devicesLayout.RowCount = 2;
             devicesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 280F));
             devicesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            devicesLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 132F));
+            devicesLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 150F));
             devicesLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             var categoriesCard = new Panel();
@@ -564,7 +564,7 @@ namespace Phidgets2Prosim
             this.flowCategories.WrapContents = true;
 
             // Category filter buttons
-            string[] categories = { "Outputs", "Gates", "Inputs", "Multi-Input", "Encoders", "Voltage Out", "Voltage In", "DC Motors", "Links", "Buttons" };
+            string[] categories = { "Outputs", "Gates", "Inputs", "Multi-Input", "Encoders", "Voltage Out", "Voltage In", "DC Motors", "BL DC Motors", "Links", "Buttons" };
             foreach (var cat in categories)
             {
                 var catBtn = new Button();
@@ -746,6 +746,7 @@ namespace Phidgets2Prosim
             advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Simple);
 
             advancedPropertiesHost.Controls.Add(BuildDCMotorEditor());
+            advancedPropertiesHost.Controls.Add(BuildBldcMotorEditor());
             advancedPropertiesHost.Controls.Add(BuildLinkEditor());
             deviceEditorLayout.Controls.Add(advancedPropertiesHost, 0, 2);
 

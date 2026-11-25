@@ -1607,7 +1607,7 @@ PhidgetsInputInstances:
     InputValue: 1
     OffInputValue: 0
      
-  - Serial: 618534
+  # - Serial: 618534
   #   HubPort: 1
   #   Channel: 6
   #   InputValue: 1 Deny
@@ -2436,7 +2436,7 @@ PhidgetsDCMotorInstances:
       PositionFilterAlpha: 0.85
       TickMs: 15 
       SetpointSlewPerTick: 0.012 
-
+        
 PhidgetsLinkInstances:
   - Serial: 618534
     HubPort: 1

@@ -184,6 +184,7 @@ namespace Phidgets2Prosim
             pnlAdvancedProperties_Voltages.Visible = false;
             pnlAdvancedProperties_Simple.Visible = false;
             if (pnlAdvancedProperties_DCMotors != null) pnlAdvancedProperties_DCMotors.Visible = false;
+            if (pnlAdvancedProperties_BLDCMotors != null) pnlAdvancedProperties_BLDCMotors.Visible = false;
             pnlAdvancedProperties_Links.Visible = true;
             pnlLinkGrid.Visible = true;
             btnSaveDevice.Visible = true;

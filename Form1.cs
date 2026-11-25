@@ -679,6 +679,9 @@
                     case DcMotorCategory:
                         LoadDcMotorList(cfg, search);
                         break;
+                    case BldcMotorCategory:
+                        Fill(cfg.PhidgetsBLDCMotorInstances, x => x.RefTargetPos, x => BuildDeviceListLabel(x.Serial, x.HubPort, null, x.RefTargetPos));
+                        break;
                     case LinkCategory:
                         Fill(cfg.PhidgetsLinkInstances, x => x.Name ?? ("C" + x.Channel), x => LinkLabel(x));
                         break;
@@ -809,6 +812,9 @@
                 case DcMotorRef dc:
                     LoadDcMotorEditor(dc.Inst, hubs);
                     break;
+                case PhidgetsBLDCMotorInst bl:
+                    LoadBldcMotorEditor(bl, hubs);
+                    break;
                 case PhidgetsLinkInst lk:
                     LoadLinkEditor(lk);
                     break;
@@ -836,6 +842,7 @@
             lblEncoderScale.Visible = txtEncoderScale.Visible = _activeDeviceCategory == "Encoders";
             lblButtonName.Visible   = txtButtonName.Visible   = _activeDeviceCategory == "Buttons";
             if (pnlAdvancedProperties_DCMotors != null) pnlAdvancedProperties_DCMotors.Visible = false;
+            if (pnlAdvancedProperties_BLDCMotors != null) pnlAdvancedProperties_BLDCMotors.Visible = false;
             btnSaveDevice.Visible = true;
         }
 
@@ -873,6 +880,7 @@
             pnlAdvancedProperties_Voltages.Visible = false;
             pnlAdvancedProperties_Simple.Visible   = false;
             ResetDcMotorEditor();
+            ResetBldcMotorEditor();
             ResetLinkEditor();
         }
 
@@ -911,10 +919,11 @@
             if (_activeDeviceCategory == LinkCategory) visible = false; // Links carry their own input + output hub selectors
             pnlGeneralProperties.Visible = visible;
 
-            bool showChannel = _activeDeviceCategory != DcMotorCategory
+            bool isMotor = _activeDeviceCategory == DcMotorCategory || _activeDeviceCategory == BldcMotorCategory;
+            bool showChannel = !isMotor
                             && _activeDeviceCategory != "Voltage Out"
                             && _activeDeviceCategory != "Multi-Input";
-            bool showRef = _activeDeviceCategory != DcMotorCategory;
+            bool showRef = !isMotor;
 
             // controls: 0 lblHub, 1 hub, 2 lblPort, 3 port, 4 lblChannel, 5 channel, 6 lblRef, 7 ref
             var c = pnlGeneralProperties.Controls;
@@ -1066,6 +1075,9 @@
                 case DcMotorCategory:
                     NewDcMotorEditor();
                     break;
+                case BldcMotorCategory:
+                    NewBldcMotorEditor();
+                    break;
                 case LinkCategory:
                     NewLinkEditor();
                     break;
@@ -1105,6 +1117,7 @@
         private void BtnSaveDevice_Click(object sender, EventArgs e)
         {
             if (_activeDeviceCategory == DcMotorCategory) { SaveDcMotor(); return; }
+            if (_activeDeviceCategory == BldcMotorCategory) { SaveBldcMotor(); return; }
             if (_activeDeviceCategory == LinkCategory) { SaveLink(); return; }
 
             // Common fields (shared form)
@@ -1298,6 +1311,7 @@
                     case "Gates":       Remove(cfg.PhidgetsGateInstances); break;
                     case "Buttons":     Remove(cfg.PhidgetsButtonInstances); break;
                     case LinkCategory:  Remove(cfg.PhidgetsLinkInstances); break;
+                    case BldcMotorCategory: Remove(cfg.PhidgetsBLDCMotorInstances); break;
                     case "Multi-Input": Remove(cfg.PhidgetsMultiInputInstances); break;
                     case "Voltage Out": Remove(cfg.PhidgetsVoltageOutputInstances); break;
                     case "Voltage In":  Remove(cfg.PhidgetsVoltageInputInstances); break;
