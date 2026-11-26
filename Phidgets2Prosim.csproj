@@ -100,6 +100,16 @@
     <Compile Include="BLDCMotorEditorUI.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="VoltageInterpolator.cs" />
+    <Compile Include="VoltageCurveEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VoltageCurveUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VoltagePreviewUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="OutputTestUI.cs">
       <SubType>Form</SubType>
     </Compile>

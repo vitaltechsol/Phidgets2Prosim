@@ -47,15 +47,19 @@ namespace Phidgets2Prosim
             if (_voltageOrigTop == null) _voltageOrigTop = controls.ToDictionary(c => c, c => c.Top);
 
             string show = isOutput ? "out" : "in";
-            foreach (var c in controls) c.Visible = c.Tag == null || (string)c.Tag == show;
+            foreach (var c in controls)
+                c.Visible = c.Tag == null || (string)c.Tag == show
+                    || ((string)c.Tag == "in-curve" && !isOutput && cboVoltageInterpolation.Text == "Curve");
 
             // original rows are 30px apart; control tops are offset by 2-5px, so bucket by (top - 2) / 30
+            // a tall control (curve editor, preview) takes as many 30px rows as it needs
             int newRow = 0;
             foreach (var group in controls.GroupBy(c => (_voltageOrigTop[c] - 2) / 30).OrderBy(g => g.Key))
             {
-                if (!group.Any(c => c.Visible)) continue;
+                var visible = group.Where(c => c.Visible).ToList();
+                if (visible.Count == 0) continue;
                 foreach (var c in group) c.Top = _voltageOrigTop[c] + (newRow - group.Key) * 30;
-                newRow++;
+                newRow += Math.Max(1, visible.Max(c => (int)Math.Ceiling((c.Height + 3) / 30.0)));
             }
         }
 
@@ -64,8 +68,8 @@ namespace Phidgets2Prosim
             chkVoltageUseSinCos.Checked = false;
             chkVoltageUseRange.Checked = false;
             chkVoltageWrap360.Checked = false;
-            txtVoltageInputPoints.Text = "0,0.2,0.4,0.8,1";
-            txtVoltageOutputPoints.Text = "0,100,500,800,1024";
+            txtVoltageInputPoints.Text = "0,1";
+            txtVoltageOutputPoints.Text = "0,255";
             cboVoltageInterpolation.Text = "Linear";
             txtVoltageMinChange.Value = 0.002M;
             txtVoltageInterval.Value = 50M;

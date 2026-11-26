@@ -47,8 +47,6 @@ namespace Phidgets2Prosim
         public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.Linear;
         public double CurvePower { get; set; } = 2.0;
         public double MinChangeTriggerValue { get; set; }
-        private double[] splineA, splineB, splineC, splineD;
-        private bool splineInitialized = false;
         private System.Timers.Timer debounceTimer;
         private object debounceLock = new object();
         private int? pendingStateChange = null;
@@ -94,10 +92,6 @@ namespace Phidgets2Prosim
             MinChangeTriggerValue = minChangeDetection;
             DataInterval = dataInterval;
             UseRange = useRange;
-            if (InterpolationMode == InterpolationMode.Spline)
-            {
-                ComputeSplineCoefficients();
-            }
             _dataRef = new DataRef(ProsimDataRef, 200, Connection, true);
 
             if (UseRange)
@@ -184,128 +178,13 @@ namespace Phidgets2Prosim
             }
         }
 
-        private double Interpolate(double x)
+        private double Interpolate(double x) =>
+            VoltageInterpolator.Interpolate(x, InputPoints, OutputPoints, InterpolationMode, CurvePower);
+
+        // Re-opens the channel after Close() (e.g. after the editor's Preview released it)
+        public void Reconnect()
         {
-
-            if (InputPoints == null || OutputPoints == null || OutputPoints.Length < 2 || InputPoints.Length != OutputPoints.Length)
-            {
-                throw new ArgumentException("InputPoints/OutputPoints must be non-null, equal length, and have at least 2 points.");
-            }
-
-
-            switch (InterpolationMode)
-            {
-                case InterpolationMode.Curve:
-                    return CurveInterpolate(x);
-                case InterpolationMode.Spline:
-                    return SplineInterpolate(x);
-                default:
-                    return LinearInterpolate(x);
-            }
-        }
-
-        private double LinearInterpolate(double x)
-        {
-            for (int i = 0; i < InputPoints.Length - 1; i++)
-            {
-                double x0 = InputPoints[i];
-                double x1 = InputPoints[i + 1];
-                double y0 = OutputPoints[i];
-                double y1 = OutputPoints[i + 1];
-
-                if (x >= x0 && x <= x1)
-                {
-                    double t = (x - x0) / (x1 - x0);
-                    return y0 + (y1 - y0) * t;
-                }
-            }
-            var interpolated = x <= InputPoints[0] ? OutputPoints[0] : OutputPoints[OutputPoints.Length - 1];
-            Debug.WriteLine($"[LinearInterpolate] x={x}, interpolated={interpolated}");
-            return interpolated;
-        }
-
-
-        private double CurveInterpolate(double x)
-        {
-            for (int i = 0; i < InputPoints.Length - 1; i++)
-            {
-                double x0 = InputPoints[i];
-                double x1 = InputPoints[i + 1];
-                double y0 = OutputPoints[i];
-                double y1 = OutputPoints[i + 1];
-
-                if (x >= x0 && x <= x1)
-                {
-                    double t = (x - x0) / (x1 - x0);
-                    t = Math.Pow(t, CurvePower);
-                    return y0 + (y1 - y0) * t;
-                }
-            }
-
-            return x <= InputPoints[0] ? OutputPoints[0] : OutputPoints[OutputPoints.Length - 1];
-        }
-
-        private void ComputeSplineCoefficients()
-        {
-            int n = InputPoints.Length;
-            splineA = new double[n];
-            splineB = new double[n - 1];
-            splineC = new double[n];
-            splineD = new double[n - 1];
-
-            for (int i = 0; i < n; i++)
-                splineA[i] = OutputPoints[i];
-
-            double[] h = new double[n - 1];
-            for (int i = 0; i < n - 1; i++)
-                h[i] = InputPoints[i + 1] - InputPoints[i];
-
-            double[] alpha = new double[n - 1];
-            for (int i = 1; i < n - 1; i++)
-                alpha[i] = (3 / h[i]) * (splineA[i + 1] - splineA[i]) - (3 / h[i - 1]) * (splineA[i] - splineA[i - 1]);
-
-            double[] l = new double[n];
-            double[] mu = new double[n];
-            double[] z = new double[n];
-            l[0] = 1;
-            mu[0] = z[0] = 0;
-
-            for (int i = 1; i < n - 1; i++)
-            {
-                l[i] = 2 * (InputPoints[i + 1] - InputPoints[i - 1]) - h[i - 1] * mu[i - 1];
-                mu[i] = h[i] / l[i];
-                z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
-            }
-
-            l[n - 1] = 1;
-            z[n - 1] = splineC[n - 1] = 0;
-
-            for (int j = n - 2; j >= 0; j--)
-            {
-                splineC[j] = z[j] - mu[j] * splineC[j + 1];
-                splineB[j] = (splineA[j + 1] - splineA[j]) / h[j] - h[j] * (splineC[j + 1] + 2 * splineC[j]) / 3;
-                splineD[j] = (splineC[j + 1] - splineC[j]) / (3 * h[j]);
-            }
-
-            splineInitialized = true;
-        }
-
-        private double SplineInterpolate(double x)
-        {
-            if (!splineInitialized) ComputeSplineCoefficients();
-
-            int i;
-            for (i = 0; i < InputPoints.Length - 1; i++)
-            {
-                if (x >= InputPoints[i] && x <= InputPoints[i + 1])
-                    break;
-            }
-
-            if (i >= InputPoints.Length - 1)
-                i = InputPoints.Length - 2;
-
-            double dx = x - InputPoints[i];
-            return splineA[i] + splineB[i] * dx + splineC[i] * dx * dx + splineD[i] * dx * dx * dx;
+            if (UseRange) OpenRange(); else Open();
         }
 
         public void Close()
@@ -334,6 +213,7 @@ namespace Phidgets2Prosim
                         voltageRatioInput.IsHubPortDevice = Channel == -1;
                     }
                     voltageRatioInput.Channel = Channel;
+                    voltageRatioInput.VoltageRatioChange -= StateChange;   // avoid double subscription on reopen
                     voltageRatioInput.VoltageRatioChange += StateChange;
 
                     voltageRatioInput.DeviceSerialNumber = Serial;
@@ -375,6 +255,7 @@ namespace Phidgets2Prosim
                     {
                         voltageInput.Channel = Channel;
                     }
+                    voltageInput.VoltageChange -= StateRangeChange;   // avoid double subscription on reopen
                     voltageInput.VoltageChange += StateRangeChange;
                     voltageInput.DeviceSerialNumber = Serial;
                     SendInfoLog($"-> Attaching {ProsimDataRef} to  [{HubPort}] Ch:{Channel}");

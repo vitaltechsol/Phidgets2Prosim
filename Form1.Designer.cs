@@ -736,6 +736,7 @@ namespace Phidgets2Prosim
             this.pnlAdvancedProperties_Voltages = new Panel();
             this.pnlAdvancedProperties_Voltages.Dock = DockStyle.Fill;
             this.pnlAdvancedProperties_Voltages.Visible = false;
+            this.pnlAdvancedProperties_Voltages.AutoScroll = true;
             InitializeVoltagesFields_Custom();
             advancedPropertiesHost.Controls.Add(this.pnlAdvancedProperties_Voltages);
 
@@ -1002,31 +1003,31 @@ namespace Phidgets2Prosim
 
             Label lblP1 = new Label(); lblExRefText(lblP1, "Input Points Map:", 30);
             this.txtVoltageInputPoints = new TextBox(); this.txtVoltageInputPoints.Location = new System.Drawing.Point(140, 32); this.txtVoltageInputPoints.Size = new System.Drawing.Size(250, 23);
-            this.txtVoltageInputPoints.Text = "0,0.2,0.4,0.8,1";
+            this.txtVoltageInputPoints.Text = "0,1";
             this.txtVoltageInputPoints.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblP2 = new Label(); lblExRefText(lblP2, "Output Points Map:", 60);
             this.txtVoltageOutputPoints = new TextBox(); this.txtVoltageOutputPoints.Location = new System.Drawing.Point(140, 62); this.txtVoltageOutputPoints.Size = new System.Drawing.Size(250, 23);
-            this.txtVoltageOutputPoints.Text = "0,100,500,800,1024";
+            this.txtVoltageOutputPoints.Text = "0,255";
             this.txtVoltageOutputPoints.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblP3 = new Label(); lblExRefText(lblP3, "Interpolat. Mode:", 90);
+            Label lblP3 = new Label(); lblExRefText(lblP3, "Interpolat. Mode:", 120);
             this.cboVoltageInterpolation = new ComboBox(); this.cboVoltageInterpolation.Items.Add("Linear"); this.cboVoltageInterpolation.Items.Add("Curve"); this.cboVoltageInterpolation.Items.Add("Spline");
-            this.cboVoltageInterpolation.Location = new System.Drawing.Point(140, 92); this.cboVoltageInterpolation.Size = new System.Drawing.Size(250, 23);
-            this.cboVoltageInterpolation.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            this.cboVoltageInterpolation.Location = new System.Drawing.Point(140, 122); this.cboVoltageInterpolation.Size = new System.Drawing.Size(95, 23);
+            this.cboVoltageInterpolation.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
-            Label lblP4 = new Label(); lblExRefText(lblP4, "Min Trigger Dev:", 120);
-            this.txtVoltageMinChange = new NumericUpDown(); this.txtVoltageMinChange.DecimalPlaces = 4; this.txtVoltageMinChange.Increment = 0.001M; this.txtVoltageMinChange.Location = new System.Drawing.Point(140, 122); this.txtVoltageMinChange.Size = new System.Drawing.Size(95, 23);
+            Label lblP4 = new Label(); lblExRefText(lblP4, "Min Trigger Dev:", 90);
+            this.txtVoltageMinChange = new NumericUpDown(); this.txtVoltageMinChange.DecimalPlaces = 4; this.txtVoltageMinChange.Increment = 0.001M; this.txtVoltageMinChange.Location = new System.Drawing.Point(140, 92); this.txtVoltageMinChange.Size = new System.Drawing.Size(95, 23);
             this.txtVoltageMinChange.Value = 0.002M;
 
-            Label lblP5 = new Label(); lblExRefText(lblP5, "Interval (ms):", 120); lblP5.Location = new System.Drawing.Point(240, 125); lblP5.Width = 80;
-            this.txtVoltageInterval = new NumericUpDown(); this.txtVoltageInterval.Location = new System.Drawing.Point(320, 122); this.txtVoltageInterval.Size = new System.Drawing.Size(70, 23);
+            Label lblP5 = new Label(); lblExRefText(lblP5, "Interval (ms):", 90); lblP5.Location = new System.Drawing.Point(240, 95); lblP5.Width = 80;
+            this.txtVoltageInterval = new NumericUpDown(); this.txtVoltageInterval.Location = new System.Drawing.Point(320, 92); this.txtVoltageInterval.Size = new System.Drawing.Size(70, 23);
             this.txtVoltageInterval.Value = 50M;
 
-            Label lblP6 = new Label(); lblExRefText(lblP6, "Curve Power Exp:", 150);
-            this.txtVoltageCurvePower = new NumericUpDown(); this.txtVoltageCurvePower.DecimalPlaces = 1; this.txtVoltageCurvePower.Location = new System.Drawing.Point(140, 152); this.txtVoltageCurvePower.Size = new System.Drawing.Size(250, 23);
+            Label lblP6 = new Label(); lblExRefText(lblP6, "Power Exp:", 120); lblP6.Location = new System.Drawing.Point(240, 125); lblP6.Width = 80;
+            this.txtVoltageCurvePower = new NumericUpDown(); this.txtVoltageCurvePower.DecimalPlaces = 1; this.txtVoltageCurvePower.Location = new System.Drawing.Point(320, 122); this.txtVoltageCurvePower.Size = new System.Drawing.Size(70, 23);
             this.txtVoltageCurvePower.Value = 2.0M;
-            this.txtVoltageCurvePower.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            this.txtVoltageCurvePower.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
             Label lblP7 = new Label(); lblExRefText(lblP7, "Scale Out Factor:", 180);
             this.txtVoltageScale = new NumericUpDown(); this.txtVoltageScale.Maximum = 10000; this.txtVoltageScale.Location = new System.Drawing.Point(140, 182); this.txtVoltageScale.Size = new System.Drawing.Size(95, 23);
@@ -1045,9 +1046,15 @@ namespace Phidgets2Prosim
             this.txtVoltageInterval.Maximum = 10000M;
 
             // Which fields belong to which category (null = shared): used to show only the relevant rows
-            foreach (Control c in new Control[] { this.chkVoltageUseRange, lblP1, this.txtVoltageInputPoints, lblP2, this.txtVoltageOutputPoints,
-                                                  lblP3, this.cboVoltageInterpolation, lblP4, this.txtVoltageMinChange, lblP6, this.txtVoltageCurvePower })
+            foreach (Control c in new Control[] { this.chkVoltageUseRange,
+                                                  lblP3, this.cboVoltageInterpolation, lblP4, this.txtVoltageMinChange })
                 c.Tag = "in";
+            // The raw point text boxes are replaced by the curve editor; they stay as hidden storage for load/save
+            foreach (Control c in new Control[] { lblP1, this.txtVoltageInputPoints, lblP2, this.txtVoltageOutputPoints })
+                c.Tag = "none";
+            // Power exponent only applies to Curve mode (shown inline next to the mode)
+            foreach (Control c in new Control[] { lblP6, this.txtVoltageCurvePower })
+                c.Tag = "in-curve";
             foreach (Control c in new Control[] { this.chkVoltageUseSinCos, lblP7, this.txtVoltageScale, lblP8, this.txtVoltageOffset,
                                                   lblP9, this.txtVoltageAmplitude, this.chkVoltageWrap360 })
                 c.Tag = "out";
@@ -1065,6 +1072,8 @@ namespace Phidgets2Prosim
             this.pnlAdvancedProperties_Voltages.Controls.Add(lblP8); this.pnlAdvancedProperties_Voltages.Controls.Add(this.txtVoltageOffset);
             this.pnlAdvancedProperties_Voltages.Controls.Add(lblP9); this.pnlAdvancedProperties_Voltages.Controls.Add(this.txtVoltageAmplitude);
             this.pnlAdvancedProperties_Voltages.Controls.Add(this.chkVoltageWrap360);
+            InitializeVoltageCurveEditor();
+            InitializeVoltagePreviewControls();
         }
 
         private void InitializeSpecialPage_Custom()
