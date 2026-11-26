@@ -47,8 +47,15 @@ namespace Phidgets2Prosim
         // thread for its whole timeout, the pool starves and timeouts/retries balloon (tens of seconds apart).
         private static readonly System.Threading.SemaphoreSlim OpenGate = new System.Threading.SemaphoreSlim(8);
 
+        // Bumped by CancelPendingOpens(); any open started under an older generation stops retrying.
+        private static int _openGeneration;
+
+        // Call when devices are unloaded (e.g. ProSim disconnect) so in-flight opens don't keep retrying.
+        public static void CancelPendingOpens() => System.Threading.Interlocked.Increment(ref _openGeneration);
+
         protected async System.Threading.Tasks.Task OpenWithRetry(Phidget22.Phidget channel, int timeoutMs = 5000, int attempts = 4)
         {
+            int generation = _openGeneration;
             for (int attempt = 1; ; attempt++)
             {
                 try
@@ -56,15 +63,18 @@ namespace Phidgets2Prosim
                     await OpenGate.WaitAsync();
                     try
                     {
+                        if (generation != _openGeneration) return;
                         await System.Threading.Tasks.Task.Run(() => channel.Open(timeoutMs));
                     }
                     finally
                     {
                         OpenGate.Release();
                     }
+                    // Unloaded while opening: release the channel that just opened.
+                    if (generation != _openGeneration) { try { channel.Close(); } catch { } }
                     return;
                 }
-                catch (Phidget22.PhidgetException ex) when (ex.ErrorCode == Phidget22.ErrorCode.Timeout && attempt < attempts)
+                catch (Phidget22.PhidgetException ex) when (ex.ErrorCode == Phidget22.ErrorCode.Timeout && attempt < attempts && generation == _openGeneration)
                 {
                     SendInfoLog($"[Open] {ProsimDataRef} [{HubPort}] Ch:{Channel} timed out (attempt {attempt}/{attempts}); retrying…");
                     try { channel.Close(); } catch { }

@@ -94,6 +94,7 @@ namespace Phidgets2Prosim
 
         public void UnloadInputDevices()
         {
+            PhidgetDevice.CancelPendingOpens();
             for (int i = 0; i < Inputs.Length;        i++) { Inputs[i]?.Close();        Inputs[i] = null; }
             for (int i = 0; i < MultiInputs.Length;   i++) { MultiInputs[i]?.Close();   MultiInputs[i] = null; }
             for (int i = 0; i < VoltageInputs.Length; i++) { VoltageInputs[i]?.Close(); VoltageInputs[i] = null; }
@@ -106,9 +107,9 @@ namespace Phidgets2Prosim
             Links.Clear();
         }
 
-        private void UnloadInputs()      { for (int i = 0; i < Inputs.Length; i++)        { Inputs[i]?.Close();        Inputs[i] = null; } }
-        private void UnloadMultiInputs() { for (int i = 0; i < MultiInputs.Length; i++)   { MultiInputs[i]?.Close();   MultiInputs[i] = null; } }
-        private void UnloadVoltageInputs() { for (int i = 0; i < VoltageInputs.Length; i++) { VoltageInputs[i]?.Close(); VoltageInputs[i] = null; } }
+        private void UnloadInputs()      { PhidgetDevice.CancelPendingOpens(); for (int i = 0; i < Inputs.Length; i++)        { Inputs[i]?.Close();        Inputs[i] = null; } }
+        private void UnloadMultiInputs() { PhidgetDevice.CancelPendingOpens(); for (int i = 0; i < MultiInputs.Length; i++)   { MultiInputs[i]?.Close();   MultiInputs[i] = null; } }
+        private void UnloadVoltageInputs() { PhidgetDevice.CancelPendingOpens(); for (int i = 0; i < VoltageInputs.Length; i++) { VoltageInputs[i]?.Close(); VoltageInputs[i] = null; } }
 
         private readonly object _reloadLock = new object();
 

@@ -28,7 +28,10 @@ namespace Phidgets2Prosim
 
         // ── State ────────────────────────────────────────────────────────────────
 
-        public bool IsConnected => _connection.isConnected;
+        // ProSimConnect has no Disconnect(); a user-requested disconnect is tracked logically.
+        private volatile bool _userDisconnected;
+
+        public bool IsConnected => _connection.isConnected && !_userDisconnected;
         public bool IsPaused    { get; private set; }
 
         // ── Internals ────────────────────────────────────────────────────────────
@@ -55,6 +58,15 @@ namespace Phidgets2Prosim
             if (string.IsNullOrWhiteSpace(ip)) ip = "127.0.0.1";
             try
             {
+                bool stillLive = _userDisconnected && _connection.isConnected;
+                _userDisconnected = false;
+                if (stillLive)
+                {
+                    // Underlying link never dropped, so no onConnect will fire; reconnect logically.
+                    RaiseInfo("ProSim reconnected.");
+                    OnConnect();
+                    return;
+                }
                 RaiseInfo("ProSim connecting to " + ip + "…");
                 await Task.Run(() => _connection.Connect(ip));
             }
@@ -73,6 +85,7 @@ namespace Phidgets2Prosim
         {
             try
             {
+                _userDisconnected = true;
                 _pauseDataRef = null;   // GC will clean up; no explicit close API
                 RaiseInfo("ProSim service disconnected.");
             }

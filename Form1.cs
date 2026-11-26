@@ -179,6 +179,7 @@
             _configsInsLoaded = false;
             _prosim.Disconnect();
             DisplayInfoLog("ProSim input devices unloaded (disconnect requested).");
+            UpdateStatusLabel();   // logs "ProSim DISCONNECTED" and switches the button to Connect
         }
 
         private void OnProSimConnected()
